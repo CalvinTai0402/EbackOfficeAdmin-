@@ -1,0 +1,32 @@
+.centerVandH {
+    margin: auto;
+    width: 80%;
+    padding: 10px;
+}
+
+.sideBarHeader {
+    margin: auto;
+    padding: 10px;
+}
+
+#sidebar .clickable {
+    cursor: pointer;
+}
+
+#sidebar .pro-sidebar {
+    width: 20px;
+    min-height: 100vh;
+    height: 100%;
+}
+
+.create {
+    position: relative;
+    margin-bottom: 10px;
+    width: 100px;
+}
+
+.delete {
+    position: relative;
+    margin-bottom: 10px;
+    width: 150px;
+}
