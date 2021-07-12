@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\UtilitiesController;
+use App\Http\Controllers\AvailableTaskController;
+use App\Http\Controllers\TaskListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +29,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource("customers", CustomerController::class);
     Route::post("customers/deleteMany",  [CustomerController::class, 'destroyMany'])->name('customers.destroyMany');
     Route::resource("users", UserController::class);
+    Route::resource("availableTasks", AvailableTaskController::class);
+    Route::post("availableTasks/deleteMany",  [AvailableTaskController::class, 'destroyMany'])->name('availableTasks.destroyMany');
+    Route::resource("taskLists", TaskListController::class);
+    Route::post("taskLists/deleteMany",  [TaskListController::class, 'destroyMany'])->name('taskLists.destroyMany');
 });
 
 Route::get('/token', [UtilitiesController::class, 'token']);

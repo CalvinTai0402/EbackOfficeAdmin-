@@ -36,7 +36,7 @@ class CustomerIndex extends React.Component {
     handleDelete = async (id) => {
         this.setState({ deleting: true })
         const res = await axios.delete(`/customers/${id}`);
-        if (res.data.status === 204) {
+        if (res.data.status === 200) {
             this.setState({ deleting: false })
         }
     };
@@ -48,7 +48,7 @@ class CustomerIndex extends React.Component {
         const res = await axios.post(`/customers/deleteMany`, {
             selectedCustomerIds: selectedCustomerIds
         });
-        if (res.data.status === 204) {
+        if (res.data.status === 200) {
             this.setState({ deleting: false })
         }
     }

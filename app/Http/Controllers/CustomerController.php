@@ -15,7 +15,6 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::all();
         $search = $request->input("search");
         $limit = $request->input("limit");
         $page = $request->input("page");
@@ -111,7 +110,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         if ($customer->delete()) {
-            return response()->json(["status" => 204]);
+            return response()->json(["status" => 200]);
         }
     }
 
@@ -119,6 +118,6 @@ class CustomerController extends Controller
     {
         $selectedCustomerIds = $request->selectedCustomerIds;
         $customersToDelete = Customer::whereIn('id', $selectedCustomerIds)->delete();
-        return response()->json(['status' => 204, 'customers' => $customersToDelete]);
+        return response()->json(['status' => 200, 'customers' => $customersToDelete]);
     }
 }
