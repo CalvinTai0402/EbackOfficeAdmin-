@@ -8,6 +8,12 @@ import {
     Message,
     Icon
 } from "semantic-ui-react";
+import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import SelectSearch from 'react-select-search';
+import fuzzySearch from "../fuzzySearch";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 class TaskListCreate extends Component {
     state = {
@@ -15,6 +21,7 @@ class TaskListCreate extends Component {
         description: "",
         notes: "",
         duedate: "",
+        selectedDate: "",
         repeat: "",
         priority: "",
         status: "",
@@ -91,8 +98,32 @@ class TaskListCreate extends Component {
         });
     };
 
+    setDate = (date) => {
+        const dateString = moment(date).format("MM-DD-yyyy")
+        this.setState({
+            duedate: dateString,
+            selectedDate: date
+        })
+    }
+
+    handleSelectChange = (value, obj) => {
+        switch (obj.value.slice(0, -1)) {
+            case "repeat":
+                this.setState({ repeat: obj.name })
+                break;
+            case "priority":
+                this.setState({ priority: obj.name })
+                break;
+            case "status":
+                this.setState({ status: obj.name })
+                break;
+            default:
+
+        }
+    }
+
     render() {
-        const { name, description, notes, duedate, repeat, priority, status, errors, loading } = this.state;
+        const { name, description, notes, selectedDate, repeat, priority, status, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -101,7 +132,7 @@ class TaskListCreate extends Component {
                             <Icon name="tasks" color="blue" />
                             Create Task
                         </Header>
-                        <Form onSubmit={this.handleStore} size="large">
+                        <Form onSubmit={this.handleStore} size="large" autoComplete="off">
                             <Segment stacked>
                                 <Form.Field>
                                     <label>Name</label>
@@ -132,44 +163,56 @@ class TaskListCreate extends Component {
                                         value={notes}
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "due")}>
                                     <label>Due date</label>
-                                    <Form.Input
-                                        fluid
-                                        name="duedate"
-                                        onChange={this.handleChange}
-                                        value={duedate}
-                                        className={this.handleInputError(errors, "due")}
+                                    <DatePicker
+                                        selected={selectedDate}
+                                        onChange={(date) => this.setDate(date)}
+                                        dateFormat="MM-dd-yyyy"
+                                        closeOnScroll={(e) => e.target === document}
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "repeat")}>
                                     <label>Repeat</label>
-                                    <Form.Input
-                                        fluid
-                                        name="repeat"
-                                        onChange={this.handleChange}
-                                        value={repeat}
-                                        className={this.handleInputError(errors, "repeat")}
+                                    <SelectSearch
+                                        search
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        filterOptions={fuzzySearch}
+                                        options={[
+                                            { value: 'repeat0', name: 'Daily' },
+                                            { value: 'repeat1', name: 'Weekly' },
+                                            { value: 'repeat2', name: 'Monthly' },
+                                            { value: 'repeat3', name: 'Yearly' }
+                                        ]}
+                                        placeholder="Choose a repeat frequency"
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "priority")}>
                                     <label>Priority</label>
-                                    <Form.Input
-                                        fluid
-                                        name="priority"
-                                        onChange={this.handleChange}
-                                        value={priority}
-                                        className={this.handleInputError(errors, "priority")}
+                                    <SelectSearch
+                                        search
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        filterOptions={fuzzySearch}
+                                        options={[
+                                            { value: 'priority0', name: 'High' },
+                                            { value: 'priority1', name: 'Medium' },
+                                            { value: 'priority2', name: 'Low' },
+                                        ]}
+                                        placeholder="Choose a priority"
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "status")}>
                                     <label>Status</label>
-                                    <Form.Input
-                                        fluid
-                                        name="status"
-                                        onChange={this.handleChange}
-                                        value={status}
-                                        className={this.handleInputError(errors, "status")}
+                                    <SelectSearch
+                                        search
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        filterOptions={fuzzySearch}
+                                        options={[
+                                            { value: 'status0', name: 'Done' },
+                                            { value: 'status1', name: 'In progress' },
+                                            { value: 'status2', name: "Haven't started" },
+                                        ]}
+                                        placeholder="Choose a status"
                                     />
                                 </Form.Field>
                                 <Button
