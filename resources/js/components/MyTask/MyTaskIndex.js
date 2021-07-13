@@ -181,10 +181,12 @@ class MyTaskIndex extends React.Component {
             case "status":
                 this.setState({ status: obj.name })
                 break;
-            case "availableTaskName":
+            // case "availableTaskName":
+            //     this.setState({ name: obj.name })
+            //     this.setState({ description: availableTaskDescriptions[obj.index].name })
+            default:
                 this.setState({ name: obj.name })
                 this.setState({ description: availableTaskDescriptions[obj.index].name })
-            default:
         }
     }
 

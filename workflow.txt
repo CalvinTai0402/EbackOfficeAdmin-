@@ -8,4 +8,8 @@
 TODO:
 - fix date-picker z-index
 - fix react-select-search placeholder color in TaskListEdit
-- relationship for company id and asignee (tasklist and mytask)
+- relationship for company id and asignee (
+    tasklist: users, customerid,
+    mytask: auth:user,
+    events: auth:user
+    )

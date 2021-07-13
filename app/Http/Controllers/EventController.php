@@ -47,7 +47,15 @@ class EventController extends Controller
         $endDate->setTimezone(new DateTimeZone('America/Denver'));
         $request["start"] = $startDate->format('Y-m-d H:i:s');
         $request["end"] = $endDate->format('Y-m-d H:i:s');
+        if ($request["priority"] == "High") {
+            $request["color"] = "Red";
+        } elseif ($request["priority"] == "Medium") {
+            $request["color"] = "Blue";
+        } else {
+            $request["color"] = "Green";
+        }
         $event = Event::create($request->all());
+        return $event;
         return response()->json(['status' => 200, 'event' => $event]);
     }
 

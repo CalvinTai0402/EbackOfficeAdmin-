@@ -3,15 +3,22 @@ import FullCalendar, { formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { createEventId } from './event-utils'
+import ReactModal from 'react-modal';
 import Spinner from '../Spinner'
+import ModalForm from './ModalForm'
+
+import '../../../css/App.css'
 
 class Event extends React.Component {
     state = {
         weekendsVisible: true,
         currentEvents: [],
         events: [],
-        laoding: false,
+        loading: false,
+        showModal: false,
+        title: "",
+        description: "",
+        priority: ""
     }
 
     async componentDidMount() {
@@ -34,13 +41,22 @@ class Event extends React.Component {
     }
 
     handleDateSelect = async (selectInfo) => {
-        let title = prompt('Please enter a new title for your event')
+        this.openModal();
+        let seconds = 0
+        do {
+            console.log("Polling...")
+            await this.sleep(1000);
+            seconds += 1
+        } while (this.state.showModal && seconds < 100)
+        this.closeModal();
         let calendarApi = selectInfo.view.calendar
         calendarApi.unselect() // clear date selection
-        if (title) {
+        if (this.state.title && this.state.description && this.state.priority) {
             calendarApi.addEvent({
-                id: createEventId(),
-                title,
+                id: 0,
+                title: this.state.title,
+                description: this.state.description,
+                priority: this.state.priority,
                 start: selectInfo.startStr,
                 end: selectInfo.endStr,
                 allDay: selectInfo.allDay
@@ -48,6 +64,14 @@ class Event extends React.Component {
         }
         await this.getEvents()
     }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
+
+    openModal = () => { this.setState({ showModal: true }) }
+
+    closeModal = () => { this.setState({ showModal: false }) }
 
     handleEventClick = (clickInfo) => {
         if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
@@ -64,12 +88,14 @@ class Event extends React.Component {
     handleAdd = async (addInfo) => {
         await axios.post('/events', {
             title: addInfo.event.title,
+            description: this.state.description,
+            priority: this.state.priority,
             start: addInfo.event.start,
             end: addInfo.event.end
         });
     }
 
-    handleChange = async (changeInfo) => {
+    handleCalendarChange = async (changeInfo) => {
         const id = changeInfo.event.id;
         await axios.put(`/events/${id}`, {
             title: changeInfo.event.title,
@@ -132,6 +158,48 @@ class Event extends React.Component {
             </>
         )
     }
+
+    handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
+
+    handleSelectChange = (value, obj) => {
+        switch (obj.value.slice(0, -1)) {
+            case "priority":
+                this.setState({ priority: obj.name })
+                break;
+            default:
+        }
+    }
+
+    renderModal = () => {
+        const { title, description, priority, showModal } = this.state;
+        return (
+            <div >
+                <ReactModal
+                    isOpen={showModal}
+                    ariaHideApp={false}
+                    style={{
+                        overlay: {
+                            position: "absolute",
+                            left: "350px",
+                            margin: "auto",
+                            width: "700px",
+                            height: "500px",
+                            zIndex: 9999
+                        }
+                    }}
+                >
+                    <ModalForm
+                        title={title}
+                        description={description}
+                        priority={priority}
+                        closeModal={this.closeModal}
+                        handleChange={this.handleChange}
+                        handleSelectChange={this.handleSelectChange} />
+                </ReactModal>
+            </div >
+        )
+    }
+
     render() {
         const { weekendsVisible, events, loading } = this.state;
         return (
@@ -159,9 +227,10 @@ class Event extends React.Component {
                                 eventClick={this.handleEventClick}
                                 eventsSet={this.handleEvents}
                                 eventAdd={this.handleAdd}
-                                eventChange={this.handleChange}
+                                eventChange={this.handleCalendarChange}
                                 eventRemove={this.handleRemove}
                             />
+                            {this.renderModal()}
                         </div>
                     </div>}
             </div>
