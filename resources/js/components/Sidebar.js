@@ -13,7 +13,8 @@ import {
 // import CustomerIndex from './Customer/CustomerIndex';
 // import CustomerCreate from './Customer/CustomerCreate';
 // import CustomerEdit from "./Customer/CustomerEdit";
-import Event from "./Event/Event"
+import Event from "./Event/Event";
+import FileManager from "./FileManager";
 import AvailableTaskIndex from './AvailableTask/AvailableTaskIndex';
 import AvailableTaskCreate from './AvailableTask/AvailableTaskCreate';
 import AvailableTaskEdit from "./AvailableTask/AvailableTaskEdit";
@@ -58,6 +59,10 @@ class Sidebar extends React.Component {
                                         Events
                                         <Link to="/events" />
                                     </MenuItem>
+                                    <MenuItem icon={<FaBattleNet />}>
+                                        Files
+                                        <Link to="/filemanager" />
+                                    </MenuItem>
                                     <SubMenu title="Task Settings" icon={<FaGem />}>
                                         <MenuItem icon={<FaBattleNet />}>
                                             Available Tasks
@@ -83,6 +88,7 @@ class Sidebar extends React.Component {
                         <div className="centerVandH">
                             <Switch>
                                 <Route exact path="/events" render={(props) => <Event {...props} />} />
+                                <Route exact path="/filemanager" render={(props) => <FileManager {...props} />} />
                                 <Route exact path="/availableTasks" render={(props) => <AvailableTaskIndex {...props} />} />
                                 <Route exact path="/availableTasks/create" render={(props) => <AvailableTaskCreate {...props} />} />
                                 <Route exact path="/availableTasks/:id/edit" render={(props) => <AvailableTaskEdit {...props} />} />

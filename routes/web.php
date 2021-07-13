@@ -28,6 +28,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         return view('reactApp');
     });
+    // Route::get('/welcome', function () {
+    //     return view('welcome');
+    // });
     // Route::resource("customers", CustomerController::class);
     // Route::post("customers/deleteMany",  [CustomerController::class, 'destroyMany'])->name('customers.destroyMany');
 

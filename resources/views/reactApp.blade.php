@@ -10,11 +10,15 @@
     <title>EBAdmin</title>
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    {{-- File Manager Fonts --}}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+    {{-- File Manager Styles --}}
+    <link rel="stylesheet" href="{{ asset('vendor/file-manager/css/file-manager.css') }}">
 </head>
 
 <body>
     <div id="root"></div>
-
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
 
