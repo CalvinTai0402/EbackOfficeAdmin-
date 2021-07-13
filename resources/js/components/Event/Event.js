@@ -4,16 +4,27 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { createEventId } from './event-utils'
+import Spinner from '../Spinner'
 
 class Event extends React.Component {
     state = {
         weekendsVisible: true,
         currentEvents: [],
-        events: []
+        events: [],
+        laoding: false,
     }
 
     async componentDidMount() {
         await this.getEvents();
+    }
+
+    getEvents = async () => {
+        this.setState({ loading: true })
+        const res = await axios.get(`/events`);
+        if (res.data.status == 200) {
+            this.setState({ loading: false })
+            this.setState({ events: res.data.events })
+        }
     }
 
     handleWeekendsToggle = () => {
@@ -22,12 +33,10 @@ class Event extends React.Component {
         })
     }
 
-    handleDateSelect = (selectInfo) => {
+    handleDateSelect = async (selectInfo) => {
         let title = prompt('Please enter a new title for your event')
         let calendarApi = selectInfo.view.calendar
-
         calendarApi.unselect() // clear date selection
-
         if (title) {
             calendarApi.addEvent({
                 id: createEventId(),
@@ -37,6 +46,7 @@ class Event extends React.Component {
                 allDay: selectInfo.allDay
             })
         }
+        await this.getEvents()
     }
 
     handleEventClick = (clickInfo) => {
@@ -51,36 +61,17 @@ class Event extends React.Component {
         })
     }
 
-    renderEventContent = (eventInfo) => {
-        return (
-            <>
-                <b>{eventInfo.timeText}</b>
-                <i>{eventInfo.event.title}</i>
-            </>
-        )
-    }
-
-    renderSidebarEvent = (event) => {
-        return (
-            <li key={event.id}>
-                <b>{formatDate(event.start, { year: 'numeric', month: 'short', day: 'numeric' })}</b>
-                <i>{event.title}</i>
-            </li>
-        )
-    }
-
     handleAdd = async (addInfo) => {
         await axios.post('/events', {
             title: addInfo.event.title,
             start: addInfo.event.start,
             end: addInfo.event.end
         });
-        // await this.getEvents();
     }
 
     handleChange = async (changeInfo) => {
         const id = changeInfo.event.id;
-        const res = await axios.put(`/events/${id}`, {
+        await axios.put(`/events/${id}`, {
             title: changeInfo.event.title,
             start: changeInfo.event.start,
             end: changeInfo.event.end
@@ -92,13 +83,8 @@ class Event extends React.Component {
         await axios.delete(`/events/${id}`);
     }
 
-    getEvents = async () => {
-        const res = await axios.get(`/events`);
-        this.setState({ events: res.data.events })
-    }
-
     renderSidebar = () => {
-        const { currentEvents } = this.state;
+        const { events } = this.state;
         return (
             <div className='demo-app-sidebar'>
                 <div className='demo-app-sidebar-section'>
@@ -120,44 +106,64 @@ class Event extends React.Component {
                     </label>
                 </div>
                 <div className='demo-app-sidebar-section'>
-                    <h2>All Events ({currentEvents.length})</h2>
+                    <h2>All Events ({events.length})</h2>
                     <ul>
-                        {currentEvents.map(this.renderSidebarEvent)}
+                        {events.map(this.renderSidebarEvent)}
                     </ul>
                 </div>
             </div>
         )
     }
 
-    render() {
-        const { weekendsVisible, events } = this.state;
+    renderSidebarEvent = (event) => {
         return (
-            <div className='demo-app'>
-                {this.renderSidebar()}
-                <div className='demo-app-main'>
-                    <FullCalendar
-                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                        headerToolbar={{
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                        }}
-                        initialView='dayGridMonth'
-                        editable={true}
-                        selectable={true}
-                        selectMirror={true}
-                        dayMaxEvents={true}
-                        weekends={weekendsVisible}
-                        events={events}
-                        select={this.handleDateSelect}
-                        eventContent={this.renderEventContent}
-                        eventClick={this.handleEventClick}
-                        eventsSet={this.handleEvents}
-                        eventAdd={this.handleAdd}
-                        eventChange={this.handleChange}
-                        eventRemove={this.handleRemove}
-                    />
-                </div>
+            <li key={event.id}>
+                <b>{formatDate(event.start, { year: 'numeric', month: 'short', day: 'numeric' })}</b>
+                <i>{event.title}</i>
+            </li>
+        )
+    }
+
+    renderEventContent = (eventInfo) => {
+        return (
+            <>
+                <b>{eventInfo.timeText}</b>
+                <i>{eventInfo.event.title}</i>
+            </>
+        )
+    }
+    render() {
+        const { weekendsVisible, events, loading } = this.state;
+        return (
+            <div>
+                {loading ? <Spinner text="Loading..." /> :
+                    <div className='demo-app'>
+                        {this.renderSidebar()}
+                        <div className='demo-app-main'>
+                            <FullCalendar
+                                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                                headerToolbar={{
+                                    left: 'prev,next today',
+                                    center: 'title',
+                                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                                }}
+                                initialView='dayGridMonth'
+                                editable={true}
+                                selectable={true}
+                                selectMirror={true}
+                                dayMaxEvents={true}
+                                weekends={weekendsVisible}
+                                events={events}
+                                select={this.handleDateSelect}
+                                eventContent={this.renderEventContent}
+                                eventClick={this.handleEventClick}
+                                eventsSet={this.handleEvents}
+                                eventAdd={this.handleAdd}
+                                eventChange={this.handleChange}
+                                eventRemove={this.handleRemove}
+                            />
+                        </div>
+                    </div>}
             </div>
         )
     }

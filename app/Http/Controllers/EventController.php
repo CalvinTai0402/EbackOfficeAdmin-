@@ -41,8 +41,10 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $startDate = new DateTime($request["start"]);
-        $endDate = new DateTime($request["end"]);
+        $startDate = new DateTime($request["start"], new DateTimeZone('UTC'));
+        $startDate->setTimezone(new DateTimeZone('America/Denver'));
+        $endDate = new DateTime($request["end"], new DateTimeZone('UTC'));
+        $endDate->setTimezone(new DateTimeZone('America/Denver'));
         $request["start"] = $startDate->format('Y-m-d H:i:s');
         $request["end"] = $endDate->format('Y-m-d H:i:s');
         $event = Event::create($request->all());
@@ -80,14 +82,10 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        // $startDate = new DateTime($request["start"], new DateTimeZone('America/Denver'));
         $startDate = new DateTime($request["start"], new DateTimeZone('UTC'));
         $startDate->setTimezone(new DateTimeZone('America/Denver'));
-
         $endDate = new DateTime($request["end"], new DateTimeZone('UTC'));
         $endDate->setTimezone(new DateTimeZone('America/Denver'));
-
-        // $endDate = new DateTime($request["end"], new DateTimeZone('America/Denver'));
         $request["start"] = $startDate->format('Y-m-d H:i:s');
         $request["end"] = $endDate->format('Y-m-d H:i:s');
         $event->update($request->all());
