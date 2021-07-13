@@ -5,7 +5,7 @@ class Home extends Component {
     render() {
         return (
             <div className='centerVandH'>
-                Roll Fast
+                EbackOffice Admin Panel
             </div>
         );
     }

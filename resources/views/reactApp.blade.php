@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token hehe-->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>rollFast</title>
+    <title>EBAdmin</title>
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>

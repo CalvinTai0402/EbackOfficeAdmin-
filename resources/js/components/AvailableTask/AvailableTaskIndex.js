@@ -60,7 +60,8 @@ class AvailableTaskIndex extends React.Component {
         const columns = ['id', 'name', 'description', 'created_at', 'updated_at', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 10,
+            perPage: 5,
+            perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
             sortable: ['name', 'description'],
             columnsWidth: { name: 20, description: 20, id: 5 },

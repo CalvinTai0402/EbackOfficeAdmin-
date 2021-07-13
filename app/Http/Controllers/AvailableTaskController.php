@@ -120,4 +120,10 @@ class AvailableTaskController extends Controller
         $availableTasksToDelete = AvailableTask::whereIn('id', $selectedAvailableTaskIds)->delete();
         return response()->json(['status' => 200, 'availableTasksToDelete' => $availableTasksToDelete]);
     }
+
+    public function populateAvalableTasksForTaskList()
+    {
+        $availableTaskNamesAndDescriptions = AvailableTask::select("name", "description")->get();
+        return response()->json(['status' => 200, 'availableTaskNamesAndDescriptions' => $availableTaskNamesAndDescriptions]);
+    }
 }

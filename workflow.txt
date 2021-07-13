@@ -6,5 +6,6 @@
 
 
 TODO:
-- companycode???
 - fix date-picker z-index
+- fix react-select-search placeholder color in TaskListEdit
+- relationship for company id and asignee (tasklist and mytask)

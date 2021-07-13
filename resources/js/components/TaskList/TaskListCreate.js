@@ -25,8 +25,31 @@ class TaskListCreate extends Component {
         repeat: "",
         priority: "",
         status: "",
+        availableTaskNames: [],
+        availableTaskDescriptions: [],
         errors: [],
-        loading: false
+        loading: false,
+    }
+
+    async componentDidMount() {
+        const res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
+        let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
+        let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
+            let availableTaskName = {
+                value: "availableTaskName" + i,
+                name: availableTaskNameAndDescription.name
+            };
+            return availableTaskName;
+        });
+        let availableTaskDescriptions = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
+            let availableTaskDescription = {
+                value: "availableTaskDescriptions" + i,
+                name: availableTaskNameAndDescription.description
+            };
+            return availableTaskDescription;
+        });
+        this.setState({ availableTaskNames: availableTaskNames });
+        this.setState({ availableTaskDescriptions: availableTaskDescriptions });
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
@@ -99,6 +122,8 @@ class TaskListCreate extends Component {
     };
 
     setDate = (date) => {
+        console.log(date)
+        console.log(typeof (date))
         const dateString = moment(date).format("MM-DD-yyyy")
         this.setState({
             duedate: dateString,
@@ -107,6 +132,7 @@ class TaskListCreate extends Component {
     }
 
     handleSelectChange = (value, obj) => {
+        const { availableTaskDescriptions } = this.state;
         switch (obj.value.slice(0, -1)) {
             case "repeat":
                 this.setState({ repeat: obj.name })
@@ -117,13 +143,15 @@ class TaskListCreate extends Component {
             case "status":
                 this.setState({ status: obj.name })
                 break;
+            case "availableTaskName":
+                this.setState({ name: obj.name })
+                this.setState({ description: availableTaskDescriptions[obj.index].name })
             default:
-
         }
     }
 
     render() {
-        const { name, description, notes, selectedDate, repeat, priority, status, errors, loading } = this.state;
+        const { description, notes, selectedDate, availableTaskNames, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -134,14 +162,14 @@ class TaskListCreate extends Component {
                         </Header>
                         <Form onSubmit={this.handleStore} size="large" autoComplete="off">
                             <Segment stacked>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "name")}>
                                     <label>Name</label>
-                                    <Form.Input
-                                        fluid
-                                        name="name"
-                                        onChange={this.handleChange}
-                                        value={name}
-                                        className={this.handleInputError(errors, "name")}
+                                    <SelectSearch
+                                        search
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        filterOptions={fuzzySearch}
+                                        options={availableTaskNames}
+                                        placeholder="Choose a task name"
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -149,7 +177,6 @@ class TaskListCreate extends Component {
                                     <Form.Input
                                         fluid
                                         name="description"
-                                        onChange={this.handleChange}
                                         value={description}
                                         className={this.handleInputError(errors, "description")}
                                     />
