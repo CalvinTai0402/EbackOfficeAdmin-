@@ -19,6 +19,27 @@
     height: 100%;
 }
 
+.sidebar-btn-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-btn {
+    padding: 1px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #adadad;
+    text-decoration: none;
+    margin: 0 auto;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .create {
     position: relative;
     margin-bottom: 10px;

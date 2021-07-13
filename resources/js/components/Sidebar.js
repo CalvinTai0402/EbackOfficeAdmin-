@@ -1,6 +1,6 @@
 import React from "react";
 import '../../css/App.css';
-import { ProSidebar, SubMenu, Menu, MenuItem, SidebarHeader, SidebarContent } from 'react-pro-sidebar';
+import { ProSidebar, SubMenu, Menu, MenuItem, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { FaBattleNet, FaGem } from "react-icons/fa";
 import Home from "./Home"
@@ -38,6 +38,10 @@ class Sidebar extends React.Component {
         menuCollapse ? this.setState({ menuCollapse: false }) : this.setState({ menuCollapse: true })
     };
 
+    logout = async () => {
+        await axios.post("/logout");
+        window.location.href = "/"
+    }
 
     render() {
         const { menuCollapse, loggedInUserName } = this.state;
@@ -83,7 +87,18 @@ class Sidebar extends React.Component {
                                     </MenuItem> */}
                                 </Menu>
                             </SidebarContent>
-
+                            <SidebarFooter style={{ textAlign: 'center' }}>
+                                <div
+                                    className="sidebar-btn-wrapper"
+                                    style={{
+                                        padding: '20px 24px',
+                                    }}
+                                >
+                                    <button className="sidebar-btn" onClick={this.logout}>
+                                        Logout
+                                    </button>
+                                </div>
+                            </SidebarFooter>
                         </ProSidebar>
                         <div className="centerVandH">
                             <Switch>
