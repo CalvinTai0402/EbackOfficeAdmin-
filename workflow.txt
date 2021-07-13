@@ -13,3 +13,8 @@ TODO:
     mytask: auth:user,
     events: auth:user
     )
+- file manager
+- users
+- customers
+- roles
+- Announcements
