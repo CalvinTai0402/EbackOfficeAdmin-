@@ -11,7 +11,6 @@ TODO:
 - relationship for company id and asignee (
     tasklist: users, customerid,
     mytask: auth:user,
-    events: auth:user,
     users: announcements
 )
 - customers

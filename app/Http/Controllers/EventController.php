@@ -6,6 +6,7 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -19,7 +20,7 @@ class EventController extends Controller
         // $data = Event::whereDate('start', '>=', $request->start)
         //     ->whereDate('end',   '<=', $request->end)
         //     ->get(['id', 'title', 'start', 'end']);
-        $events = Event::all();
+        $events =  Auth::user()->events;
         return response()->json(['status' => 200, 'events' => $events]);
     }
 
@@ -54,6 +55,7 @@ class EventController extends Controller
         } else {
             $request["color"] = "Green";
         }
+        $request["user_id"] = Auth::id();
         $event = Event::create($request->all());
         return response()->json(['status' => 200, 'event' => $event]);
     }
