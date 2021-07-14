@@ -17,6 +17,7 @@ class TaskList extends Model
         'repeat',
         'priority',
         'status',
+        'assigneeNames'
     ];
 
     public function scopeName($query, $filter)
@@ -67,6 +68,15 @@ class TaskList extends Model
     {
         if (!is_null($filter)) {
             return $query->orWhere('status', 'LIKE', '%' . $filter . '%');
+        }
+
+        return $query;
+    }
+
+    public function scopeAssigneenames($query, $filter)
+    {
+        if (!is_null($filter)) {
+            return $query->orWhere('assigneeNames', 'LIKE', '%' . $filter . '%');
         }
 
         return $query;

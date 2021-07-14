@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TaskList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\User;
 class TaskListController extends Controller
 {
     /**
@@ -27,6 +27,7 @@ class TaskListController extends Controller
             ->repeat($search)
             ->priority($search)
             ->status($search)
+            ->assigneenames($search)
             ->order($orderBy, $order)
             ->skipPage($toSkip)
             ->take($limit)
@@ -63,6 +64,12 @@ class TaskListController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
+        $assigneeNames = [];
+        $assigneeNameArrays = User::select('name')->whereIn('id', $request["asigneeIds"])->get()->toArray();
+        foreach ($assigneeNameArrays as $assigneeNameArray){
+            array_push($assigneeNames, $assigneeNameArray["name"]);
+        }
+        $request["assigneeNames"] = implode(", ", $assigneeNames);
         $taskList = TaskList::create($request->all());
         $taskList->users()->attach($request["asigneeIds"]);
         return response()->json(['status' => 200, 'taskList' => $taskList]);
@@ -87,6 +94,14 @@ class TaskListController extends Controller
      */
     public function edit(TaskList $taskList)
     {
+        $asigneeIds = [];
+        $initialAssignees = [];
+        foreach ($taskList->users()->select("user_id", "name")->get()->toArray() as $userInfo){
+            array_push($asigneeIds, $userInfo["user_id"]);
+            array_push($initialAssignees, $userInfo["name"]);
+        }
+        $taskList["asigneeIds"] = $asigneeIds;
+        $taskList["initialAssignees"] = $initialAssignees;
         return response()->json(['status' => 200, 'taskList' => $taskList]);
     }
 
@@ -110,6 +125,13 @@ class TaskListController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
+        $assigneeNames = [];
+        $assigneeNameArrays = User::select('name')->whereIn('id', $request["asigneeIds"])->get()->toArray();
+        foreach ($assigneeNameArrays as $assigneeNameArray){
+            array_push($assigneeNames, $assigneeNameArray["name"]);
+        }
+        $request["assigneeNames"] = implode(", ", $assigneeNames);
+        $taskList->users()->sync($request["asigneeIds"]);
         $taskList->update($request->all());
         return response()->json(['status' => 200, 'taskList' => $taskList]);
     }

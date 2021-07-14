@@ -25,13 +25,49 @@ class TaskListEdit extends Component {
         repeat: "",
         priority: "",
         status: "",
+        asigneeIds: [],
+        initialAssignees: [], // e.g. ["userName0", "userName1"]
         availableTaskNames: [],
         availableTaskDescriptions: [],
+        userNames: [],
+        userIds: [],
         errors: [],
         loading: false
     }
 
     async componentDidMount() {
+        await this.populateAvalableTaskNamesAndDecriptions()
+        await this.populateAvailableUsers()
+        const {userNames} = this.state;
+        const id = this.props.match.params.id;
+        let res = await axios.get(`/taskLists/${id}/edit`);
+        let duedateParts = res.data.taskList.duedate.split("-");
+        let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
+        let initialAssignees = []
+        if (res.data.taskList.initialAssignees.length > 0){
+            initialAssignees = res.data.taskList.initialAssignees.map((initialAssignee, i) => {
+                for (let i = 0; i < userNames.length; i++) {
+                    if (userNames[i].name === initialAssignee){
+                        return userNames[i].value;
+                    }
+                }
+            });
+        }
+        this.setState({
+            name: res.data.taskList.name,
+            description: res.data.taskList.description,
+            notes: res.data.taskList.notes,
+            duedate: res.data.taskList.duedate,
+            selectedDate: selectedDate,
+            repeat: res.data.taskList.repeat,
+            priority: res.data.taskList.priority,
+            status: res.data.taskList.status,
+            asigneeIds: res.data.taskList.asigneeIds,
+            initialAssignees: initialAssignees,
+        });
+    }
+
+    populateAvalableTaskNamesAndDecriptions = async () => {
         let res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
         let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
         let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
@@ -48,22 +84,32 @@ class TaskListEdit extends Component {
             };
             return availableTaskDescription;
         });
-        this.setState({ availableTaskNames: availableTaskNames });
-        this.setState({ availableTaskDescriptions: availableTaskDescriptions });
-
-        const id = this.props.match.params.id;
-        res = await axios.get(`/taskLists/${id}/edit`);
-        let duedateParts = res.data.taskList.duedate.split("-");
-        let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
         this.setState({
-            name: res.data.taskList.name,
-            description: res.data.taskList.description,
-            notes: res.data.taskList.notes,
-            duedate: res.data.taskList.duedate,
-            selectedDate: selectedDate,
-            repeat: res.data.taskList.repeat,
-            priority: res.data.taskList.priority,
-            status: res.data.taskList.status,
+            availableTaskNames: availableTaskNames,
+            availableTaskDescriptions: availableTaskDescriptions
+        });
+    }
+
+    populateAvailableUsers = async () => {
+        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let userIdsAndNames = res.data.userIdsAndNames;
+        let userNames = userIdsAndNames.map((userIdAndName, i) => {
+            let userName = {
+                value: "userName" + i,
+                name: userIdAndName.name
+            };
+            return userName;
+        });
+        let userIds = userIdsAndNames.map((userIdAndName, i) => {
+            let userId = {
+                value: "userId" + i,
+                name: userIdAndName.id
+            };
+            return userId;
+        });
+        this.setState({
+            userNames: userNames,
+            userIds: userIds
         });
     }
 
@@ -71,7 +117,7 @@ class TaskListEdit extends Component {
 
     handleUpdate = async (event) => {
         event.preventDefault();
-        const { name, description, notes, duedate, repeat, priority, status } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
@@ -83,6 +129,7 @@ class TaskListEdit extends Component {
                 repeat: repeat,
                 priority: priority,
                 status: status,
+                asigneeIds: asigneeIds,
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -111,8 +158,8 @@ class TaskListEdit extends Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description, duedate, repeat, priority, status }) => {
-        if (name && description && duedate && repeat && priority && status) { return true }
+    isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
+        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0 ) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
@@ -132,6 +179,9 @@ class TaskListEdit extends Component {
             }
             if (status.length === 0) {
                 errors.push("Status cannot be empty")
+            }
+            if (asigneeIds.length === 0) {
+                errors.push("Asignee cannot be empty")
             }
             this.setState({ errors }) // the reason for this is to re-render
         });
@@ -157,14 +207,30 @@ class TaskListEdit extends Component {
             case "status":
                 this.setState({ status: obj.name })
                 break;
-            case "availableTaskName":
+            // case "availableTaskName":
+            //     this.setState({ name: obj.name })
+            //     this.setState({ description: availableTaskDescriptions[obj.index].name })
+            default:
                 this.setState({ name: obj.name })
                 this.setState({ description: availableTaskDescriptions[obj.index].name })
-            default:
         }
     }
+
+    handleMultipleSelectChange = (value, objArray) => {
+        const { userIds } = this.state;
+        let asigneeIds = []
+        if (objArray.length == 0){
+            this.setState({ asigneeIds: [] })
+        } else if (objArray[objArray.length - 1].value.includes("userName")) {
+            for (let i = 0; i < objArray.length; i++) {
+                asigneeIds.push(userIds[objArray[i].index].name)
+            }
+            this.setState({ asigneeIds: asigneeIds })
+        }
+    }
+
     render() {
-        const { name, description, notes, selectedDate, repeat, priority, status, availableTaskNames, errors, loading } = this.state;
+        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, userNames, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -191,7 +257,6 @@ class TaskListEdit extends Component {
                                     <Form.Input
                                         fluid
                                         name="description"
-                                        // onChange={this.handleChange}
                                         value={description}
                                         className={this.handleInputError(errors, "description")}
                                     />
@@ -255,6 +320,20 @@ class TaskListEdit extends Component {
                                             { value: 'status2', name: "Haven't started" },
                                         ]}
                                         placeholder={status}
+                                    />
+                                </Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "asignee")}>
+                                    <label>Asignee(s)</label>
+                                    <SelectSearch
+                                        search
+                                        closeOnSelect={false}
+                                        printOptions="on-focus"
+                                        multiple
+                                        placeholder="Choose asignee(s)"
+                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray)}
+                                        filterOptions={fuzzySearch}
+                                        options={userNames}
+                                        value={initialAssignees}
                                     />
                                 </Form.Field>
                                 <Button

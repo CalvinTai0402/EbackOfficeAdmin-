@@ -22,6 +22,7 @@ class CreateTaskListsTable extends Migration
             $table->string('repeat');
             $table->string('priority');
             $table->string('status');
+            $table->string('assigneeNames');
             $table->timestamps();
         });
     }

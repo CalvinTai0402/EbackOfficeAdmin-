@@ -24,7 +24,7 @@ use App\Http\Controllers\EventController;
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::group(['middleware' => ['auth']], function () {
+// Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         return view('reactApp');
     });
@@ -48,7 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource("myTasks", MyTaskController::class);
 
     Route::resource('events', EventController::class);
-});
+// });
 
 Route::get('/token', [UtilitiesController::class, 'token']);
 Route::get('/getLoggedInUsername', [UtilitiesController::class, 'getLoggedInUsername']);

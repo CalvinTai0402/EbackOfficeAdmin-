@@ -29,6 +29,7 @@ class TaskListFactory extends Factory
             'repeat' => "Daily",
             'priority' => "High",
             'status' => "In progress",
+            'assigneeNames' => ""
         ];
     }
 }

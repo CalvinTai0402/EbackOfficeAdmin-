@@ -130,7 +130,7 @@ class TaskListCreate extends Component {
     };
 
     isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
-        if (name && description && duedate && repeat && priority && status && asigneeIds) { return true }
+        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
@@ -159,8 +159,6 @@ class TaskListCreate extends Component {
     };
 
     setDate = (date) => {
-        console.log(date)
-        console.log(typeof (date))
         const dateString = moment(date).format("MM-DD-yyyy")
         this.setState({
             duedate: dateString,
@@ -190,10 +188,11 @@ class TaskListCreate extends Component {
     }
 
     handleMultipleSelectChange = (value, objArray) => {
-        console.log(objArray)
         const { userIds } = this.state;
         let asigneeIds = []
-        if (objArray[objArray.length - 1].value.includes("userName")) {
+        if (objArray.length == 0){
+            this.setState({ asigneeIds: [] })
+        } else if (objArray[objArray.length - 1].value.includes("userName")) {
             for (let i = 0; i < objArray.length; i++) {
                 asigneeIds.push(userIds[objArray[i].index].name)
             }
