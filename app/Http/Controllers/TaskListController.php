@@ -64,6 +64,7 @@ class TaskListController extends Controller
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
         $taskList = TaskList::create($request->all());
+        $taskList->users()->attach($request["asigneeIds"]);
         return response()->json(['status' => 200, 'taskList' => $taskList]);
     }
 

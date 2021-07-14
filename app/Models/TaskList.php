@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use \App\Models\User;
 
 class TaskList extends Model
 {
@@ -87,5 +88,10 @@ class TaskList extends Model
         }
 
         return $query;
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'tasklists_users', 'tasklist_id', 'user_id');
     }
 }

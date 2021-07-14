@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MyTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class MyTaskController extends Controller
 {
@@ -21,7 +22,7 @@ class MyTaskController extends Controller
         $orderBy = $request->input("orderBy");
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
-        $myTasks = MyTask::name($search)
+        $myTasks = Auth::user()->taskLists()->name($search)
             ->description($search)
             ->notes($search)
             ->repeat($search)

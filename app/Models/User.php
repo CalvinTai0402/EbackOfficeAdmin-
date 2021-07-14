@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use \App\Models\Event;
+use \App\Models\TaskList;
 
 class User extends Authenticatable
 {
@@ -82,5 +83,10 @@ class User extends Authenticatable
     public function events()
     {
         return $this->hasMany(Event::class);
+    }
+
+    public function taskLists()
+    {
+        return $this->belongsToMany(TaskList::class, 'tasklists_users', 'user_id', 'tasklist_id');
     }
 }

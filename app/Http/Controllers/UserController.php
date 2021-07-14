@@ -122,4 +122,10 @@ class UserController extends Controller
         $usersToDelete = User::whereIn('id', $selectedUserIds)->delete();
         return response()->json(['status' => 200, 'usersToDelete' => $usersToDelete]);
     }
+
+    public function populateUsersForTaskList()
+    {
+        $userIdsAndNames = User::select("id", "name")->get();
+        return response()->json(['status' => 200, 'userIdsAndNames' => $userIdsAndNames]);
+    }
 }

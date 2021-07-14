@@ -25,14 +25,22 @@ class TaskListCreate extends Component {
         repeat: "",
         priority: "",
         status: "",
+        asigneeIds: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
+        userNames: [],
+        userIds: [],
         errors: [],
         loading: false,
     }
 
     async componentDidMount() {
-        const res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
+        await this.populateAvalableTaskNamesAndDecriptions()
+        await this.populateAvailableUsers()
+    }
+
+    populateAvalableTaskNamesAndDecriptions = async () => {
+        let res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
         let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
         let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
             let availableTaskName = {
@@ -48,15 +56,40 @@ class TaskListCreate extends Component {
             };
             return availableTaskDescription;
         });
-        this.setState({ availableTaskNames: availableTaskNames });
-        this.setState({ availableTaskDescriptions: availableTaskDescriptions });
+        this.setState({
+            availableTaskNames: availableTaskNames,
+            availableTaskDescriptions: availableTaskDescriptions
+        });
+    }
+
+    populateAvailableUsers = async () => {
+        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let userIdsAndNames = res.data.userIdsAndNames;
+        let userNames = userIdsAndNames.map((userIdAndName, i) => {
+            let userName = {
+                value: "userName" + i,
+                name: userIdAndName.name
+            };
+            return userName;
+        });
+        let userIds = userIdsAndNames.map((userIdAndName, i) => {
+            let userId = {
+                value: "userId" + i,
+                name: userIdAndName.id
+            };
+            return userId;
+        });
+        this.setState({
+            userNames: userNames,
+            userIds: userIds
+        });
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
     handleStore = async event => {
         event.preventDefault();
-        const { name, description, notes, duedate, repeat, priority, status } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.post('/taskLists', {
@@ -67,6 +100,7 @@ class TaskListCreate extends Component {
                 repeat: repeat,
                 priority: priority,
                 status: status,
+                asigneeIds: asigneeIds
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -95,8 +129,8 @@ class TaskListCreate extends Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description, duedate, repeat, priority, status }) => {
-        if (name && description && duedate && repeat && priority && status) { return true }
+    isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
+        if (name && description && duedate && repeat && priority && status && asigneeIds) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
@@ -116,6 +150,9 @@ class TaskListCreate extends Component {
             }
             if (status.length === 0) {
                 errors.push("Status cannot be empty")
+            }
+            if (asigneeIds.length === 0) {
+                errors.push("Asignee cannot be empty")
             }
             this.setState({ errors })
         });
@@ -152,8 +189,20 @@ class TaskListCreate extends Component {
         }
     }
 
+    handleMultipleSelectChange = (value, objArray) => {
+        console.log(objArray)
+        const { userIds } = this.state;
+        let asigneeIds = []
+        if (objArray[objArray.length - 1].value.includes("userName")) {
+            for (let i = 0; i < objArray.length; i++) {
+                asigneeIds.push(userIds[objArray[i].index].name)
+            }
+            this.setState({ asigneeIds: asigneeIds })
+        }
+    }
+
     render() {
-        const { description, notes, selectedDate, availableTaskNames, errors, loading } = this.state;
+        const { description, notes, selectedDate, availableTaskNames, userNames, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -242,6 +291,19 @@ class TaskListCreate extends Component {
                                             { value: 'status2', name: "Haven't started" },
                                         ]}
                                         placeholder="Choose a status"
+                                    />
+                                </Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "asignee")}>
+                                    <label>Asignee(s)</label>
+                                    <SelectSearch
+                                        search
+                                        closeOnSelect={false}
+                                        printOptions="on-focus"
+                                        multiple
+                                        placeholder="Choose asignee(s)"
+                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray)}
+                                        filterOptions={fuzzySearch}
+                                        options={userNames}
                                     />
                                 </Form.Field>
                                 <Button
