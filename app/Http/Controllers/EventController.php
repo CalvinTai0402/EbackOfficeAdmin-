@@ -55,7 +55,6 @@ class EventController extends Controller
             $request["color"] = "Green";
         }
         $event = Event::create($request->all());
-        return $event;
         return response()->json(['status' => 200, 'event' => $event]);
     }
 

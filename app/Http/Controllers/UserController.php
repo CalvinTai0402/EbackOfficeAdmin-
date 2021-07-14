@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -14,7 +15,6 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::all();
         $search = $request->input("search");
         $limit = $request->input("limit");
         $page = $request->input("page");
@@ -48,8 +48,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            "name" => "required|max:50",
+            "email" => "required|max:50|unique:users,email",
+            "role" => "required|max:20",
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => 422, 'errors' => $validator->messages()]);
+        }
         $user = User::create($request->all());
-        return response()->json(['status' => 201, 'user' => $user]);
+        return response()->json(['status' => 200, 'user' => $user]);
     }
 
     /**
@@ -58,7 +66,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
         //
     }
@@ -69,9 +77,8 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        $user = User::find($id);
         return response()->json(['status' => 200, 'user' => $user]);
     }
 
@@ -82,9 +89,16 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $user = User::find($id);
+        $validator = Validator::make($request->all(), [
+            "name" => "required|max:50",
+            "email" => "required|max:50|unique:users,email,$user->id",
+            "role" => "required|max:20",
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => 422, 'errors' => $validator->messages()]);
+        }
         $user->update($request->all());
         return response()->json(['status' => 200, 'user' => $user]);
     }
@@ -95,21 +109,17 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        $user = User::find($id);
         if ($user->delete()) {
-            return response()->json(["status" => 204]);
+            return response()->json(["status" => 200]);
         }
     }
 
     public function destroyMany(Request $request)
     {
-        $filter = $request->input("filter");
-        $filter = json_decode($filter);
-        $ids = trim(json_encode($filter->id), "[]"); // $ids is of the string type
-        $usersToDelete = User::whereIn('id', explode(",", $ids))->get();
-        User::whereIn('id', explode(",", $ids))->delete();
-        return response()->json($usersToDelete, 200);
+        $selectedUserIds = $request->selectedUserIds;
+        $usersToDelete = User::whereIn('id', $selectedUserIds)->delete();
+        return response()->json(['status' => 200, 'usersToDelete' => $usersToDelete]);
     }
 }

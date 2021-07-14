@@ -112,7 +112,7 @@ class TaskListEdit extends Component {
     };
 
     isFormValid = ({ name, description, duedate, repeat, priority, status }) => {
-        if (name && description) { return true }
+        if (name && description && duedate && repeat && priority && status) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {

@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Route::resource("customers", CustomerController::class);
     // Route::post("customers/deleteMany",  [CustomerController::class, 'destroyMany'])->name('customers.destroyMany');
 
+    Route::post("users/deleteMany",  [UserController::class, 'destroyMany'])->name('users.destroyMany');
     Route::resource("users", UserController::class);
 
     Route::get("availableTasks/populateAvalableTasksForTaskList",  [AvailableTaskController::class, 'populateAvalableTasksForTaskList'])->name('availableTasks.populateAvalableTasksForTaskList');
