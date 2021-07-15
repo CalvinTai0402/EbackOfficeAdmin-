@@ -8,25 +8,59 @@ import {
     Message,
     Icon
 } from "semantic-ui-react";
-
+import SelectSearch from 'react-select-search';
+import fuzzySearch from "../fuzzySearch";
 class AnnouncementCreate extends Component {
     state = {
         name: "",
         description: "",
+        asigneeIds: [],
+        userNames: [],
+        userIds: [],
         errors: [],
         loading: false
+    }
+
+    async componentDidMount() {
+        await this.populateAvailableUsers()
+    }
+
+    populateAvailableUsers = async () => {
+        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let userIdsAndNames = res.data.userIdsAndNames;
+        let userNames = userIdsAndNames.map((userIdAndName, i) => {
+            let userName = {
+                value: userIdAndName.name,
+                name: userIdAndName.name,
+                index: i
+            };
+            return userName;
+        });
+        let userIds = userIdsAndNames.map((userIdAndName, i) => {
+            let userId = {
+                value: userIdAndName.id,
+                name: userIdAndName.id,
+                index: i
+            };
+            return userId;
+        });
+        this.setState({
+            userNames: userNames,
+            userIds: userIds
+        });
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
     handleStore = async event => {
         event.preventDefault();
-        const { name, description } = this.state;
+        const { name, description, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.post('/announcements', {
                 name: name,
-                description: description
+                description: description,
+                asigneeIds: asigneeIds
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -55,8 +89,8 @@ class AnnouncementCreate extends Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description }) => {
-        if (name && description) { return true }
+    isFormValid = ({ name, description, asigneeIds }) => {
+        if (name && description && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
@@ -65,12 +99,38 @@ class AnnouncementCreate extends Component {
             if (description.length === 0) {
                 errors.push("Description cannot be empty")
             }
+            if (asigneeIds.length === 0) {
+                errors.push("Asignee cannot be empty")
+            }
             this.setState({ errors })
         });
     };
 
+    handleMultipleSelectChange = (value, objArray, field) => {
+        switch (field) {
+            case "asignee":
+                const { userIds, userNames } = this.state;
+                let asigneeIds = []
+                if (objArray.length == 0) {
+                    this.setState({ asigneeIds: [] })
+                } else {
+                    for (let i = 0; i < objArray.length; i++) {
+                        let userName = objArray[i].value;
+                        for (let i = 0; i < userNames.length; i++) {
+                            if (userName === userNames[i].value) {
+                                asigneeIds.push(userIds[i].value)
+                            }
+                        }
+                    }
+                    this.setState({ asigneeIds: asigneeIds })
+                }
+                break
+            default:
+        }
+    }
+
     render() {
-        const { name, description, errors, loading } = this.state;
+        const { name, description, userNames, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -99,6 +159,19 @@ class AnnouncementCreate extends Component {
                                         onChange={this.handleChange}
                                         value={description}
                                         className={this.handleInputError(errors, "description")}
+                                    />
+                                </Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "asignee")}>
+                                    <label>Announce to</label>
+                                    <SelectSearch
+                                        search
+                                        filterOptions={fuzzySearch}
+                                        closeOnSelect={false}
+                                        printOptions="on-focus"
+                                        multiple
+                                        placeholder="Choose assignee(s)"
+                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray, "asignee")}
+                                        options={userNames}
                                     />
                                 </Form.Field>
                                 <Button

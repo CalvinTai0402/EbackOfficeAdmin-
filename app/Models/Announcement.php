@@ -12,6 +12,7 @@ class Announcement extends Model
     protected $fillable = [
         'name',
         'description',
+        'assignees'
     ];
 
     public function scopeName($query, $filter)

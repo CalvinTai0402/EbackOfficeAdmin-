@@ -58,8 +58,14 @@ class AnnouncementController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
+        $assignees = [];
+        $assigneeNameArrays = User::select('name')->whereIn('id', $request["asigneeIds"])->get()->toArray();
+        foreach ($assigneeNameArrays as $assigneeNameArray) {
+            array_push($assignees, $assigneeNameArray["name"]);
+        }
+        $request["assignees"] = implode(", ", $assignees);
         $announcement = Announcement::create($request->all());
-        // $announcement->users()->attach(Auth::id());
+        $announcement->users()->attach($request["asigneeIds"]);
         return response()->json(['status' => 200, 'announcement' => $announcement]);
     }
 
@@ -82,6 +88,14 @@ class AnnouncementController extends Controller
      */
     public function edit(Announcement $announcement)
     {
+        $asigneeIds = [];
+        $initialAssignees = [];
+        foreach ($announcement->users()->select("user_id", "name")->get()->toArray() as $userInfo) {
+            array_push($asigneeIds, $userInfo["user_id"]);
+            array_push($initialAssignees, $userInfo["name"]);
+        }
+        $announcement["asigneeIds"] = $asigneeIds;
+        $announcement["initialAssignees"] = $initialAssignees;
         return response()->json(['status' => 200, 'announcement' => $announcement]);
     }
 
@@ -101,6 +115,13 @@ class AnnouncementController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
+        $assignees = [];
+        $assigneeNameArrays = User::select('name')->whereIn('id', $request["asigneeIds"])->get()->toArray();
+        foreach ($assigneeNameArrays as $assigneeNameArray) {
+            array_push($assignees, $assigneeNameArray["name"]);
+        }
+        $request["assignees"] = implode(", ", $assignees);
+        $announcement->users()->sync($request["asigneeIds"]);
         $announcement->update($request->all());
         return response()->json(['status' => 200, 'announcement' => $announcement]);
     }

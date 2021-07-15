@@ -8,26 +8,67 @@ import {
     Message,
     Icon
 } from "semantic-ui-react";
-
+import SelectSearch from 'react-select-search';
+import fuzzySearch from "../fuzzySearch";
 class AnnouncementEdit extends Component {
     state = {
         name: "",
         description: "",
+        asigneeIds: [],
+        initialAssignees: [],
         errors: [],
         loading: false
+    }
+
+    async componentDidMount() {
+        await this.populateAvailableUsers()
+        const id = this.props.match.params.id;
+        let res = await axios.get(`/announcements/${id}/edit`);
+        this.setState({
+            name: res.data.announcement.name,
+            description: res.data.announcement.description,
+            asigneeIds: res.data.announcement.asigneeIds,
+            initialAssignees: res.data.announcement.initialAssignees,
+        });
+    }
+
+    populateAvailableUsers = async () => {
+        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let userIdsAndNames = res.data.userIdsAndNames;
+        let userNames = userIdsAndNames.map((userIdAndName, i) => {
+            let userName = {
+                value: userIdAndName.name,
+                name: userIdAndName.name,
+                index: i
+            };
+            return userName;
+        });
+        let userIds = userIdsAndNames.map((userIdAndName, i) => {
+            let userId = {
+                value: userIdAndName.id,
+                name: userIdAndName.id,
+                index: i
+            };
+            return userId;
+        });
+        this.setState({
+            userNames: userNames,
+            userIds: userIds
+        });
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
     handleUpdate = async () => {
         // event.preventDefault();
-        const { name, description } = this.state;
+        const { name, description, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
-            const res = await axios.put(`/availableTasks/${id}`, {
+            const res = await axios.put(`/announcements/${id}`, {
                 name: name,
-                description: description
+                description: description,
+                asigneeIds: asigneeIds
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -45,7 +86,7 @@ class AnnouncementEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/availableTasks");
+                this.props.history.push("/announcementsunread");
             }
         }
     };
@@ -56,8 +97,8 @@ class AnnouncementEdit extends Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description }) => {
-        if (name && description) { return true }
+    isFormValid = ({ name, description, asigneeIds }) => {
+        if (name && description && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
@@ -66,26 +107,45 @@ class AnnouncementEdit extends Component {
             if (description.length === 0) {
                 errors.push("Description cannot be empty")
             }
-            this.setState({ errors }) // the reason for this is to re-render
+            if (asigneeIds.length === 0) {
+                errors.push("Asignee cannot be empty")
+            }
+            this.setState({ errors })
         });
     };
 
-    async componentDidMount() {
-        const id = this.props.match.params.id;
-        const res = await axios.get(`/availableTasks/${id}/edit`);
-        this.setState({ name: res.data.availableTask.name });
-        this.setState({ description: res.data.availableTask.description });
+    handleMultipleSelectChange = (value, objArray, field) => {
+        switch (field) {
+            case "asignee":
+                const { userIds, userNames } = this.state;
+                let asigneeIds = []
+                if (objArray.length == 0) {
+                    this.setState({ asigneeIds: [] })
+                } else {
+                    for (let i = 0; i < objArray.length; i++) {
+                        let userName = objArray[i].value;
+                        for (let i = 0; i < userNames.length; i++) {
+                            if (userName === userNames[i].value) {
+                                asigneeIds.push(userIds[i].value)
+                            }
+                        }
+                    }
+                    this.setState({ asigneeIds: asigneeIds })
+                }
+                break
+            default:
+        }
     }
 
     render() {
-        const { name, description, errors, loading } = this.state;
+        const { name, description, userNames, initialAssignees, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
                     <Grid.Column style={{ maxWidth: 450 }}>
                         <Header as="h1" icon color="blue" textAlign="center">
                             <Icon name="tasks" color="blue" />
-                            Edit Available Task
+                            Edit Announcement
                         </Header>
                         <Form onSubmit={this.handleUpdate} size="large">
                             <Segment stacked>
@@ -107,6 +167,20 @@ class AnnouncementEdit extends Component {
                                         onChange={this.handleChange}
                                         value={description}
                                         className={this.handleInputError(errors, "description")}
+                                    />
+                                </Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "asignee")}>
+                                    <label>Announce to</label>
+                                    <SelectSearch
+                                        search
+                                        filterOptions={fuzzySearch}
+                                        closeOnSelect={false}
+                                        printOptions="on-focus"
+                                        multiple
+                                        placeholder="Choose assignee(s)"
+                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray, "asignee")}
+                                        options={userNames}
+                                        value={initialAssignees}
                                     />
                                 </Form.Field>
                                 <Button

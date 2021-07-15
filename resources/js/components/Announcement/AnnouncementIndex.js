@@ -83,13 +83,13 @@ class AnnouncementIndex extends React.Component {
         let title = "Unread announcements"
         if (read === 1) { title = "Read announcements" }
         const url = 'http://localhost:8000/announcements?read=' + read;
-        const columns = ['id', 'name', 'description', 'created_at', 'updated_at', 'actions']
+        const columns = ['id', 'name', 'description', 'assignees', 'created_at', 'updated_at', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
-            sortable: ['name', 'description'],
+            sortable: ['name', 'description', 'assignees'],
             columnsWidth: { name: 20, description: 20, id: 5 },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
