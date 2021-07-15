@@ -49,7 +49,7 @@ class AvailableTaskController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "name" => "required|max:50",
+            "name" => "required|max:50|unique:available_tasks,name",
             "description" => "required|max:200"
         ]);
         if ($validator->fails()) {
@@ -91,7 +91,7 @@ class AvailableTaskController extends Controller
     public function update(Request $request, AvailableTask $availableTask)
     {
         $validator = Validator::make($request->all(), [
-            "name" => "required|max:50",
+            "name" => "required|max:50|unique:available_tasks,name,$availableTask->id",
             "description" => "required|max:200"
         ]);
         if ($validator->fails()) {

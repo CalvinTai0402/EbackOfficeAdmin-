@@ -83,10 +83,10 @@ class UserCreate extends Component {
         });
     };
 
-    handleSelectChange = (value, obj) => {
-        switch (obj.value.slice(0, -1)) {
+    handleSelectChange = (value, obj, field) => {
+        switch (field) {
             case "role":
-                this.setState({ role: obj.name })
+                this.setState({ role: obj.value })
                 break;
             default:
         }
@@ -140,11 +140,11 @@ class UserCreate extends Component {
                                     <label>Role</label>
                                     <SelectSearch
                                         search
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "role")}
                                         filterOptions={fuzzySearch}
                                         options={[
-                                            { value: 'role0', name: 'admin' },
-                                            { value: 'role1', name: 'user' },
+                                            { value: 'admin', name: 'admin' },
+                                            { value: 'user', name: 'user' },
                                         ]}
                                         placeholder="Choose a role"
                                     />

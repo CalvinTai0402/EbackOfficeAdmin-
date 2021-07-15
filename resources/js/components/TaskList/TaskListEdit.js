@@ -26,7 +26,7 @@ class TaskListEdit extends Component {
         priority: "",
         status: "",
         asigneeIds: [],
-        initialAssignees: [], // e.g. ["userName0", "userName1"]
+        initialAssignees: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
         userNames: [],
@@ -38,21 +38,11 @@ class TaskListEdit extends Component {
     async componentDidMount() {
         await this.populateAvalableTaskNamesAndDecriptions()
         await this.populateAvailableUsers()
-        const {userNames} = this.state;
+        const { userNames } = this.state;
         const id = this.props.match.params.id;
         let res = await axios.get(`/taskLists/${id}/edit`);
         let duedateParts = res.data.taskList.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
-        let initialAssignees = []
-        if (res.data.taskList.initialAssignees.length > 0){
-            initialAssignees = res.data.taskList.initialAssignees.map((initialAssignee, i) => {
-                for (let i = 0; i < userNames.length; i++) {
-                    if (userNames[i].name === initialAssignee){
-                        return userNames[i].value;
-                    }
-                }
-            });
-        }
         this.setState({
             name: res.data.taskList.name,
             description: res.data.taskList.description,
@@ -63,7 +53,7 @@ class TaskListEdit extends Component {
             priority: res.data.taskList.priority,
             status: res.data.taskList.status,
             asigneeIds: res.data.taskList.asigneeIds,
-            initialAssignees: initialAssignees,
+            initialAssignees: res.data.taskList.initialAssignees,
         });
     }
 
@@ -72,15 +62,17 @@ class TaskListEdit extends Component {
         let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
         let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
             let availableTaskName = {
-                value: "availableTaskName" + i,
-                name: availableTaskNameAndDescription.name
+                value: availableTaskNameAndDescription.name,
+                name: availableTaskNameAndDescription.name,
+                index: i
             };
             return availableTaskName;
         });
         let availableTaskDescriptions = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
             let availableTaskDescription = {
-                value: "availableTaskDescriptions" + i,
-                name: availableTaskNameAndDescription.description
+                value: availableTaskNameAndDescription.description,
+                name: availableTaskNameAndDescription.description,
+                index: i
             };
             return availableTaskDescription;
         });
@@ -95,15 +87,17 @@ class TaskListEdit extends Component {
         let userIdsAndNames = res.data.userIdsAndNames;
         let userNames = userIdsAndNames.map((userIdAndName, i) => {
             let userName = {
-                value: "userName" + i,
-                name: userIdAndName.name
+                value: userIdAndName.name,
+                name: userIdAndName.name,
+                index: i
             };
             return userName;
         });
         let userIds = userIdsAndNames.map((userIdAndName, i) => {
             let userId = {
-                value: "userId" + i,
-                name: userIdAndName.id
+                value: userIdAndName.id,
+                name: userIdAndName.id,
+                index: i
             };
             return userId;
         });
@@ -159,7 +153,7 @@ class TaskListEdit extends Component {
     };
 
     isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
-        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0 ) { return true }
+        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
@@ -195,37 +189,55 @@ class TaskListEdit extends Component {
         })
     }
 
-    handleSelectChange = (value, obj) => {
-        const { availableTaskDescriptions } = this.state;
-        switch (obj.value.slice(0, -1)) {
+    handleSelectChange = (value, obj, field) => {
+        const { availableTaskNames, availableTaskDescriptions } = this.state;
+        switch (field) {
+            case "availableTaskName":
+                let index;
+                let availableTaskName = obj.value;
+                for (let i = 0; i < availableTaskNames.length; i++) {
+                    if (availableTaskName === availableTaskNames[i].value) {
+                        index = i
+                    }
+                }
+                this.setState({
+                    name: obj.value,
+                    description: availableTaskDescriptions[index].name
+                })
+                break
             case "repeat":
-                this.setState({ repeat: obj.name })
+                this.setState({ repeat: obj.value })
                 break;
             case "priority":
-                this.setState({ priority: obj.name })
+                this.setState({ priority: obj.value })
                 break;
             case "status":
-                this.setState({ status: obj.name })
+                this.setState({ status: obj.value })
                 break;
-            // case "availableTaskName":
-            //     this.setState({ name: obj.name })
-            //     this.setState({ description: availableTaskDescriptions[obj.index].name })
             default:
-                this.setState({ name: obj.name })
-                this.setState({ description: availableTaskDescriptions[obj.index].name })
         }
     }
 
-    handleMultipleSelectChange = (value, objArray) => {
-        const { userIds } = this.state;
-        let asigneeIds = []
-        if (objArray.length == 0){
-            this.setState({ asigneeIds: [] })
-        } else if (objArray[objArray.length - 1].value.includes("userName")) {
-            for (let i = 0; i < objArray.length; i++) {
-                asigneeIds.push(userIds[objArray[i].index].name)
-            }
-            this.setState({ asigneeIds: asigneeIds })
+    handleMultipleSelectChange = (value, objArray, field) => {
+        switch (field) {
+            case "asignee":
+                const { userIds, userNames } = this.state;
+                let asigneeIds = []
+                if (objArray.length == 0) {
+                    this.setState({ asigneeIds: [] })
+                } else {
+                    for (let i = 0; i < objArray.length; i++) {
+                        let userName = objArray[i].value;
+                        for (let i = 0; i < userNames.length; i++) {
+                            if (userName === userNames[i].value) {
+                                asigneeIds.push(userIds[i].value)
+                            }
+                        }
+                    }
+                    this.setState({ asigneeIds: asigneeIds })
+                }
+                break
+            default:
         }
     }
 
@@ -246,10 +258,11 @@ class TaskListEdit extends Component {
                                     <SelectSearch
                                         style={{ color: "black" }}
                                         search
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableTaskName")}
                                         filterOptions={fuzzySearch}
                                         options={availableTaskNames}
-                                        placeholder={name}
+                                        placeholder="Choose a task"
+                                        value={name}
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -283,54 +296,57 @@ class TaskListEdit extends Component {
                                     <label>Repeat</label>
                                     <SelectSearch
                                         search
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "repeat")}
                                         filterOptions={fuzzySearch}
                                         options={[
-                                            { value: 'repeat0', name: 'Daily' },
-                                            { value: 'repeat1', name: 'Weekly' },
-                                            { value: 'repeat2', name: 'Monthly' },
-                                            { value: 'repeat3', name: 'Yearly' }
+                                            { value: 'Daily', name: 'Daily' },
+                                            { value: 'Weekly', name: 'Weekly' },
+                                            { value: 'Monthly', name: 'Monthly' },
+                                            { value: 'Yearly', name: 'Yearly' }
                                         ]}
-                                        placeholder={repeat}
+                                        placeholder="Choose a repeat frequency"
+                                        value={repeat}
                                     />
                                 </Form.Field>
                                 <Form.Field className={this.handleInputError(errors, "priority")}>
                                     <label>Priority</label>
                                     <SelectSearch
                                         search
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "priority")}
                                         filterOptions={fuzzySearch}
                                         options={[
-                                            { value: 'priority0', name: 'High' },
-                                            { value: 'priority1', name: 'Medium' },
-                                            { value: 'priority2', name: 'Low' },
+                                            { value: 'High', name: 'High' },
+                                            { value: 'Medium', name: 'Medium' },
+                                            { value: 'Low', name: 'Low' },
                                         ]}
-                                        placeholder={priority}
+                                        placeholder="Choose a priority"
+                                        value={priority}
                                     />
                                 </Form.Field>
                                 <Form.Field className={this.handleInputError(errors, "status")}>
                                     <label>Status</label>
                                     <SelectSearch
                                         search
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "status")}
                                         filterOptions={fuzzySearch}
                                         options={[
-                                            { value: 'status0', name: 'Done' },
-                                            { value: 'status1', name: 'In progress' },
-                                            { value: 'status2', name: "Haven't started" },
+                                            { value: 'Done', name: 'Done' },
+                                            { value: 'In progress', name: 'In progress' },
+                                            { value: "Haven't started", name: "Haven't started" },
                                         ]}
-                                        placeholder={status}
+                                        placeholder="Choose a status"
+                                        value={status}
                                     />
                                 </Form.Field>
                                 <Form.Field className={this.handleInputError(errors, "asignee")}>
-                                    <label>Asignee(s)</label>
+                                    <label>Assignee(s)</label>
                                     <SelectSearch
                                         search
                                         closeOnSelect={false}
                                         printOptions="on-focus"
                                         multiple
-                                        placeholder="Choose asignee(s)"
-                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray)}
+                                        placeholder="Choose assignee(s)"
+                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray, "asignee")}
                                         filterOptions={fuzzySearch}
                                         options={userNames}
                                         value={initialAssignees}

@@ -22,7 +22,7 @@ class AvailableTaskFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->sentence(1),
+            'name' => $this->faker->unique()->sentence(1),
             'description' => $this->faker->sentence(7),
         ];
     }
