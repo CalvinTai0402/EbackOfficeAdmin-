@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Table } from 'reactstrap';
 import {
     Grid,
     Form,
@@ -10,18 +11,23 @@ import {
 } from "semantic-ui-react";
 import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
+
 class AnnouncementEdit extends Component {
     state = {
         name: "",
         description: "",
         asigneeIds: [],
         initialAssignees: [],
+        userNames: [],
+        userIds: [],
+        thisAnnouncementDetails: [],
         errors: [],
         loading: false
     }
 
     async componentDidMount() {
         await this.populateAvailableUsers()
+        await this.populateThisAnnouncementDetails()
         const id = this.props.match.params.id;
         let res = await axios.get(`/announcements/${id}/edit`);
         this.setState({
@@ -54,6 +60,14 @@ class AnnouncementEdit extends Component {
         this.setState({
             userNames: userNames,
             userIds: userIds
+        });
+    }
+
+    populateThisAnnouncementDetails = async () => {
+        const id = this.props.match.params.id;
+        let res = await axios.get(`/announcements/${id}/populateThisAnnouncementDetails`);
+        this.setState({
+            thisAnnouncementDetails: res.data.thisAnnouncementDetails
         });
     }
 
@@ -138,7 +152,7 @@ class AnnouncementEdit extends Component {
     }
 
     render() {
-        const { name, description, userNames, initialAssignees, errors, loading } = this.state;
+        const { name, description, userNames, initialAssignees, thisAnnouncementDetails, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -202,6 +216,28 @@ class AnnouncementEdit extends Component {
                         )}
                     </Grid.Column>
                 </Grid>
+                <Table style={{ marginTop: "30px" }}>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Sent to</th>
+                            <th>Read</th>
+                            <th>Deleted</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {thisAnnouncementDetails.map((thisAnnouncementDetail, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{thisAnnouncementDetail[0]}</td>
+                                    <td>{thisAnnouncementDetail[1]}</td>
+                                    <td>{thisAnnouncementDetail[2]}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
             </div>
         );
     }

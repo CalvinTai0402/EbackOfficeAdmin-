@@ -135,4 +135,20 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
     }
+
+    public function populateThisAnnouncementDetails(Announcement $announcement)
+    {
+        $thisAnnouncementDetails = [];
+        foreach ($announcement->users as $user) {
+            $thisAnnouncementDetail = [];
+            array_push(
+                $thisAnnouncementDetail,
+                $user->name,
+                $user->pivot->read,
+                $user->pivot->deleted
+            );
+            array_push($thisAnnouncementDetails, $thisAnnouncementDetail);
+        }
+        return response()->json(['status' => 200, 'thisAnnouncementDetails' => $thisAnnouncementDetails]);
+    }
 }

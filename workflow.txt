@@ -6,9 +6,6 @@
 
 
 TODO:
-1.
-- AnnouncementCreate, AnnouncementEdit (need relationship with users of which are published to). refer TaskListController and its frontend.
-
 2.
 - relationship for company id and asignee (
     tasklist: customerid,
