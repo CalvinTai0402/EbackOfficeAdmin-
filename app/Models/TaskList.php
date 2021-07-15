@@ -17,7 +17,7 @@ class TaskList extends Model
         'repeat',
         'priority',
         'status',
-        'assigneeNames'
+        'assigneeNames',
     ];
 
     public function scopeName($query, $filter)

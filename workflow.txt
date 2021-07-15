@@ -7,14 +7,11 @@
 
 TODO:
 - fix date-picker z-index
-- fix react-select-search placeholder color in TaskListEdit
+- fix react-select-search placeholder color in TaskListEdit (really is the name and value pairs)
 - relationship for company id and asignee (
-    tasklist: users, customerid,
-    mytask: auth:user,
+    tasklist: customerid,
     users: announcements
 )
 - customers
 - Announcements
 - roles (basically get roles of loggedInUser then conditional rendering)
-
-- tasklistEdit & mytaskEdit assignee, TaskListController & MyTaskController update need "$taskList->users()->attach($request["asigneeIds"]);". is it attach or some other method?

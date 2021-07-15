@@ -89,4 +89,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(TaskList::class, 'tasklists_users', 'user_id', 'tasklist_id');
     }
+
+    public function myTasks()
+    {
+        return $this->belongsToMany(TaskList::class, 'tasklists_users', 'user_id', 'tasklist_id');
+    }
 }

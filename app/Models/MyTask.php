@@ -16,6 +16,7 @@ class MyTask extends Model
         'repeat',
         'priority',
         'status',
+        'assigneeNames',
     ];
     protected $table = 'task_lists';
     public function scopeName($query, $filter)
@@ -71,6 +72,15 @@ class MyTask extends Model
         return $query;
     }
 
+    public function scopeAssigneenames($query, $filter)
+    {
+        if (!is_null($filter)) {
+            return $query->orWhere('assigneeNames', 'LIKE', '%' . $filter . '%');
+        }
+
+        return $query;
+    }
+
     public function scopeOrder($query, $field, $order)
     {
         if (!is_null($field)) {
@@ -87,5 +97,10 @@ class MyTask extends Model
         }
 
         return $query;
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'tasklists_users', 'tasklist_id', 'user_id');
     }
 }

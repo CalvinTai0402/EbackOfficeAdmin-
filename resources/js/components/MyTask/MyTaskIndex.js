@@ -28,12 +28,67 @@ class MyTaskIndex extends React.Component {
         repeat: "",
         priority: "",
         status: "",
+        asigneeIds: [],
+        initialAssignees: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
+        userNames: [],
+        userIds: [],
         rowId: "",
         errors: [],
         loading: false
     };
+
+    async componentDidMount() {
+        await this.populateAvalableTaskNamesAndDecriptions()
+        await this.populateAvailableUsers()
+    }
+
+    populateAvalableTaskNamesAndDecriptions = async () => {
+        let res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
+        let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
+        let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
+            let availableTaskName = {
+                value: "availableTaskName" + i,
+                name: availableTaskNameAndDescription.name
+            };
+            return availableTaskName;
+        });
+        let availableTaskDescriptions = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
+            let availableTaskDescription = {
+                value: "availableTaskDescriptions" + i,
+                name: availableTaskNameAndDescription.description
+            };
+            return availableTaskDescription;
+        });
+        this.setState({
+            availableTaskNames: availableTaskNames,
+            availableTaskDescriptions: availableTaskDescriptions
+        });
+    }
+
+    populateAvailableUsers = async () => {
+        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let userIdsAndNames = res.data.userIdsAndNames;
+        let userNames = userIdsAndNames.map((userIdAndName, i) => {
+            let userName = {
+                value: "userName" + i,
+                name: userIdAndName.name
+            };
+            return userName;
+        });
+        let userIds = userIdsAndNames.map((userIdAndName, i) => {
+            let userId = {
+                value: "userId" + i,
+                name: userIdAndName.id
+            };
+            return userId;
+        });
+        this.setState({
+            userNames: userNames,
+            userIds: userIds
+        });
+    }
 
     check_all = React.createRef();
 
@@ -57,37 +112,32 @@ class MyTaskIndex extends React.Component {
     }
 
     handleEditClicked = async (id) => {
-        let res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
-        let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
-        let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
-            let availableTaskName = {
-                value: "availableTaskName" + i,
-                name: availableTaskNameAndDescription.name
-            };
-            return availableTaskName;
-        });
-        let availableTaskDescriptions = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
-            let availableTaskDescription = {
-                value: "availableTaskDescriptions" + i,
-                name: availableTaskNameAndDescription.description
-            };
-            return availableTaskDescription;
-        });
-        res = await axios.get(`/taskLists/${id}/edit`);
-        let duedateParts = res.data.taskList.duedate.split("-");
+        const { userNames } = this.state;
+        let res = await axios.get(`/myTasks/${id}/edit`);
+        let duedateParts = res.data.myTask.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
+        let initialAssignees = []
+        if (res.data.myTask.initialAssignees.length > 0) {
+            initialAssignees = res.data.myTask.initialAssignees.map((initialAssignee, i) => {
+                for (let i = 0; i < userNames.length; i++) {
+                    if (userNames[i].name === initialAssignee) {
+                        return userNames[i].value;
+                    }
+                }
+            });
+        }
         this.setState({
-            name: res.data.taskList.name,
-            description: res.data.taskList.description,
-            notes: res.data.taskList.notes,
-            duedate: res.data.taskList.duedate,
+            name: res.data.myTask.name,
+            description: res.data.myTask.description,
+            notes: res.data.myTask.notes,
+            duedate: res.data.myTask.duedate,
             selectedDate: selectedDate,
-            repeat: res.data.taskList.repeat,
-            priority: res.data.taskList.priority,
-            status: res.data.taskList.status,
+            repeat: res.data.myTask.repeat,
+            priority: res.data.myTask.priority,
+            status: res.data.myTask.status,
             rowId: id,
-            availableTaskNames: availableTaskNames,
-            availableTaskDescriptions: availableTaskDescriptions
+            asigneeIds: res.data.myTask.asigneeIds,
+            initialAssignees: initialAssignees,
         });
     }
 
@@ -95,10 +145,10 @@ class MyTaskIndex extends React.Component {
 
     handleUpdate = async (event) => {
         event.preventDefault();
-        const { name, description, notes, duedate, repeat, priority, status, rowId } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
-            const res = await axios.put(`/taskLists/${rowId}`, {
+            const res = await axios.put(`/myTasks/${rowId}`, {
                 name: name,
                 description: description,
                 notes: notes,
@@ -106,6 +156,7 @@ class MyTaskIndex extends React.Component {
                 repeat: repeat,
                 priority: priority,
                 status: status,
+                asigneeIds: asigneeIds,
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -123,7 +174,6 @@ class MyTaskIndex extends React.Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                // this.forceUpdate()
                 this.props.history.push("/myTasks");
             }
         }
@@ -135,8 +185,8 @@ class MyTaskIndex extends React.Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description, duedate, repeat, priority, status }) => {
-        if (name && description && duedate && repeat && priority && status) { return true }
+    isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
+        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
@@ -156,6 +206,9 @@ class MyTaskIndex extends React.Component {
             }
             if (status.length === 0) {
                 errors.push("Status cannot be empty")
+            }
+            if (asigneeIds.length === 0) {
+                errors.push("Asignee cannot be empty")
             }
             this.setState({ errors }) // the reason for this is to re-render
         });
@@ -190,17 +243,31 @@ class MyTaskIndex extends React.Component {
         }
     }
 
+    handleMultipleSelectChange = (value, objArray) => {
+        const { userIds } = this.state;
+        let asigneeIds = []
+        if (objArray.length == 0) {
+            this.setState({ asigneeIds: [] })
+        } else if (objArray[objArray.length - 1].value.includes("userName")) {
+            for (let i = 0; i < objArray.length; i++) {
+                asigneeIds.push(userIds[objArray[i].index].name)
+            }
+            this.setState({ asigneeIds: asigneeIds })
+        }
+    }
+
     render() {
-        const { name, description, notes, selectedDate, repeat, priority, status, availableTaskNames, errors, loading } = this.state;
+        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, userNames, errors, loading } = this.state;
+        let selected = name !== "";
         let self = this;
         const url = 'http://localhost:8000/myTasks';
-        const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'created_at', 'updated_at', 'actions']
+        const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
-            sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status'],
+            sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames'],
             columnsWidth: { name: 20, description: 20, id: 5 },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
@@ -252,110 +319,127 @@ class MyTaskIndex extends React.Component {
                         <div>
                             <Grid textAlign="center" verticalAlign="middle" className="app">
                                 <Grid.Column style={{ maxWidth: 450 }}>
-                                    <Header as="h1" icon color="blue" textAlign="center" >
-                                        Edit Task
+                                    {selected ? <div><Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
+                                        Editing: {name}
                                     </Header>
-                                    <Form onSubmit={this.handleUpdate} size="large">
-                                        <Segment stacked>
-                                            <Form.Field className={this.handleInputError(errors, "name")}>
-                                                <label>Name</label>
-                                                <SelectSearch
-                                                    style={{ color: "black" }}
-                                                    search
-                                                    onChange={(value, obj) => this.handleSelectChange(value, obj)}
-                                                    filterOptions={fuzzySearch}
-                                                    options={availableTaskNames}
-                                                    placeholder={name}
-                                                />
-                                            </Form.Field>
-                                            <Form.Field>
-                                                <label>Description</label>
-                                                <Form.Input
+                                        <Form onSubmit={this.handleUpdate} size="large">
+                                            <Segment stacked>
+                                                <Form.Field className={this.handleInputError(errors, "name")}>
+                                                    <label>Name</label>
+                                                    <SelectSearch
+                                                        style={{ color: "black" }}
+                                                        search
+                                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                                        filterOptions={fuzzySearch}
+                                                        options={availableTaskNames}
+                                                        placeholder={name}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Description</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="description"
+                                                        // onChange={this.handleChange}
+                                                        value={description}
+                                                        className={this.handleInputError(errors, "description")}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Notes</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="notes"
+                                                        onChange={this.handleChange}
+                                                        value={notes}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "due")}>
+                                                    <label>Due date</label>
+                                                    <DatePicker
+                                                        selected={selectedDate}
+                                                        onChange={(date) => this.setDate(date)}
+                                                        dateFormat="MM-dd-yyyy"
+                                                        closeOnScroll={(e) => e.target === document}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "repeat")}>
+                                                    <label>Repeat</label>
+                                                    <SelectSearch
+                                                        search
+                                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                                        filterOptions={fuzzySearch}
+                                                        options={[
+                                                            { value: 'repeat0', name: 'Daily' },
+                                                            { value: 'repeat1', name: 'Weekly' },
+                                                            { value: 'repeat2', name: 'Monthly' },
+                                                            { value: 'repeat3', name: 'Yearly' }
+                                                        ]}
+                                                        placeholder={repeat}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "priority")}>
+                                                    <label>Priority</label>
+                                                    <SelectSearch
+                                                        search
+                                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                                        filterOptions={fuzzySearch}
+                                                        options={[
+                                                            { value: 'priority0', name: 'High' },
+                                                            { value: 'priority1', name: 'Medium' },
+                                                            { value: 'priority2', name: 'Low' },
+                                                        ]}
+                                                        placeholder={priority}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "status")}>
+                                                    <label>Status</label>
+                                                    <SelectSearch
+                                                        search
+                                                        onChange={(value, obj) => this.handleSelectChange(value, obj)}
+                                                        filterOptions={fuzzySearch}
+                                                        options={[
+                                                            { value: 'status0', name: 'Done' },
+                                                            { value: 'status1', name: 'In progress' },
+                                                            { value: 'status2', name: "Haven't started" },
+                                                        ]}
+                                                        placeholder={status}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "asignee")}>
+                                                    <label>Asignee(s)</label>
+                                                    <SelectSearch
+                                                        search
+                                                        closeOnSelect={false}
+                                                        printOptions="on-focus"
+                                                        multiple
+                                                        placeholder="Choose asignee(s)"
+                                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray)}
+                                                        filterOptions={fuzzySearch}
+                                                        options={userNames}
+                                                        value={initialAssignees}
+                                                    />
+                                                </Form.Field>
+                                                <Button
+                                                    disabled={loading}
+                                                    className={loading ? "loading" : ""}
+                                                    color="blue"
                                                     fluid
-                                                    name="description"
-                                                    // onChange={this.handleChange}
-                                                    value={description}
-                                                    className={this.handleInputError(errors, "description")}
-                                                />
-                                            </Form.Field>
-                                            <Form.Field>
-                                                <label>Notes</label>
-                                                <Form.Input
-                                                    fluid
-                                                    name="notes"
-                                                    onChange={this.handleChange}
-                                                    value={notes}
-                                                />
-                                            </Form.Field>
-                                            <Form.Field className={this.handleInputError(errors, "due")}>
-                                                <label>Due date</label>
-                                                <DatePicker
-                                                    selected={selectedDate}
-                                                    onChange={(date) => this.setDate(date)}
-                                                    dateFormat="MM-dd-yyyy"
-                                                    closeOnScroll={(e) => e.target === document}
-                                                />
-                                            </Form.Field>
-                                            <Form.Field className={this.handleInputError(errors, "repeat")}>
-                                                <label>Repeat</label>
-                                                <SelectSearch
-                                                    search
-                                                    onChange={(value, obj) => this.handleSelectChange(value, obj)}
-                                                    filterOptions={fuzzySearch}
-                                                    options={[
-                                                        { value: 'repeat0', name: 'Daily' },
-                                                        { value: 'repeat1', name: 'Weekly' },
-                                                        { value: 'repeat2', name: 'Monthly' },
-                                                        { value: 'repeat3', name: 'Yearly' }
-                                                    ]}
-                                                    placeholder={repeat}
-                                                />
-                                            </Form.Field>
-                                            <Form.Field className={this.handleInputError(errors, "priority")}>
-                                                <label>Priority</label>
-                                                <SelectSearch
-                                                    search
-                                                    onChange={(value, obj) => this.handleSelectChange(value, obj)}
-                                                    filterOptions={fuzzySearch}
-                                                    options={[
-                                                        { value: 'priority0', name: 'High' },
-                                                        { value: 'priority1', name: 'Medium' },
-                                                        { value: 'priority2', name: 'Low' },
-                                                    ]}
-                                                    placeholder={priority}
-                                                />
-                                            </Form.Field>
-                                            <Form.Field className={this.handleInputError(errors, "status")}>
-                                                <label>Status</label>
-                                                <SelectSearch
-                                                    search
-                                                    onChange={(value, obj) => this.handleSelectChange(value, obj)}
-                                                    filterOptions={fuzzySearch}
-                                                    options={[
-                                                        { value: 'status0', name: 'Done' },
-                                                        { value: 'status1', name: 'In progress' },
-                                                        { value: 'status2', name: "Haven't started" },
-                                                    ]}
-                                                    placeholder={status}
-                                                />
-                                            </Form.Field>
-                                            <Button
-                                                disabled={loading}
-                                                className={loading ? "loading" : ""}
-                                                color="blue"
-                                                fluid
-                                                size="large"
-                                            >
-                                                Update
-                                            </Button>
-                                        </Segment>
-                                    </Form>
-                                    {errors.length > 0 && (
-                                        <Message error>
-                                            <h3>Error</h3>
-                                            {this.displayErrors(errors)}
-                                        </Message>
-                                    )}
+                                                    size="large"
+                                                >
+                                                    Update
+                                                </Button>
+                                            </Segment>
+                                        </Form>
+                                        {errors.length > 0 && (
+                                            <Message error>
+                                                <h3>Error</h3>
+                                                {this.displayErrors(errors)}
+                                            </Message>
+                                        )}</div> :
+                                        <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
+                                            Select a task to edit
+                                        </Header>}
                                 </Grid.Column>
                             </Grid>
                         </div>

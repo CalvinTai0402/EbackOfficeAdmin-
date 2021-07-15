@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\MyTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -22,12 +23,13 @@ class MyTaskController extends Controller
         $orderBy = $request->input("orderBy");
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
-        $myTasks = Auth::user()->taskLists()->name($search)
+        $myTasks = Auth::user()->myTasks()->name($search)
             ->description($search)
             ->notes($search)
             ->repeat($search)
             ->priority($search)
             ->status($search)
+            ->assigneenames($search)
             ->order($orderBy, $order)
             ->skipPage($toSkip)
             ->take($limit)
@@ -75,6 +77,14 @@ class MyTaskController extends Controller
      */
     public function edit(MyTask $myTask)
     {
+        $asigneeIds = [];
+        $initialAssignees = [];
+        foreach ($myTask->users()->select("user_id", "name")->get()->toArray() as $userInfo) {
+            array_push($asigneeIds, $userInfo["user_id"]);
+            array_push($initialAssignees, $userInfo["name"]);
+        }
+        $myTask["asigneeIds"] = $asigneeIds;
+        $myTask["initialAssignees"] = $initialAssignees;
         return response()->json(['status' => 200, 'myTask' => $myTask]);
     }
 
@@ -98,6 +108,13 @@ class MyTaskController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
+        $assigneeNames = [];
+        $assigneeNameArrays = User::select('name')->whereIn('id', $request["asigneeIds"])->get()->toArray();
+        foreach ($assigneeNameArrays as $assigneeNameArray) {
+            array_push($assigneeNames, $assigneeNameArray["name"]);
+        }
+        $request["assigneeNames"] = implode(", ", $assigneeNames);
+        $myTask->users()->sync($request["asigneeIds"]);
         $myTask->update($request->all());
         return response()->json(['status' => 200, 'myTask' => $myTask]);
     }

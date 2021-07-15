@@ -127,6 +127,7 @@ class Event extends React.Component {
                             type='checkbox'
                             checked={this.state.weekendsVisible}
                             onChange={this.handleWeekendsToggle}
+                            style={{ marginRight: "10px" }}
                         ></input>
                         toggle weekends
                     </label>
