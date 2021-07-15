@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -127,5 +128,30 @@ class UserController extends Controller
     {
         $userIdsAndNames = User::select("id", "name")->get();
         return response()->json(['status' => 200, 'userIdsAndNames' => $userIdsAndNames]);
+    }
+
+    public function readAnnouncement($announcementId)
+    {
+        Auth::user()->announcements()->updateExistingPivot($announcementId, ["read" => 1]);
+        return response()->json(['status' => 200]);
+    }
+
+    public function unreadAnnouncement($announcementId)
+    {
+        Auth::user()->announcements()->updateExistingPivot($announcementId, ["read" => 0]);
+        return response()->json(['status' => 200]);
+    }
+
+    public function deleteAnnouncement($announcementId)
+    {
+        Auth::user()->announcements()->updateExistingPivot($announcementId, ["deleted" => 1]);
+        return response()->json(['status' => 200]);
+    }
+
+    public function deleteAnnouncements(Request $request)
+    {
+        $selectedAnnouncementIds = $request->selectedAnnouncementIds;
+        Auth::user()->announcements()->updateExistingPivot($selectedAnnouncementIds, ["deleted" => 1]);
+        return response()->json(['status' => 200]);
     }
 }

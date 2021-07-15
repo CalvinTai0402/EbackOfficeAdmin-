@@ -21,6 +21,9 @@ import FileManager from "./FileManager";
 import AvailableTaskIndex from './AvailableTask/AvailableTaskIndex';
 import AvailableTaskCreate from './AvailableTask/AvailableTaskCreate';
 import AvailableTaskEdit from "./AvailableTask/AvailableTaskEdit";
+import AnnouncementIndex from "./Announcement/AnnouncementIndex";
+import AnnouncementCreate from "./Announcement/AnnouncementCreate";
+import AnnouncementEdit from "./Announcement/AnnouncementEdit";
 import TaskListIndex from './TaskList/TaskListIndex';
 import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
@@ -88,6 +91,16 @@ class Sidebar extends React.Component {
                                             <Link to="/mytasks" />
                                         </MenuItem>
                                     </SubMenu>
+                                    <SubMenu title="Announcements" icon={<FaGem />}>
+                                        <MenuItem icon={<FaBattleNet />}>
+                                            Unread Announcments
+                                            <Link to="/announcementsunread" />
+                                        </MenuItem>
+                                        <MenuItem icon={<FaBattleNet />}>
+                                            Read Announcments
+                                            <Link to="/announcementsread" />
+                                        </MenuItem>
+                                    </SubMenu>
                                     {/* <MenuItem icon={<FaBattleNet />}>
                                         Customers
                                         <Link to="/customers" />
@@ -112,18 +125,30 @@ class Sidebar extends React.Component {
                                 <Route exact path="/users" render={(props) => <UserIndex {...props} />} />
                                 <Route exact path="/users/create" render={(props) => <UserCreate {...props} />} />
                                 <Route exact path="/users/:id/edit" render={(props) => <UserEdit {...props} />} />
+
                                 <Route exact path="/events" render={(props) => <Event {...props} />} />
+
                                 <Route exact path="/filemanager" render={(props) => <FileManager {...props} />} />
+
                                 <Route exact path="/availableTasks" render={(props) => <AvailableTaskIndex {...props} />} />
                                 <Route exact path="/availableTasks/create" render={(props) => <AvailableTaskCreate {...props} />} />
                                 <Route exact path="/availableTasks/:id/edit" render={(props) => <AvailableTaskEdit {...props} />} />
+
+                                <Route exact path="/announcementsunread" render={(props) => <AnnouncementIndex read={0} {...props} />} />
+                                <Route exact path="/announcementsread" render={(props) => <AnnouncementIndex read={1} {...props} />} />
+                                <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
+                                <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />
+
                                 <Route exact path="/taskLists" render={(props) => <TaskListIndex {...props} />} />
                                 <Route exact path="/taskLists/create" render={(props) => <TaskListCreate {...props} />} />
                                 <Route exact path="/taskLists/:id/edit" render={(props) => <TaskListEdit {...props} />} />
+
                                 <Route exact path="/mytasks" render={(props) => <MyTaskIndex {...props} />} />
+
                                 {/* <Route exact path="/customers" render={(props) => <CustomerIndex {...props} />} />
                                 <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />
                                 <Route exact path="/customers/:id/edit" render={(props) => <CustomerEdit {...props} />} /> */}
+
                                 <Route exact path="/" render={(props) => <Home {...props} />} />
                             </Switch>
                         </div>

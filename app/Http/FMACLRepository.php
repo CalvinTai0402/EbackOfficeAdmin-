@@ -24,7 +24,7 @@ class FMACLRepository implements ACLRepository
      */
     public function getRules(): array
     {
-        if (Auth::id() === 1) {
+        if (Auth::user()->role === "admin") {
             return [
                 ['disk' => 'public', 'path' => '*', 'access' => 2],
             ];

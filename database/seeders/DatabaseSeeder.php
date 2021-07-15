@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         // \App\Models\Customer::factory(20)->create();
         \App\Models\AvailableTask::factory(20)->create();
         \App\Models\TaskList::factory(20)->create();
+        \App\Models\Announcement::factory(20)->create();
     }
 }

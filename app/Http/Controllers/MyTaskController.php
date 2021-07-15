@@ -34,7 +34,7 @@ class MyTaskController extends Controller
             ->skipPage($toSkip)
             ->take($limit)
             ->get();
-        return response()->json(['count' => MyTask::count(), 'total' => MyTask::count(), 'data' => $myTasks]);
+        return response()->json(['count' => Auth::user()->myTasks()->count(), 'total' => Auth::user()->myTasks()->count(), 'data' => $myTasks]);
     }
 
     /**

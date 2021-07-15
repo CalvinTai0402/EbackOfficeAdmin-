@@ -6,12 +6,28 @@
 
 
 TODO:
-- fix date-picker z-index
-- fix react-select-search placeholder color in TaskListEdit (really is the name and value pairs)
+1.
+- AnnouncementCreate, AnnouncementEdit (need relationship with users of which are published to). refer TaskListController and its frontend.
+
+
+2.
 - relationship for company id and asignee (
     tasklist: customerid,
-    users: announcements
 )
 - customers
-- Announcements
+
+3.
+- fix date-picker z-index
+- fix react-select-search placeholder color in TaskListEdit (really is the name and value pairs)
+- Task scheduler
+
+4.
+- make pretty
+- make events only render >= today (->where('start','>',today());)
 - roles (basically get roles of loggedInUser then conditional rendering)
+
+5.
+Announcements can be deleted by sender
+
+https://medium.com/@afrazahmad090/laravel-many-to-many-relationship-explained-822b554c1973
+$announcement->users()->first()->pivot->read;
