@@ -132,22 +132,7 @@ class Event extends React.Component {
                         toggle weekends
                     </label>
                 </div>
-                <div className='demo-app-sidebar-section'>
-                    <h2>All Events ({events.length})</h2>
-                    <ul>
-                        {events.map(this.renderSidebarEvent)}
-                    </ul>
-                </div>
             </div>
-        )
-    }
-
-    renderSidebarEvent = (event) => {
-        return (
-            <li key={event.id}>
-                <b>{formatDate(event.start, { year: 'numeric', month: 'short', day: 'numeric' })}</b>
-                <i>{event.title}</i>
-            </li>
         )
     }
 
