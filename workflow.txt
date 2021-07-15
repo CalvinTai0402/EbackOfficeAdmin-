@@ -15,14 +15,13 @@ TODO:
 3.
 - fix date-picker z-index
 - Task scheduler
+- rich text
 
 4.
 - make pretty
 - make events only render >= today (->where('start','>',today());)
-- Announcements can be deleted by sender
 
 5.
 - roles (basically get roles of loggedInUser then conditional rendering)
 
 https://medium.com/@afrazahmad090/laravel-many-to-many-relationship-explained-822b554c1973
-$announcement->users()->first()->pivot->read;

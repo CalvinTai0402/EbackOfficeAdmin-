@@ -64,6 +64,7 @@ class AnnouncementController extends Controller
             array_push($assignees, $assigneeNameArray["name"]);
         }
         $request["assignees"] = implode(", ", $assignees);
+        $request["owner_id"] = Auth::id();
         $announcement = Announcement::create($request->all());
         $announcement->users()->attach($request["asigneeIds"]);
         return response()->json(['status' => 200, 'announcement' => $announcement]);
@@ -134,6 +135,16 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
+        if ($announcement->delete()) {
+            return response()->json(["status" => 200]);
+        }
+    }
+
+    public function destroyMany(Request $request)
+    {
+        $selectedSentAnnouncementIds = $request->selectedSentAnnouncementIds;
+        $sentAnnouncementsToDelete = Announcement::whereIn('id', $selectedSentAnnouncementIds)->delete();
+        return response()->json(['status' => 200, 'sentAnnouncementsToDelete' => $sentAnnouncementsToDelete]);
     }
 
     public function populateThisAnnouncementDetails(Announcement $announcement)
@@ -150,5 +161,24 @@ class AnnouncementController extends Controller
             array_push($thisAnnouncementDetails, $thisAnnouncementDetail);
         }
         return response()->json(['status' => 200, 'thisAnnouncementDetails' => $thisAnnouncementDetails]);
+    }
+
+    public function getSentAnnouncements(Request $request)
+    {
+        $search = $request->input("search");
+        $limit = $request->input("limit");
+        $page = $request->input("page");
+        $orderBy = $request->input("orderBy");
+        $order = $request->input("order");
+        $toSkip = ($page - 1) * $limit;
+        $read = $request->input("read");
+        $sentAnnouncements =  Announcement::sent()
+            ->name($search)
+            ->description($search)
+            ->order($orderBy, $order)
+            ->skipPage($toSkip)
+            ->take($limit)
+            ->get();
+        return response()->json(['count' => Announcement::sent()->count(), 'total' => Announcement::sent()->count(), 'data' => $sentAnnouncements]);
     }
 }

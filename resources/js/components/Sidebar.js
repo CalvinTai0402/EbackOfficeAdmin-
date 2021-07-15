@@ -24,6 +24,7 @@ import AvailableTaskEdit from "./AvailableTask/AvailableTaskEdit";
 import AnnouncementIndex from "./Announcement/AnnouncementIndex";
 import AnnouncementCreate from "./Announcement/AnnouncementCreate";
 import AnnouncementEdit from "./Announcement/AnnouncementEdit";
+import SentAnnouncementsIndex from "./Announcement/SentAnnouncementsIndex";
 import TaskListIndex from './TaskList/TaskListIndex';
 import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
@@ -100,6 +101,10 @@ class Sidebar extends React.Component {
                                             Read Announcments
                                             <Link to="/announcementsread" />
                                         </MenuItem>
+                                        <MenuItem icon={<FaBattleNet />}>
+                                            Sent Announcments
+                                            <Link to="/announcementssent" />
+                                        </MenuItem>
                                     </SubMenu>
                                     {/* <MenuItem icon={<FaBattleNet />}>
                                         Customers
@@ -138,6 +143,7 @@ class Sidebar extends React.Component {
                                 <Route exact path="/announcementsread" render={(props) => <AnnouncementIndex read={1} {...props} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
                                 <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />
+                                <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
 
                                 <Route exact path="/taskLists" render={(props) => <TaskListIndex {...props} />} />
                                 <Route exact path="/taskLists/create" render={(props) => <TaskListCreate {...props} />} />

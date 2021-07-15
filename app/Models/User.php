@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use \App\Models\Event;
 use \App\Models\TaskList;
 use \App\Models\Announcement;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {

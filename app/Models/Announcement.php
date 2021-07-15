@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class Announcement extends Model
 {
@@ -12,7 +13,8 @@ class Announcement extends Model
     protected $fillable = [
         'name',
         'description',
-        'assignees'
+        'assignees',
+        'owner_id'
     ];
 
     public function scopeName($query, $filter)
@@ -31,6 +33,11 @@ class Announcement extends Model
         }
 
         return $query;
+    }
+
+    public function scopeSent($query)
+    {
+        return $query->where('owner_id', '=', Auth::id());
     }
 
     public function scopeOrder($query, $field, $order)
