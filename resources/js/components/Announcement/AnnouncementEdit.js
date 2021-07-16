@@ -11,7 +11,12 @@ import {
 } from "semantic-ui-react";
 import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 class AnnouncementEdit extends Component {
     state = {
         name: "",
@@ -21,6 +26,7 @@ class AnnouncementEdit extends Component {
         userNames: [],
         userIds: [],
         thisAnnouncementDetails: [],
+        editorState: EditorState.createEmpty(),
         errors: [],
         loading: false
     }
@@ -30,12 +36,20 @@ class AnnouncementEdit extends Component {
         await this.populateThisAnnouncementDetails()
         const id = this.props.match.params.id;
         let res = await axios.get(`/announcements/${id}/edit`);
+        const contentBlock = htmlToDraft(res.data.announcement.description);
+        let editorState = EditorState.createEmpty();
+        if (contentBlock) {
+            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+            editorState = EditorState.createWithContent(contentState);
+        }
         this.setState({
             name: res.data.announcement.name,
             description: res.data.announcement.description,
             asigneeIds: res.data.announcement.asigneeIds,
             initialAssignees: res.data.announcement.initialAssignees,
+            editorState: editorState
         });
+
     }
 
     populateAvailableUsers = async () => {
@@ -72,6 +86,14 @@ class AnnouncementEdit extends Component {
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
+
+    handleEditorChange = (editorState) => {
+        this.setState({ editorState }, () => {
+            this.setState({
+                description: draftToHtml(convertToRaw(editorState.getCurrentContent()))
+            })
+        });
+    };
 
     handleUpdate = async () => {
         // event.preventDefault();
@@ -152,11 +174,11 @@ class AnnouncementEdit extends Component {
     }
 
     render() {
-        const { name, description, userNames, initialAssignees, thisAnnouncementDetails, errors, loading } = this.state;
+        const { name, userNames, initialAssignees, thisAnnouncementDetails, editorState, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
-                    <Grid.Column style={{ maxWidth: 450 }}>
+                    <Grid.Column style={{ width: "80%" }}>
                         <Header as="h1" icon color="blue" textAlign="center">
                             <Icon name="tasks" color="blue" />
                             Edit Announcement
@@ -173,14 +195,13 @@ class AnnouncementEdit extends Component {
                                         className={this.handleInputError(errors, "name")}
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
-                                    <Form.Input
-                                        fluid
-                                        name="description"
-                                        onChange={this.handleChange}
-                                        value={description}
-                                        className={this.handleInputError(errors, "description")}
+                                    <Editor
+                                        editorState={editorState}
+                                        wrapperClassName="demo-wrapper"
+                                        editorClassName="editor-class"
+                                        onEditorStateChange={this.handleEditorChange}
                                     />
                                 </Form.Field>
                                 <Form.Field className={this.handleInputError(errors, "asignee")}>

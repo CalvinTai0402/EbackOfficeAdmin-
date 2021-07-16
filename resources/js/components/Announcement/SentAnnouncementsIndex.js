@@ -106,6 +106,10 @@ class SentAnnouncementsIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedSentAnnouncements.includes(row.id.toString())} />
                                             );
+                                        case 'description':
+                                            return (
+                                                <div dangerouslySetInnerHTML={{ __html: `${row.description}` }} />
+                                            )
                                         case 'actions':
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "space-between" }}>
