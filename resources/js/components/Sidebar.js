@@ -106,10 +106,6 @@ class Sidebar extends React.Component {
                                             <Link to="/announcementssent" />
                                         </MenuItem>
                                     </SubMenu>
-                                    <MenuItem icon={<FaBattleNet />}>
-                                        Test
-                                        <Link to="/test" />
-                                    </MenuItem>
                                     {/* <MenuItem icon={<FaBattleNet />}>
                                         Customers
                                         <Link to="/customers" />
@@ -153,8 +149,6 @@ class Sidebar extends React.Component {
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
                                 <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />
                                 <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
-
-                                <Route exact path="/test" render={(props) => <Test {...props} />} />
 
                                 {/* <Route exact path="/customers" render={(props) => <CustomerIndex {...props} />} />
                                 <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />

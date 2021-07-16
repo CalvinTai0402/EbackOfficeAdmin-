@@ -95,6 +95,31 @@ class AnnouncementEdit extends Component {
         });
     };
 
+    uploadImageCallBack = async (file) => {
+        let fileName = new Date(Date.now()).toISOString() + "_" + file.name
+        fileName = fileName.replaceAll(":", "-")
+        await this.uploadImage(fileName, file)
+        let imagePath = 'http://localhost:8000/announcementImages/' + fileName;
+        return new Promise(
+            (resolve, reject) => {
+                resolve({ data: { link: imagePath } });
+            }
+        );
+    }
+
+    uploadImage = async (fileName, imageFile) => {
+        const data = new FormData()
+        data.append('fileName', fileName)
+        data.append('imageFile', imageFile)
+        this.setState({ loading: true });
+        const res = await axios.post('/announcements/saveImageFile', data).catch((e) => {
+            console.log(e);
+        });
+        if (res.data.status === 200) {
+            this.setState({ loading: false });
+        }
+    }
+
     handleUpdate = async () => {
         // event.preventDefault();
         const { name, description, asigneeIds } = this.state;
@@ -202,6 +227,13 @@ class AnnouncementEdit extends Component {
                                         wrapperClassName="demo-wrapper"
                                         editorClassName="editor-class"
                                         onEditorStateChange={this.handleEditorChange}
+                                        toolbar={{
+                                            image: {
+                                                uploadCallback: this.uploadImageCallBack,
+                                                previewImage: true,
+                                                inputAccept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
+                                            }
+                                        }}
                                     />
                                 </Form.Field>
                                 <Form.Field className={this.handleInputError(errors, "asignee")}>
