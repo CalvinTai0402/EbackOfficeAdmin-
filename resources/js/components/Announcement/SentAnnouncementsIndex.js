@@ -90,7 +90,7 @@ class SentAnnouncementsIndex extends React.Component {
                     <div style={{ color: "white" }} >
                         <AiFillMinusSquare color="white" size="20" />
                         <span style={{ marginLeft: "8px" }} >
-                            Unsend Many Announcement to All
+                            Unsend Many Announcements to All
                         </span>
                     </div>
                 </button>
