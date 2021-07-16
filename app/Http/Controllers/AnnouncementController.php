@@ -53,7 +53,7 @@ class AnnouncementController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "name" => "required|max:50",
-            "description" => "required|max:200"
+            "description" => "required|max:3000"
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
@@ -111,7 +111,7 @@ class AnnouncementController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "name" => "required|max:50",
-            "description" => "required|max:200"
+            "description" => "required|max:3000"
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);

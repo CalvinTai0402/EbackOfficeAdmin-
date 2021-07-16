@@ -106,6 +106,10 @@ class Sidebar extends React.Component {
                                             <Link to="/announcementssent" />
                                         </MenuItem>
                                     </SubMenu>
+                                    <MenuItem icon={<FaBattleNet />}>
+                                        Test
+                                        <Link to="/test" />
+                                    </MenuItem>
                                     {/* <MenuItem icon={<FaBattleNet />}>
                                         Customers
                                         <Link to="/customers" />
@@ -139,17 +143,18 @@ class Sidebar extends React.Component {
                                 <Route exact path="/availableTasks/create" render={(props) => <AvailableTaskCreate {...props} />} />
                                 <Route exact path="/availableTasks/:id/edit" render={(props) => <AvailableTaskEdit {...props} />} />
 
+                                <Route exact path="/taskLists" render={(props) => <TaskListIndex {...props} />} />
+                                <Route exact path="/taskLists/create" render={(props) => <TaskListCreate {...props} />} />
+                                <Route exact path="/taskLists/:id/edit" render={(props) => <TaskListEdit {...props} />} />
+                                <Route exact path="/mytasks" render={(props) => <MyTaskIndex {...props} />} />
+
                                 <Route exact path="/announcementsunread" render={(props) => <AnnouncementIndex read={0} {...props} />} />
                                 <Route exact path="/announcementsread" render={(props) => <AnnouncementIndex read={1} {...props} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
                                 <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />
                                 <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
 
-                                <Route exact path="/taskLists" render={(props) => <TaskListIndex {...props} />} />
-                                <Route exact path="/taskLists/create" render={(props) => <TaskListCreate {...props} />} />
-                                <Route exact path="/taskLists/:id/edit" render={(props) => <TaskListEdit {...props} />} />
-
-                                <Route exact path="/mytasks" render={(props) => <MyTaskIndex {...props} />} />
+                                <Route exact path="/test" render={(props) => <Test {...props} />} />
 
                                 {/* <Route exact path="/customers" render={(props) => <CustomerIndex {...props} />} />
                                 <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />

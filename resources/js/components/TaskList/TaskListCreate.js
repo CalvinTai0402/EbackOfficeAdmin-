@@ -270,6 +270,7 @@ class TaskListCreate extends Component {
                                         onChange={(date) => this.setDate(date)}
                                         dateFormat="MM-dd-yyyy"
                                         closeOnScroll={(e) => e.target === document}
+                                        wrapperClassName="datePicker"
                                     />
                                 </Form.Field>
                                 <Form.Field className={this.handleInputError(errors, "repeat")}>

@@ -6,22 +6,19 @@
 
 
 TODO:
-2.
+1.
+- make pretty (logos, sidebar color)
+
+2. Add task to events
+
+3.
 - relationship for company id and asignee (
     tasklist: customerid,
 )
 - customers
 
-3.
-- fix date-picker z-index
-- Task scheduler
-- rich text
-
-4.
-- make pretty
-- make events only render >= today (->where('start','>',today());)
-
 5.
 - roles (basically get roles of loggedInUser then conditional rendering)
+- Task scheduler (after adding customers, need to fix)
 
 https://medium.com/@afrazahmad090/laravel-many-to-many-relationship-explained-822b554c1973

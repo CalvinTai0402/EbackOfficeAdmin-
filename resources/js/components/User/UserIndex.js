@@ -57,7 +57,7 @@ class UserIndex extends React.Component {
         const { deleting } = this.state;
         let self = this;
         const url = 'http://localhost:8000/users';
-        const columns = ['id', 'name', 'email', 'role', 'created_at', 'updated_at', 'actions']
+        const columns = ['id', 'name', 'email', 'role', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,

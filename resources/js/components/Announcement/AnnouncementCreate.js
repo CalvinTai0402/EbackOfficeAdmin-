@@ -10,6 +10,11 @@ import {
 } from "semantic-ui-react";
 import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
+import { EditorState, convertToRaw } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 class AnnouncementCreate extends Component {
     state = {
         name: "",
@@ -17,6 +22,7 @@ class AnnouncementCreate extends Component {
         asigneeIds: [],
         userNames: [],
         userIds: [],
+        editorState: EditorState.createEmpty(),
         errors: [],
         loading: false
     }
@@ -52,6 +58,14 @@ class AnnouncementCreate extends Component {
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
+    handleEditorChange = (editorState) => {
+        this.setState({ editorState }, () => {
+            this.setState({
+                description: draftToHtml(convertToRaw(editorState.getCurrentContent()))
+            })
+        });
+    };
+
     handleStore = async event => {
         event.preventDefault();
         const { name, description, asigneeIds } = this.state;
@@ -86,7 +100,7 @@ class AnnouncementCreate extends Component {
     displayErrors = errors => errors.map((error, i) => <p key={i}>{error}</p>);
 
     handleInputError = (errors, inputName) => {
-        return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
+        return errors.some(error => error.toLowerCase().includes(inputName)) ? "error has-error" : "";
     };
 
     isFormValid = ({ name, description, asigneeIds }) => {
@@ -130,35 +144,34 @@ class AnnouncementCreate extends Component {
     }
 
     render() {
-        const { name, description, userNames, errors, loading } = this.state;
+        const { name, userNames, editorState, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
-                    <Grid.Column style={{ maxWidth: 450 }}>
+                    <Grid.Column style={{ width: "80%" }}>
                         <Header as="h1" icon color="blue" textAlign="center">
                             <Icon name="file alternate" color="blue" />
                             Create Announcement
                         </Header>
                         <Form onSubmit={this.handleStore} size="large">
                             <Segment stacked>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "name")}>
                                     <label>Name</label>
                                     <Form.Input
                                         fluid
                                         name="name"
                                         onChange={this.handleChange}
                                         value={name}
-                                        className={this.handleInputError(errors, "name")}
+
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
-                                    <Form.Input
-                                        fluid
-                                        name="description"
-                                        onChange={this.handleChange}
-                                        value={description}
-                                        className={this.handleInputError(errors, "description")}
+                                    <Editor
+                                        editorState={editorState}
+                                        wrapperClassName="demo-wrapper"
+                                        editorClassName="editor-class"
+                                        onEditorStateChange={this.handleEditorChange}
                                     />
                                 </Form.Field>
                                 <Form.Field className={this.handleInputError(errors, "asignee")}>

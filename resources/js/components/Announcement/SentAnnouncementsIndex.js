@@ -61,7 +61,7 @@ class SentAnnouncementsIndex extends React.Component {
         const { deleting, loading } = this.state;
         let self = this;
         const url = 'http://localhost:8000/announcements/getSentAnnouncements';
-        const columns = ['id', 'name', 'description', 'assignees', 'created_at', 'updated_at', 'actions']
+        const columns = ['id', 'name', 'description', 'assignees', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
@@ -90,7 +90,7 @@ class SentAnnouncementsIndex extends React.Component {
                     <div style={{ color: "white" }} >
                         <AiFillMinusSquare color="white" size="20" />
                         <span style={{ marginLeft: "8px" }} >
-                            Unsend Many Announcement to All
+                            Unsend Many Announcements to All
                         </span>
                     </div>
                 </button>
@@ -106,6 +106,10 @@ class SentAnnouncementsIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedSentAnnouncements.includes(row.id.toString())} />
                                             );
+                                        case 'description':
+                                            return (
+                                                <div dangerouslySetInnerHTML={{ __html: `${row.description}` }} />
+                                            )
                                         case 'actions':
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "space-between" }}>

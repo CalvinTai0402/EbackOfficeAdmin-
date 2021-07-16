@@ -83,7 +83,7 @@ class AnnouncementIndex extends React.Component {
         let title = "Unread announcements"
         if (read === 1) { title = "Read announcements" }
         const url = 'http://localhost:8000/announcements?read=' + read;
-        const columns = ['id', 'name', 'description', 'assignees', 'created_at', 'updated_at', 'actions']
+        const columns = ['id', 'name', 'description', 'assignees', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
@@ -141,6 +141,10 @@ class AnnouncementIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedAnnouncements.includes(row.id.toString())} />
                                             );
+                                        case 'description':
+                                            return (
+                                                <div dangerouslySetInnerHTML={{ __html: `${row.description}` }} />
+                                            )
                                         case 'actions':
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "space-between" }}>
