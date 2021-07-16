@@ -23,6 +23,11 @@ class Event extends React.Component {
 
     async componentDidMount() {
         await this.getEvents();
+        document.body.style.overflow = "hidden" // fix for ReactModal taking up white space
+    }
+
+    async componentWillUnmount() {
+        document.body.style.overflow = "visible" // fix for ReactModal taking up white space
     }
 
     getEvents = async () => {
@@ -193,6 +198,7 @@ class Event extends React.Component {
                 {loading ? <Spinner text="Loading..." /> :
                     <div className='demo-app'>
                         {this.renderSidebar()}
+                        {this.renderModal()}
                         <div className='demo-app-main'>
                             <FullCalendar
                                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -216,7 +222,6 @@ class Event extends React.Component {
                                 eventChange={this.handleCalendarChange}
                                 eventRemove={this.handleRemove}
                             />
-                            {this.renderModal()}
                         </div>
                     </div>}
             </div>
