@@ -57,25 +57,6 @@ class AnnouncementIndex extends React.Component {
         }
     }
 
-    handleRead = async (id) => {
-        this.setState({ loading: true });
-        const res = await axios.put(`/users/readAnnouncement/${id}`);
-        if (res.data.status === 200) {
-            this.setState({ loading: false });
-            this.props.history.push("/announcementsunread");
-        }
-    }
-
-    handleUnread = async (id) => {
-        this.setState({ loading: true });
-        const res = await axios.put(`/users/unreadAnnouncement/${id}`);
-        if (res.data.status === 200) {
-            this.setState({ loading: false });
-            this.props.history.push("/announcementsread");
-        }
-    }
-
-
     render() {
         const { deleting, loading } = this.state;
         let self = this;
@@ -156,16 +137,24 @@ class AnnouncementIndex extends React.Component {
                                                             </div>
                                                         </Link>
                                                     </button>
-                                                    {read === 1 ? <button className="btn btn-success" style={{ marginRight: "5px" }} onClick={() => { self.handleUnread(row.id) }}>
-                                                        <AiOutlineRead color="white" />
+                                                    {read === 1 ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
+                                                        {/* <AiOutlineRead color="white" />
                                                         <div style={{ color: "white" }} >
                                                             Unread
-                                                        </div>
-                                                    </button> : <button className="btn btn-success" style={{ marginRight: "5px" }} onClick={() => { self.handleRead(row.id) }}>
-                                                        <AiOutlineRead color="white" />
-                                                        <div style={{ color: "white" }} >
-                                                            read
-                                                        </div>
+                                                        </div> */}
+                                                        <Link to={'announcements/' + row.id + '/unreadingPage'}>
+                                                            <AiOutlineRead color="white" />
+                                                            <div style={{ color: "white" }} >
+                                                                Unread
+                                                            </div>
+                                                        </Link>
+                                                    </button> : <button className="btn btn-success" style={{ marginRight: "5px" }} >
+                                                        <Link to={'announcements/' + row.id + '/readingPage'}>
+                                                            <AiOutlineRead color="white" />
+                                                            <div style={{ color: "white" }} >
+                                                                Read
+                                                            </div>
+                                                        </Link>
                                                     </button>}
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
                                                         <AiFillDelete color="white" />

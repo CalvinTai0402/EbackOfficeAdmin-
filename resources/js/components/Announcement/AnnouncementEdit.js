@@ -284,8 +284,8 @@ class AnnouncementEdit extends Component {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{thisAnnouncementDetail[0]}</td>
-                                    <td>{thisAnnouncementDetail[1]}</td>
-                                    <td>{thisAnnouncementDetail[2]}</td>
+                                    <td>{thisAnnouncementDetail[1] === 0 ? "No" : "Yes"}</td>
+                                    <td>{thisAnnouncementDetail[2] === 0 ? "No" : "Yes"}</td>
                                 </tr>
                             );
                         })}
