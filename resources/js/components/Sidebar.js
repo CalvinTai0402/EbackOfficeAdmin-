@@ -25,6 +25,7 @@ import AnnouncementIndex from "./Announcement/AnnouncementIndex";
 import AnnouncementCreate from "./Announcement/AnnouncementCreate";
 import AnnouncementEdit from "./Announcement/AnnouncementEdit";
 import SentAnnouncementsIndex from "./Announcement/SentAnnouncementsIndex";
+import ReadPage from "./Announcement/ReadPage";
 import TaskListIndex from './TaskList/TaskListIndex';
 import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
@@ -106,10 +107,6 @@ class Sidebar extends React.Component {
                                             <Link to="/announcementssent" />
                                         </MenuItem>
                                     </SubMenu>
-                                    <MenuItem icon={<FaBattleNet />}>
-                                        Test
-                                        <Link to="/test" />
-                                    </MenuItem>
                                     {/* <MenuItem icon={<FaBattleNet />}>
                                         Customers
                                         <Link to="/customers" />
@@ -150,11 +147,11 @@ class Sidebar extends React.Component {
 
                                 <Route exact path="/announcementsunread" render={(props) => <AnnouncementIndex read={0} {...props} />} />
                                 <Route exact path="/announcementsread" render={(props) => <AnnouncementIndex read={1} {...props} />} />
+                                <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
                                 <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />
-                                <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
-
-                                <Route exact path="/test" render={(props) => <Test {...props} />} />
+                                <Route exact path="/announcements/:id/readingPage" render={(props) => <ReadPage reading={1} {...props} />} />
+                                <Route exact path="/announcements/:id/unreadingPage" render={(props) => <ReadPage reading={0} {...props} />} />
 
                                 {/* <Route exact path="/customers" render={(props) => <CustomerIndex {...props} />} />
                                 <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />

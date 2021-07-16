@@ -7,6 +7,7 @@ use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 
 class AnnouncementController extends Controller
 {
@@ -180,5 +181,24 @@ class AnnouncementController extends Controller
             ->take($limit)
             ->get();
         return response()->json(['count' => Announcement::sent()->count(), 'total' => Announcement::sent()->count(), 'data' => $sentAnnouncements]);
+    }
+
+    public function saveImageFile(Request $request)
+    {
+        $response = [];
+        if ($request->has('imageFile')) {
+            $imageFile = $request->file('imageFile');
+            // $imageFile->move('announcementImages/', $request["fileName"]);
+            $imageFileResized = Image::make($imageFile)->resize(300, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            $imageFileResized->save(public_path('announcementImages/' . $request["fileName"]));
+            $response["status"] = 200;
+            $response["message"] = "Success! kerasModelFile(s) uploaded";
+        } else {
+            $response["status"] = 500;
+            $response["message"] = "Failed! kerasModelFile(s) not uploaded";
+        }
+        return response()->json($response);
     }
 }

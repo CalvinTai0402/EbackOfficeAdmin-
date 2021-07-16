@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get("announcements/{announcement}/populateThisAnnouncementDetails",  [AnnouncementController::class, 'populateThisAnnouncementDetails'])->name('announcements.populateThisAnnouncementDetails');
     Route::get("announcements/getSentAnnouncements",  [AnnouncementController::class, 'getSentAnnouncements'])->name('announcements.getSentAnnouncements');
+    Route::post("announcements/saveImageFile",  [AnnouncementController::class, 'saveImageFile'])->name('announcements.saveImageFile');
     Route::post("announcements/deleteMany",  [AnnouncementController::class, 'destroyMany'])->name('announcements.destroyMany');
     Route::resource("announcements", AnnouncementController::class);
 
