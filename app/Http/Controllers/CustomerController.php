@@ -21,8 +21,9 @@ class CustomerController extends Controller
         $orderBy = $request->input("orderBy");
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
-        $customers = Customer::name($search)
-            ->email($search)
+        $customers = Customer::code($search)
+            ->name($search)
+            ->service($search)
             ->order($orderBy, $order)
             ->skipPage($toSkip)
             ->take($limit)
@@ -49,14 +50,15 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            "code" => "required|max:50",
             "name" => "required|min:3|max:50",
-            "email" => "required|max:50|unique:customers,email"
+            "service" => "required|max:50"
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
         $customer = Customer::create($request->all());
-        return response()->json(['status' => 201, 'customer' => $customer]);
+        return response()->json(['status' => 200, 'customer' => $customer]);
     }
 
     /**
@@ -91,8 +93,9 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validator = Validator::make($request->all(), [
+            "code" => "required|max:50",
             "name" => "required|min:3|max:50",
-            "email" => "required|max:50|unique:customers,email,$customer->id"
+            "service" => "required|max:50"
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);

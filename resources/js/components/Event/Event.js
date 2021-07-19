@@ -32,7 +32,7 @@ class Event extends React.Component {
 
     getEvents = async () => {
         this.setState({ loading: true })
-        const res = await axios.get(`/events`);
+        const res = await axios.get(`${process.env.MIX_API_URL}/events`);
         if (res.data.status == 200) {
             this.setState({ loading: false })
             this.setState({ events: res.data.events })
@@ -91,7 +91,7 @@ class Event extends React.Component {
     }
 
     handleAdd = async (addInfo) => {
-        await axios.post('/events', {
+        await axios.post(`${process.env.MIX_API_URL}/events`, {
             title: addInfo.event.title,
             description: this.state.description,
             priority: this.state.priority,
@@ -102,7 +102,7 @@ class Event extends React.Component {
 
     handleCalendarChange = async (changeInfo) => {
         const id = changeInfo.event.id;
-        await axios.put(`/events/${id}`, {
+        await axios.put(`${process.env.MIX_API_URL}/events/${id}`, {
             title: changeInfo.event.title,
             start: changeInfo.event.start,
             end: changeInfo.event.end
@@ -111,7 +111,7 @@ class Event extends React.Component {
 
     handleRemove = async (removeInfo) => {
         const id = removeInfo.event.id;
-        await axios.delete(`/events/${id}`);
+        await axios.delete(`${process.env.MIX_API_URL}/events/${id}`);
     }
 
     renderSidebar = () => {

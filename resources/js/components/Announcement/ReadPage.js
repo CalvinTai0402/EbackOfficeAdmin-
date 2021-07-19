@@ -10,7 +10,7 @@ class ReadPage extends Component {
 
     async componentDidMount() {
         const id = this.props.match.params.id;
-        let res = await axios.get(`/announcements/${id}/edit`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/announcements/${id}/edit`);
         this.setState({
             name: res.data.announcement.name,
             description: res.data.announcement.description,
@@ -29,12 +29,12 @@ class ReadPage extends Component {
     markReadOrUnread = async () => {
         const id = this.props.match.params.id;
         if (this.props.reading) {
-            const res = await axios.put(`/users/readAnnouncement/${id}`);
+            const res = await axios.put(`${process.env.MIX_API_URL}/users/readAnnouncement/${id}`);
             if (res.data.status === 200) {
                 this.props.history.push("/announcementsunread");
             }
         } else {
-            const res = await axios.put(`/users/unreadAnnouncement/${id}`);
+            const res = await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
             if (res.data.status === 200) {
                 this.props.history.push("/announcementsread");
             }

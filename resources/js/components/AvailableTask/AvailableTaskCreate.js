@@ -24,7 +24,7 @@ class AvailableTaskCreate extends Component {
         const { name, description } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
-            const res = await axios.post('/availableTasks', {
+            const res = await axios.post(`${process.env.MIX_API_URL}/availableTasks`, {
                 name: name,
                 description: description
             });

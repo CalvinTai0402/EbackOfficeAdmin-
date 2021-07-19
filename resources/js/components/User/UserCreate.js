@@ -30,7 +30,7 @@ class UserCreate extends Component {
         const { name, email, password, role } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
-            const res = await axios.post('/users', {
+            const res = await axios.post(`${process.env.MIX_API_URL}/users`, {
                 name: name,
                 email: email,
                 password: password,

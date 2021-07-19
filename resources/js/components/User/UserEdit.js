@@ -24,7 +24,7 @@ class UserEdit extends Component {
 
     async componentDidMount() {
         const id = this.props.match.params.id;
-        let res = await axios.get(`/users/${id}/edit`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/users/${id}/edit`);
         this.setState({
             name: res.data.user.name,
             email: res.data.user.email,
@@ -40,7 +40,7 @@ class UserEdit extends Component {
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
-            const res = await axios.put(`/users/${id}`, {
+            const res = await axios.put(`${process.env.MIX_API_URL}/users/${id}`, {
                 name: name,
                 email: email,
                 role: role,
