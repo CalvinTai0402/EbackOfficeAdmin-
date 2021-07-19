@@ -19,11 +19,7 @@ class ReadPage extends Component {
     }
 
     handleCancel = async () => {
-        if (this.props.reading) {
-            this.props.history.push("/announcementsunread");
-        } else {
-            this.props.history.push("/announcementsread");
-        }
+        this.props.history.push("/announcementsread");
     }
 
     markReadOrUnread = async () => {
@@ -31,12 +27,12 @@ class ReadPage extends Component {
         if (this.props.reading) {
             const res = await axios.put(`${process.env.MIX_API_URL}/users/readAnnouncement/${id}`);
             if (res.data.status === 200) {
-                this.props.history.push("/announcementsunread");
+                this.props.history.push("/announcements");
             }
         } else {
             const res = await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
             if (res.data.status === 200) {
-                this.props.history.push("/announcementsread");
+                this.props.history.push("/announcements");
             }
         }
 

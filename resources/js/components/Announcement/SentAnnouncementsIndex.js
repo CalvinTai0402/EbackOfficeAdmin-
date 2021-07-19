@@ -113,11 +113,11 @@ class SentAnnouncementsIndex extends React.Component {
                                         case 'actions':
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                                    <button className="btn btn-danger" style={{ marginRight: "5px" }}>
+                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'announcements/' + row.id + '/edit'}>
-                                                            <AiFillDelete color="white" />
+                                                            <AiFillEdit color="white" />
                                                             <div style={{ color: "white" }} >
-                                                                Unsend to some
+                                                                Edit
                                                             </div>
                                                         </Link>
                                                     </button>

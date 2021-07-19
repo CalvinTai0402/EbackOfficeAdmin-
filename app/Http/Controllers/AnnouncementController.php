@@ -25,13 +25,26 @@ class AnnouncementController extends Controller
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
         $read = $request->input("read");
-        $announcements =  Auth::user()->announcementsReadOrUnread($read)->name($search)
+        $unreadAnnouncements =  Auth::user()->announcementsReadOrUnread(0)->name($search)
             ->description($search)
             ->order($orderBy, $order)
             ->skipPage($toSkip)
             ->take($limit)
             ->get();
-        return response()->json(['count' => Auth::user()->announcementsReadOrUnread($read)->count(), 'total' => Auth::user()->announcementsReadOrUnread($read)->count(), 'data' => $announcements]);
+        foreach ($unreadAnnouncements as $unreadAnnouncement) {
+            $unreadAnnouncement['status'] = "Unread";
+        }
+        $readAnnouncements =  Auth::user()->announcementsReadOrUnread(1)->name($search)
+            ->description($search)
+            ->order($orderBy, $order)
+            ->skipPage($toSkip)
+            ->take($limit)
+            ->get();
+        foreach ($readAnnouncements as $readAnnouncement) {
+            $readAnnouncement['status'] = "Read";
+        }
+        $announcements = $unreadAnnouncements->merge($readAnnouncements);
+        return response()->json(['count' => $announcements->count(), 'total' => $announcements->count(), 'data' => $announcements]);
     }
 
     /**

@@ -60,11 +60,11 @@ class AnnouncementIndex extends React.Component {
     render() {
         const { deleting, loading } = this.state;
         let self = this;
-        let read = this.props.read;
-        let title = "Unread announcements"
-        if (read === 1) { title = "Read announcements" }
-        const url = `${process.env.MIX_API_URL}/announcements?read=` + read;
-        const columns = ['id', 'name', 'description', 'assignees', 'actions']
+        // let read = this.props.read;
+        // let read = 1
+        // const url = `${process.env.MIX_API_URL}/announcements?read=` + read;
+        const url = `${process.env.MIX_API_URL}/announcements`;
+        const columns = ['id', 'name', 'description', 'assignees', 'status', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
@@ -107,14 +107,12 @@ class AnnouncementIndex extends React.Component {
                         </span>
                     </div>
                 </button>
-                <Header as="h1" icon color="black" textAlign="left">
-                    {title}
-                </Header>
                 {
                     deleting ? <Spinner /> : loading ? <Spinner text="loading" /> :
                         <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
                             {
                                 function (row, column) {
+                                    let read = row["status"]
                                     switch (column) {
                                         case 'id':
                                             return (
@@ -137,11 +135,7 @@ class AnnouncementIndex extends React.Component {
                                                             </div>
                                                         </Link>
                                                     </button>
-                                                    {read === 1 ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        {/* <AiOutlineRead color="white" />
-                                                        <div style={{ color: "white" }} >
-                                                            Unread
-                                                        </div> */}
+                                                    {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
                                                         <Link to={'announcements/' + row.id + '/unreadingPage'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
@@ -152,7 +146,7 @@ class AnnouncementIndex extends React.Component {
                                                         <Link to={'announcements/' + row.id + '/readingPage'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
-                                                                Read
+                                                                New
                                                             </div>
                                                         </Link>
                                                     </button>}

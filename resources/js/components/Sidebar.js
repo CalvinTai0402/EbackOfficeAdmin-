@@ -98,13 +98,17 @@ class Sidebar extends React.Component {
                                         </MenuItem>
                                     </SubMenu>
                                     <SubMenu title="Announcements" icon={<FaGem />}>
-                                        <MenuItem icon={<FaBattleNet />}>
+                                        {/* <MenuItem icon={<FaBattleNet />}>
                                             Unread Announcments
                                             <Link to="/announcementsunread" />
                                         </MenuItem>
                                         <MenuItem icon={<FaBattleNet />}>
                                             Read Announcments
                                             <Link to="/announcementsread" />
+                                        </MenuItem> */}
+                                        <MenuItem icon={<FaBattleNet />}>
+                                            Announcments
+                                            <Link to="/announcements" />
                                         </MenuItem>
                                         <MenuItem icon={<FaBattleNet />}>
                                             Sent Announcments
@@ -151,8 +155,9 @@ class Sidebar extends React.Component {
                                 <Route exact path="/taskLists/:id/edit" render={(props) => <TaskListEdit {...props} />} />
                                 <Route exact path="/mytasks" render={(props) => <MyTaskIndex {...props} />} />
 
-                                <Route exact path="/announcementsunread" render={(props) => <AnnouncementIndex read={0} {...props} />} />
-                                <Route exact path="/announcementsread" render={(props) => <AnnouncementIndex read={1} {...props} />} />
+                                {/* <Route exact path="/announcementsunread" render={(props) => <AnnouncementIndex read={0} {...props} />} />
+                                <Route exact path="/announcementsread" render={(props) => <AnnouncementIndex read={1} {...props} />} /> */}
+                                <Route exact path="/announcements" render={(props) => <AnnouncementIndex {...props} />} />
                                 <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
                                 <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />

@@ -147,7 +147,7 @@ class AnnouncementEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/announcementsunread");
+                this.props.history.push("/announcements");
             }
         }
     };
