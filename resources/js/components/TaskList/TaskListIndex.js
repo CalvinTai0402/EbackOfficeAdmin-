@@ -35,7 +35,7 @@ class TaskListIndex extends React.Component {
 
     handleDelete = async (id) => {
         this.setState({ deleting: true })
-        const res = await axios.delete(`/taskLists/${id}`);
+        const res = await axios.delete(`${process.env.MIX_API_URL}/taskLists/${id}`);
         if (res.data.status === 200) {
             this.setState({ deleting: false })
         }
@@ -45,7 +45,7 @@ class TaskListIndex extends React.Component {
         this.setState({ deleting: true })
         const { selectedTaskLists } = this.state
         let selectedTaskListIds = selectedTaskLists.map(Number);
-        const res = await axios.post(`/taskLists/deleteMany`, {
+        const res = await axios.post(`${process.env.MIX_API_URL}/taskLists/deleteMany`, {
             selectedTaskListIds: selectedTaskListIds
         });
         if (res.data.status === 200) {
@@ -56,7 +56,7 @@ class TaskListIndex extends React.Component {
     render() {
         const { deleting } = this.state;
         let self = this;
-        const url = 'http://localhost:8000/taskLists';
+        const url = `${process.env.MIX_API_URL}/taskLists`;
         const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {

@@ -9,23 +9,46 @@ class Customer extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'code',
         'name',
+        'service',
+        'service_other',
+        'business_address',
+        'mailing_address',
+        'year_end',
+        'ein',
+        'company_group',
+        'contact_person',
+        'other_contact_person',
         'email',
+        'fax',
+        'telephone',
+        'client_status',
+        'remark',
     ];
 
-    public function scopeName($query, $filter)
+    public function scopeCode($query, $filter)
     {
         if (!is_null($filter)) {
-            return $query->where('name', 'LIKE', '%' . $filter . '%');
+            return $query->where('code', 'LIKE', '%' . $filter . '%');
         }
 
         return $query;
     }
 
-    public function scopeEmail($query, $filter)
+    public function scopeName($query, $filter)
     {
         if (!is_null($filter)) {
-            return $query->orWhere('email', 'LIKE', '%' . $filter . '%');
+            return $query->orWhere('name', 'LIKE', '%' . $filter . '%');
+        }
+
+        return $query;
+    }
+
+    public function scopeService($query, $filter)
+    {
+        if (!is_null($filter)) {
+            return $query->orWhere('service', 'LIKE', '%' . $filter . '%');
         }
 
         return $query;

@@ -46,7 +46,7 @@ class MyTaskIndex extends React.Component {
     }
 
     populateAvalableTaskNamesAndDecriptions = async () => {
-        let res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/availableTasks/populateAvalableTasksForTaskList`);
         let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
         let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
             let availableTaskName = {
@@ -71,7 +71,7 @@ class MyTaskIndex extends React.Component {
     }
 
     populateAvailableUsers = async () => {
-        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/users/populateUsersForTaskList`);
         let userIdsAndNames = res.data.userIdsAndNames;
         let userNames = userIdsAndNames.map((userIdAndName, i) => {
             let userName = {
@@ -118,7 +118,7 @@ class MyTaskIndex extends React.Component {
 
     handleEditClicked = async (id) => {
         const { userNames } = this.state;
-        let res = await axios.get(`/myTasks/${id}/edit`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/myTasks/${id}/edit`);
         let duedateParts = res.data.myTask.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
         // let initialAssignees = []
@@ -154,7 +154,7 @@ class MyTaskIndex extends React.Component {
         const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
-            const res = await axios.put(`/myTasks/${rowId}`, {
+            const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/${rowId}`, {
                 name: name,
                 description: description,
                 notes: notes,
@@ -283,7 +283,7 @@ class MyTaskIndex extends React.Component {
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, userNames, errors, loading, selected } = this.state;
         let self = this;
-        const url = 'http://localhost:8000/myTasks';
+        const url = `${process.env.MIX_API_URL}/myTasks`;
         const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {

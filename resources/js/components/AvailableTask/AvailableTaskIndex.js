@@ -35,7 +35,7 @@ class AvailableTaskIndex extends React.Component {
 
     handleDelete = async (id) => {
         this.setState({ deleting: true })
-        const res = await axios.delete(`/availableTasks/${id}`);
+        const res = await axios.delete(`${process.env.MIX_API_URL}/availableTasks/${id}`);
         if (res.data.status === 200) {
             this.setState({ deleting: false })
         }
@@ -45,7 +45,7 @@ class AvailableTaskIndex extends React.Component {
         this.setState({ deleting: true })
         const { selectedAvailableTasks } = this.state
         let selectedAvailableTaskIds = selectedAvailableTasks.map(Number);
-        const res = await axios.post(`/availableTasks/deleteMany`, {
+        const res = await axios.post(`${process.env.MIX_API_URL}/availableTasks/deleteMany`, {
             selectedAvailableTaskIds: selectedAvailableTaskIds
         });
         if (res.data.status === 200) {
@@ -56,7 +56,7 @@ class AvailableTaskIndex extends React.Component {
     render() {
         const { deleting } = this.state;
         let self = this;
-        const url = 'http://localhost:8000/availableTasks';
+        const url = `${process.env.MIX_API_URL}/availableTasks`;
         const columns = ['id', 'name', 'description', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {

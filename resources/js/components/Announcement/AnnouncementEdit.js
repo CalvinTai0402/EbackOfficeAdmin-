@@ -35,7 +35,7 @@ class AnnouncementEdit extends Component {
         await this.populateAvailableUsers()
         await this.populateThisAnnouncementDetails()
         const id = this.props.match.params.id;
-        let res = await axios.get(`/announcements/${id}/edit`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/announcements/${id}/edit`);
         const contentBlock = htmlToDraft(res.data.announcement.description);
         let editorState = EditorState.createEmpty();
         if (contentBlock) {
@@ -53,7 +53,7 @@ class AnnouncementEdit extends Component {
     }
 
     populateAvailableUsers = async () => {
-        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/users/populateUsersForTaskList`);
         let userIdsAndNames = res.data.userIdsAndNames;
         let userNames = userIdsAndNames.map((userIdAndName, i) => {
             let userName = {
@@ -79,7 +79,7 @@ class AnnouncementEdit extends Component {
 
     populateThisAnnouncementDetails = async () => {
         const id = this.props.match.params.id;
-        let res = await axios.get(`/announcements/${id}/populateThisAnnouncementDetails`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/announcements/${id}/populateThisAnnouncementDetails`);
         this.setState({
             thisAnnouncementDetails: res.data.thisAnnouncementDetails
         });
@@ -112,7 +112,7 @@ class AnnouncementEdit extends Component {
         data.append('fileName', fileName)
         data.append('imageFile', imageFile)
         this.setState({ loading: true });
-        const res = await axios.post('/announcements/saveImageFile', data).catch((e) => {
+        const res = await axios.post(`${process.env.MIX_API_URL}/announcements/saveImageFile`, data).catch((e) => {
             console.log(e);
         });
         if (res.data.status === 200) {
@@ -126,7 +126,7 @@ class AnnouncementEdit extends Component {
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
-            const res = await axios.put(`/announcements/${id}`, {
+            const res = await axios.put(`${process.env.MIX_API_URL}/announcements/${id}`, {
                 name: name,
                 description: description,
                 asigneeIds: asigneeIds

@@ -8,14 +8,14 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link,
 } from "react-router-dom";
-// import CustomerIndex from './Customer/CustomerIndex';
-// import CustomerCreate from './Customer/CustomerCreate';
-// import CustomerEdit from "./Customer/CustomerEdit";
 import UserIndex from "./User/UserIndex";
 import UserCreate from "./User/UserCreate";
 import UserEdit from "./User/UserEdit";
+import CustomerIndex from './Customer/CustomerIndex';
+import CustomerCreate from './Customer/CustomerCreate';
+import CustomerEdit from "./Customer/CustomerEdit";
 import Event from "./Event/Event";
 import FileManager from "./FileManager";
 import AvailableTaskIndex from './AvailableTask/AvailableTaskIndex';
@@ -72,6 +72,10 @@ class Sidebar extends React.Component {
                                         <Link to="/users" />
                                     </MenuItem>
                                     <MenuItem icon={<FaBattleNet />}>
+                                        Customers
+                                        <Link to="/customers" />
+                                    </MenuItem>
+                                    <MenuItem icon={<FaBattleNet />}>
                                         Events
                                         <Link to="/events" />
                                     </MenuItem>
@@ -107,10 +111,6 @@ class Sidebar extends React.Component {
                                             <Link to="/announcementssent" />
                                         </MenuItem>
                                     </SubMenu>
-                                    {/* <MenuItem icon={<FaBattleNet />}>
-                                        Customers
-                                        <Link to="/customers" />
-                                    </MenuItem> */}
                                 </Menu>
                             </SidebarContent>
                             <SidebarFooter style={{ textAlign: 'center' }}>
@@ -128,9 +128,15 @@ class Sidebar extends React.Component {
                         </ProSidebar>
                         <div className="centerVandH">
                             <Switch>
+                                <Route exact path="/" render={(props) => <Home {...props} />} />
+
                                 <Route exact path="/users" render={(props) => <UserIndex {...props} />} />
                                 <Route exact path="/users/create" render={(props) => <UserCreate {...props} />} />
                                 <Route exact path="/users/:id/edit" render={(props) => <UserEdit {...props} />} />
+
+                                <Route exact path="/customers" render={(props) => <CustomerIndex {...props} />} />
+                                <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />
+                                <Route exact path="/customers/:id/edit" render={(props) => <CustomerEdit {...props} />} />
 
                                 <Route exact path="/events" render={(props) => <Event {...props} />} />
 
@@ -152,12 +158,6 @@ class Sidebar extends React.Component {
                                 <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />
                                 <Route exact path="/announcements/:id/readingPage" render={(props) => <ReadPage reading={1} {...props} />} />
                                 <Route exact path="/announcements/:id/unreadingPage" render={(props) => <ReadPage reading={0} {...props} />} />
-
-                                {/* <Route exact path="/customers" render={(props) => <CustomerIndex {...props} />} />
-                                <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />
-                                <Route exact path="/customers/:id/edit" render={(props) => <CustomerEdit {...props} />} /> */}
-
-                                <Route exact path="/" render={(props) => <Home {...props} />} />
                             </Switch>
                         </div>
                     </div>

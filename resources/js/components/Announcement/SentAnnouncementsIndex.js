@@ -39,7 +39,7 @@ class SentAnnouncementsIndex extends React.Component {
 
     handleUnsendToAll = async (id) => {
         this.setState({ deleting: true })
-        const res = await axios.delete(`/announcements/${id}`);
+        const res = await axios.delete(`${process.env.MIX_API_URL}/announcements/${id}`);
         if (res.data.status === 200) {
             this.setState({ deleting: false })
         }
@@ -49,7 +49,7 @@ class SentAnnouncementsIndex extends React.Component {
         this.setState({ deleting: true })
         const { selectedSentAnnouncements } = this.state
         let selectedSentAnnouncementIds = selectedSentAnnouncements.map(Number);
-        const res = await axios.post(`/announcements/deleteMany`, {
+        const res = await axios.post(`${process.env.MIX_API_URL}/announcements/deleteMany`, {
             selectedSentAnnouncementIds: selectedSentAnnouncementIds
         });
         if (res.data.status === 200) {
@@ -60,7 +60,7 @@ class SentAnnouncementsIndex extends React.Component {
     render() {
         const { deleting, loading } = this.state;
         let self = this;
-        const url = 'http://localhost:8000/announcements/getSentAnnouncements';
+        const url = `${process.env.MIX_API_URL}/announcements/getSentAnnouncements`;
         const columns = ['id', 'name', 'description', 'assignees', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {

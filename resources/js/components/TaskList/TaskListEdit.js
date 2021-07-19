@@ -40,7 +40,7 @@ class TaskListEdit extends Component {
         await this.populateAvailableUsers()
         const { userNames } = this.state;
         const id = this.props.match.params.id;
-        let res = await axios.get(`/taskLists/${id}/edit`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/taskLists/${id}/edit`);
         let duedateParts = res.data.taskList.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
         this.setState({
@@ -58,7 +58,7 @@ class TaskListEdit extends Component {
     }
 
     populateAvalableTaskNamesAndDecriptions = async () => {
-        let res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/availableTasks/populateAvalableTasksForTaskList`);
         let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
         let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
             let availableTaskName = {
@@ -83,7 +83,7 @@ class TaskListEdit extends Component {
     }
 
     populateAvailableUsers = async () => {
-        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/users/populateUsersForTaskList`);
         let userIdsAndNames = res.data.userIdsAndNames;
         let userNames = userIdsAndNames.map((userIdAndName, i) => {
             let userName = {
@@ -115,7 +115,7 @@ class TaskListEdit extends Component {
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
-            const res = await axios.put(`/taskLists/${id}`, {
+            const res = await axios.put(`${process.env.MIX_API_URL}/taskLists/${id}`, {
                 name: name,
                 description: description,
                 notes: notes,

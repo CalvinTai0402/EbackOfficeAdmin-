@@ -39,7 +39,7 @@ class AnnouncementIndex extends React.Component {
 
     handleDelete = async (id) => {
         this.setState({ deleting: true })
-        const res = await axios.put(`/users/deleteAnnouncement/${id}`);
+        const res = await axios.put(`${process.env.MIX_API_URL}/users/deleteAnnouncement/${id}`);
         if (res.data.status === 200) {
             this.setState({ deleting: false })
         }
@@ -49,7 +49,7 @@ class AnnouncementIndex extends React.Component {
         this.setState({ deleting: true })
         const { selectedAnnouncements } = this.state
         let selectedAnnouncementIds = selectedAnnouncements.map(Number);
-        const res = await axios.put(`/users/deleteAnnouncements`, {
+        const res = await axios.put(`${process.env.MIX_API_URL}/users/deleteAnnouncements`, {
             selectedAnnouncementIds: selectedAnnouncementIds
         });
         if (res.data.status === 200) {
@@ -63,7 +63,7 @@ class AnnouncementIndex extends React.Component {
         let read = this.props.read;
         let title = "Unread announcements"
         if (read === 1) { title = "Read announcements" }
-        const url = 'http://localhost:8000/announcements?read=' + read;
+        const url = `${process.env.MIX_API_URL}/announcements?read=` + read;
         const columns = ['id', 'name', 'description', 'assignees', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {

@@ -32,7 +32,7 @@ class AnnouncementCreate extends Component {
     }
 
     populateAvailableUsers = async () => {
-        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/users/populateUsersForTaskList`);
         let userIdsAndNames = res.data.userIdsAndNames;
         let userNames = userIdsAndNames.map((userIdAndName, i) => {
             let userName = {
@@ -83,7 +83,7 @@ class AnnouncementCreate extends Component {
         data.append('fileName', fileName)
         data.append('imageFile', imageFile)
         this.setState({ loading: true });
-        const res = await axios.post('/announcements/saveImageFile', data).catch((e) => {
+        const res = await axios.post(`${process.env.MIX_API_URL}/announcements/saveImageFile`, data).catch((e) => {
             console.log(e);
         });
         if (res.data.status === 200) {
@@ -96,7 +96,7 @@ class AnnouncementCreate extends Component {
         const { name, description, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
-            const res = await axios.post('/announcements', {
+            const res = await axios.post(`${process.env.MIX_API_URL}/announcements`, {
                 name: name,
                 description: description,
                 asigneeIds: asigneeIds

@@ -25,7 +25,7 @@ class AvailableTaskEdit extends Component {
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
-            const res = await axios.put(`/availableTasks/${id}`, {
+            const res = await axios.put(`${process.env.MIX_API_URL}/availableTasks/${id}`, {
                 name: name,
                 description: description
             });
@@ -72,7 +72,7 @@ class AvailableTaskEdit extends Component {
 
     async componentDidMount() {
         const id = this.props.match.params.id;
-        const res = await axios.get(`/availableTasks/${id}/edit`);
+        const res = await axios.get(`${process.env.MIX_API_URL}/availableTasks/${id}/edit`);
         this.setState({ name: res.data.availableTask.name });
         this.setState({ description: res.data.availableTask.description });
     }

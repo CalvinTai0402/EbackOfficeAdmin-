@@ -40,7 +40,7 @@ class TaskListCreate extends Component {
     }
 
     populateAvalableTaskNamesAndDecriptions = async () => {
-        let res = await axios.get(`/availableTasks/populateAvalableTasksForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/availableTasks/populateAvalableTasksForTaskList`);
         let availableTaskNamesAndDescriptions = res.data.availableTaskNamesAndDescriptions;
         let availableTaskNames = availableTaskNamesAndDescriptions.map((availableTaskNameAndDescription, i) => {
             let availableTaskName = {
@@ -65,7 +65,7 @@ class TaskListCreate extends Component {
     }
 
     populateAvailableUsers = async () => {
-        let res = await axios.get(`/users/populateUsersForTaskList`);
+        let res = await axios.get(`${process.env.MIX_API_URL}/users/populateUsersForTaskList`);
         let userIdsAndNames = res.data.userIdsAndNames;
         let userNames = userIdsAndNames.map((userIdAndName, i) => {
             let userName = {
@@ -96,7 +96,7 @@ class TaskListCreate extends Component {
         const { name, description, notes, duedate, repeat, priority, status, asigneeIds } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
-            const res = await axios.post('/taskLists', {
+            const res = await axios.post(`${process.env.MIX_API_URL}/taskLists`, {
                 name: name,
                 description: description,
                 notes: notes,
@@ -220,7 +220,6 @@ class TaskListCreate extends Component {
                 break
             default:
         }
-
     }
 
     render() {

@@ -57,12 +57,13 @@ class CustomerIndex extends React.Component {
         const { deleting } = this.state;
         let self = this;
         const url = 'http://localhost:8000/customers';
-        const columns = ['id', 'name', 'email', 'created_at', 'updated_at', 'actions']
+        const columns = ['id', 'code', 'name', 'service', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 10,
+            perPage: 5,
+            perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
-            sortable: ['name', 'email', 'created_at'],
+            sortable: ['code', 'name', 'service'],
             columnsWidth: { name: 20, email: 20, id: 5 },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
