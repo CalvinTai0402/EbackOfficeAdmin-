@@ -29,15 +29,15 @@ class CustomerFactory extends Factory
             'business_address' => $this->faker->address(),
             'mailing_address' => $this->faker->address(),
             'year_end' => "January",
-            'ein' => '',
+            'ein' => '1289733',
             'company_group' => $this->faker->sentence(1),
             'contact_person' => $this->faker->name(),
             'other_contact_person' => $this->faker->name(),
             'email' => $this->faker->email(),
             'fax' => $this->faker->phoneNumber(),
             'telephone' => $this->faker->phoneNumber(),
-            'client_status' => '',
-            'remark' => '',
+            'client_status' => 'Done',
+            'remark' => 'None',
         ];
     }
 }

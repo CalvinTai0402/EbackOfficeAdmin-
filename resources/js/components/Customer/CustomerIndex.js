@@ -35,7 +35,7 @@ class CustomerIndex extends React.Component {
 
     handleDelete = async (id) => {
         this.setState({ deleting: true })
-        const res = await axios.delete(`/customers/${id}`);
+        const res = await axios.delete(`${process.env.MIX_API_URL}/customers/${id}`);
         if (res.data.status === 200) {
             this.setState({ deleting: false })
         }
@@ -45,7 +45,7 @@ class CustomerIndex extends React.Component {
         this.setState({ deleting: true })
         const { selectedCustomers } = this.state
         let selectedCustomerIds = selectedCustomers.map(Number);
-        const res = await axios.post(`/customers/deleteMany`, {
+        const res = await axios.post(`${process.env.MIX_API_URL}/customers/deleteMany`, {
             selectedCustomerIds: selectedCustomerIds
         });
         if (res.data.status === 200) {
@@ -56,7 +56,7 @@ class CustomerIndex extends React.Component {
     render() {
         const { deleting } = this.state;
         let self = this;
-        const url = 'http://localhost:8000/customers';
+        const url = `${process.env.MIX_API_URL}/customers`;
         const columns = ['id', 'code', 'name', 'service', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {

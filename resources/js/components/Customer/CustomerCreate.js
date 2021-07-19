@@ -41,22 +41,22 @@ class CustomerCreate extends Component {
             companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
-            const res = await axios.post('/customers', {
+            const res = await axios.post(`${process.env.MIX_API_URL}/customers`, {
                 code: code,
                 name: name,
                 service: service,
-                serviceOther: serviceOther,
-                businessAddress: businessAddress,
-                mailingAddress: mailingAddress,
-                yearEnd: yearEnd,
+                service_other: serviceOther,
+                business_address: businessAddress,
+                mailing_address: mailingAddress,
+                year_end: yearEnd,
                 ein: ein,
-                companyGroup: companyGroup,
-                contactPerson: contactPerson,
-                otherContactPerson: otherContactPerson,
+                company_group: companyGroup,
+                contact_person: contactPerson,
+                other_contact_person: otherContactPerson,
                 email: email,
                 fax: fax,
                 telephone: telephone,
-                clientStatus: clientStatus,
+                client_status: clientStatus,
                 remark: remark,
             });
             if (res.data.status === 422) {
@@ -73,7 +73,7 @@ class CustomerCreate extends Component {
                     this.setState({ errors })
                 });
             }
-            else if (res.data.status === 201) {
+            else if (res.data.status === 200) {
                 this.setState({ loading: false });
                 this.props.history.push("/customers");
             }
@@ -180,6 +180,7 @@ class CustomerCreate extends Component {
                                         onChange={this.handleChange}
                                         value={serviceOther}
                                         placeholder={"If other, please specify"}
+                                        disabled={service !== "Other"}
                                     />
                                 </Form.Field>
                             </Grid.Column>
@@ -189,7 +190,6 @@ class CustomerCreate extends Component {
                                 <Form.Field>
                                     <label>Business Address</label>
                                     <TextArea
-                                        fluid
                                         name="businessAddress"
                                         onChange={this.handleChange}
                                         value={businessAddress}
@@ -200,7 +200,6 @@ class CustomerCreate extends Component {
                                 <Form.Field>
                                     <label>Mailing Address</label>
                                     <TextArea
-                                        fluid
                                         name="mailingAddress"
                                         onChange={this.handleChange}
                                         value={mailingAddress}
@@ -318,7 +317,6 @@ class CustomerCreate extends Component {
                                 <Form.Field>
                                     <label>Remarks</label>
                                     <TextArea
-                                        fluid
                                         name="remark"
                                         onChange={this.handleChange}
                                         value={remark}
@@ -328,27 +326,20 @@ class CustomerCreate extends Component {
                         </Grid.Row>
                         <Grid.Row>
                             <Grid.Column width={16}>
-                                {errors.length > 0 && (
-                                    <Message error>
-                                        <h3>Error</h3>
-                                        {this.displayErrors(errors)}
-                                    </Message>
-                                )}
+                                <Button
+                                    disabled={loading}
+                                    className={loading ? "loading" : ""}
+                                    color="blue"
+                                    fluid
+                                    size="large"
+                                >
+                                    Create customer
+                                </Button>
                             </Grid.Column>
                         </Grid.Row>
-                        <Button
-                            disabled={loading}
-                            className={loading ? "loading" : ""}
-                            color="blue"
-                            fluid
-                            size="large"
-                        >
-                            Create customer
-                        </Button>
                     </Grid>
-
                 </Form>
-                <div>
+                <div style={{ marginTop: "20px" }}>
                     {errors.length > 0 && (
                         <Message error>
                             <h3>Error</h3>
