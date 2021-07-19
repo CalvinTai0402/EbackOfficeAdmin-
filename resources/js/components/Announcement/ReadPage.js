@@ -9,6 +9,8 @@ class ReadPage extends Component {
     }
 
     async componentDidMount() {
+        console.log(this.props.match.params.id);
+        console.log(typeof (this.props.match.params.id));
         const id = this.props.match.params.id;
         let res = await axios.get(`${process.env.MIX_API_URL}/announcements/${id}/edit`);
         this.setState({
@@ -19,24 +21,20 @@ class ReadPage extends Component {
     }
 
     handleCancel = async () => {
-        if (this.props.reading) {
-            this.props.history.push("/announcementsunread");
-        } else {
-            this.props.history.push("/announcementsread");
-        }
+        this.props.history.push("/announcements");
     }
 
     markReadOrUnread = async () => {
         const id = this.props.match.params.id;
-        if (this.props.reading) {
+        if (this.props.match.params.reading === "1") {
             const res = await axios.put(`${process.env.MIX_API_URL}/users/readAnnouncement/${id}`);
             if (res.data.status === 200) {
-                this.props.history.push("/announcementsunread");
+                this.props.history.push("/announcements");
             }
         } else {
             const res = await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
             if (res.data.status === 200) {
-                this.props.history.push("/announcementsread");
+                this.props.history.push("/announcements");
             }
         }
 
@@ -76,7 +74,7 @@ class ReadPage extends Component {
                         <div style={{ color: "white" }} >
                             <AiOutlineRead color="white" />
                             <span style={{ marginLeft: "8px" }} >
-                                {this.props.reading === 1 ? "Mark as read" : "Mark as unread"}
+                                {this.props.match.params.reading === "1" ? "Mark as read" : "Mark as unread"}
                             </span>
                         </div>
                     </button>

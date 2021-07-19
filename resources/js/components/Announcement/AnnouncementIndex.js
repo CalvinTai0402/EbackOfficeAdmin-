@@ -60,17 +60,14 @@ class AnnouncementIndex extends React.Component {
     render() {
         const { deleting, loading } = this.state;
         let self = this;
-        let read = this.props.read;
-        let title = "Unread announcements"
-        if (read === 1) { title = "Read announcements" }
-        const url = `${process.env.MIX_API_URL}/announcements?read=` + read;
-        const columns = ['id', 'name', 'description', 'assignees', 'actions']
+        const url = `${process.env.MIX_API_URL}/announcements`;
+        const columns = ['id', 'name', 'description', 'assignees', 'status', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
-            sortable: ['name', 'description', 'assignees'],
+            sortable: ['name', 'description', 'assignees', 'status'],
             columnsWidth: { name: 20, description: 20, id: 5 },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
@@ -107,14 +104,12 @@ class AnnouncementIndex extends React.Component {
                         </span>
                     </div>
                 </button>
-                <Header as="h1" icon color="black" textAlign="left">
-                    {title}
-                </Header>
                 {
                     deleting ? <Spinner /> : loading ? <Spinner text="loading" /> :
                         <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
                             {
                                 function (row, column) {
+                                    let read = row["status"]
                                     switch (column) {
                                         case 'id':
                                             return (
@@ -137,22 +132,18 @@ class AnnouncementIndex extends React.Component {
                                                             </div>
                                                         </Link>
                                                     </button>
-                                                    {read === 1 ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        {/* <AiOutlineRead color="white" />
-                                                        <div style={{ color: "white" }} >
-                                                            Unread
-                                                        </div> */}
-                                                        <Link to={'announcements/' + row.id + '/unreadingPage'}>
+                                                    {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
+                                                        <Link to={'announcements/' + row.id + '/readOrUnreadPage/0'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
                                                                 Unread
                                                             </div>
                                                         </Link>
                                                     </button> : <button className="btn btn-success" style={{ marginRight: "5px" }} >
-                                                        <Link to={'announcements/' + row.id + '/readingPage'}>
+                                                        <Link to={'announcements/' + row.id + '/readOrUnreadPage/1'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
-                                                                Read
+                                                                New
                                                             </div>
                                                         </Link>
                                                     </button>}
