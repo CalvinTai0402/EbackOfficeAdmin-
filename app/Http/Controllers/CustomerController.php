@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Credential;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -57,7 +58,19 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
-        $customer = Customer::create($request->all());
+        $input = $request;
+        $credentials = $input["credentials"];
+        unset($input["credentials"]);
+        $customer = Customer::create($input->all());
+        foreach ($credentials as $credential) {
+            $newCredential = new Credential;
+            $newCredential->entity_name = $credential[0];
+            $newCredential->login_url = $credential[1];
+            $newCredential->username = $credential[2];
+            $newCredential->password = $credential[3];
+            $newCredential->remarks = $credential[4];
+            $customer->credentials()->save($newCredential);
+        }
         return response()->json(['status' => 200, 'customer' => $customer]);
     }
 

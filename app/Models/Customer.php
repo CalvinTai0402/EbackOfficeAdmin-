@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Credential;
 
 class Customer extends Model
 {
@@ -70,5 +71,10 @@ class Customer extends Model
         }
 
         return $query;
+    }
+
+    public function credentials()
+    {
+        return $this->hasMany(Credential::class);
     }
 }

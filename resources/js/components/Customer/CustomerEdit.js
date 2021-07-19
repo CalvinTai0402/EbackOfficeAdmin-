@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
-
+import CredentialIndex from '../Credential/CredentialIndex';
 class CustomerEdit extends Component {
     state = {
         code: "",
@@ -28,6 +28,7 @@ class CustomerEdit extends Component {
         telephone: "",
         clientStatus: "",
         remark: "",
+        credentials: [],
         errors: [],
         loading: false
     }
@@ -35,7 +36,6 @@ class CustomerEdit extends Component {
     async componentDidMount() {
         const id = this.props.match.params.id;
         let res = await axios.get(`${process.env.MIX_API_URL}/customers/${id}/edit`);
-        console.log(res.data.customer.service_other)
         this.setState({
             code: res.data.customer.code,
             name: res.data.customer.name,
@@ -346,6 +346,15 @@ class CustomerEdit extends Component {
                                         value={remark}
                                     />
                                 </Form.Field>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <CredentialIndex
+                                    addRow={this.addRow}
+                                    deleteRow={this.deleteRow}
+                                    handleCredentialsChange={this.handleCredentialsChange}
+                                    credentials={credentials} />
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>

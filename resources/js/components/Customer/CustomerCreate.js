@@ -6,11 +6,10 @@ import {
     Button,
     Header,
     Message,
-    Icon
 } from "semantic-ui-react";
 import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
-
+import CredentialIndex from '../Credential/CredentialIndex';
 class CustomerCreate extends Component {
     state = {
         code: "",
@@ -29,6 +28,7 @@ class CustomerCreate extends Component {
         telephone: "",
         clientStatus: "",
         remark: "",
+        credentials: [["", "", "", "", ""]],
         errors: [],
         loading: false
     }
@@ -38,7 +38,7 @@ class CustomerCreate extends Component {
     handleStore = async event => {
         event.preventDefault();
         const { code, name, service, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
-            companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, } = this.state;
+            companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, credentials } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.post(`${process.env.MIX_API_URL}/customers`, {
@@ -58,6 +58,7 @@ class CustomerCreate extends Component {
                 telephone: telephone,
                 client_status: clientStatus,
                 remark: remark,
+                credentials: credentials
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -115,13 +116,51 @@ class CustomerCreate extends Component {
         }
     }
 
+    handleCredentialsChange = (e, inputType, index) => {
+        const { credentials } = this.state;
+        let credential = credentials[index];
+        switch (inputType) {
+            case "entityName":
+                credential[0] = e.target.value;
+                break
+            case "loginUrl":
+                credential[1] = e.target.value;
+                break
+            case "username":
+                credential[2] = e.target.value;
+                break
+            case "password":
+                credential[3] = e.target.value;
+                break
+            case "remarks":
+                credential[4] = e.target.value;
+                break
+            default:
+        }
+        this.setState({ credentials })
+    }
+
+    addRow = (event) => {
+        event.preventDefault();
+        let { credentials } = this.state;
+        credentials.push(["", "", "", "", ""])
+        this.setState({ credentials })
+    }
+
+    deleteRow = (event, rowId) => {
+        event.preventDefault();
+        let { credentials } = this.state;
+        console.log(credentials, rowId)
+        credentials.splice(rowId, 1)
+        this.setState({ credentials })
+    }
+
     render() {
-        const { code, name, service, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
-            companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, errors, loading } = this.state;
+        const { code, name, service, serviceOther, businessAddress, mailingAddress, yearEnd, ein, companyGroup, contactPerson,
+            otherContactPerson, email, fax, telephone, clientStatus, remark, credentials, errors, loading } = this.state;
         return (
             <div>
                 <Header as="h1" icon color="blue" textAlign="center">
-                    <Icon name="customer" color="blue" />
                     Create Customer
                 </Header>
                 <Form onSubmit={this.handleStore} size="large">
@@ -322,6 +361,15 @@ class CustomerCreate extends Component {
                                         value={remark}
                                     />
                                 </Form.Field>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <CredentialIndex
+                                    addRow={this.addRow}
+                                    deleteRow={this.deleteRow}
+                                    handleCredentialsChange={this.handleCredentialsChange}
+                                    credentials={credentials} />
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
