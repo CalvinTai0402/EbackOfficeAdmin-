@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Credential;
 use Illuminate\Http\Request;
 
@@ -81,5 +82,17 @@ class CredentialController extends Controller
     public function destroy(Credential $credential)
     {
         //
+    }
+
+    public function populateCredentialsForCustomers(Customer $customer)
+    {
+        $credentials = $customer->credentials;
+        $credentialsFormatted = [];
+        foreach ($credentials as $credential) {
+            $credential = array_values(json_decode($credential, true));
+            $credential = array_values(array_slice($credential, 1, 5, true));
+            array_push($credentialsFormatted, $credential);
+        }
+        return response()->json(['status' => 200, 'credentials' => $credentialsFormatted]);
     }
 }

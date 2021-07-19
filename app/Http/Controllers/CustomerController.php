@@ -113,7 +113,20 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 422, 'errors' => $validator->messages()]);
         }
-        $customer->update($request->all());
+        $input = $request;
+        $credentials = $input["credentials"];
+        unset($input["credentials"]);
+        $customer->credentials()->delete();
+        foreach ($credentials as $credential) {
+            $newCredential = new Credential;
+            $newCredential->entity_name = $credential[0];
+            $newCredential->login_url = $credential[1];
+            $newCredential->username = $credential[2];
+            $newCredential->password = $credential[3];
+            $newCredential->remarks = $credential[4];
+            $customer->credentials()->save($newCredential);
+        }
+        $customer->update($input->all());
         return response()->json(['status' => 200, 'customer' => $customer]);
     }
 
