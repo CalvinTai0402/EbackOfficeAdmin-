@@ -60,9 +60,6 @@ class AnnouncementIndex extends React.Component {
     render() {
         const { deleting, loading } = this.state;
         let self = this;
-        // let read = this.props.read;
-        // let read = 1
-        // const url = `${process.env.MIX_API_URL}/announcements?read=` + read;
         const url = `${process.env.MIX_API_URL}/announcements`;
         const columns = ['id', 'name', 'description', 'assignees', 'status', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
@@ -70,7 +67,7 @@ class AnnouncementIndex extends React.Component {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
-            sortable: ['name', 'description', 'assignees'],
+            sortable: ['name', 'description', 'assignees', 'status'],
             columnsWidth: { name: 20, description: 20, id: 5 },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
@@ -136,14 +133,14 @@ class AnnouncementIndex extends React.Component {
                                                         </Link>
                                                     </button>
                                                     {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/unreadingPage'}>
+                                                        <Link to={'announcements/' + row.id + '/readOrUnreadPage/0'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
                                                                 Unread
                                                             </div>
                                                         </Link>
                                                     </button> : <button className="btn btn-success" style={{ marginRight: "5px" }} >
-                                                        <Link to={'announcements/' + row.id + '/readingPage'}>
+                                                        <Link to={'announcements/' + row.id + '/readOrUnreadPage/1'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
                                                                 New
