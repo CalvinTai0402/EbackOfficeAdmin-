@@ -9,6 +9,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\TaskListController;
 use App\Http\Controllers\MyTaskController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\CredentialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/token', [UtilitiesController::class, 'token']);
     Route::get('/getLoggedInUsername', [UtilitiesController::class, 'getLoggedInUsername']);
     Route::prefix('api')->group(function () {
+
+        Route::get("credentials/{customer}/populateCredentialsForCustomers",  [CredentialController::class, 'populateCredentialsForCustomers'])->name('credentials.populateCredentialsForCustomers');
+
         Route::resource("customers", CustomerController::class);
         Route::post("customers/deleteMany",  [CustomerController::class, 'destroyMany'])->name('customers.destroyMany');
 

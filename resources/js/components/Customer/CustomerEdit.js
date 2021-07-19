@@ -34,6 +34,7 @@ class CustomerEdit extends Component {
     }
 
     async componentDidMount() {
+        await this.populateCredentialsForCustomers();
         const id = this.props.match.params.id;
         let res = await axios.get(`${process.env.MIX_API_URL}/customers/${id}/edit`);
         this.setState({
@@ -56,12 +57,20 @@ class CustomerEdit extends Component {
         });
     }
 
+    populateCredentialsForCustomers = async () => {
+        const id = this.props.match.params.id;
+        let res = await axios.get(`${process.env.MIX_API_URL}/credentials/${id}/populateCredentialsForCustomers`);
+        this.setState({
+            credentials: res.data.credentials,
+        });
+    }
+
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
     handleUpdate = async () => {
         // event.preventDefault();
         const { code, name, service, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
-            companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, } = this.state;
+            companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, credentials } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
@@ -82,6 +91,7 @@ class CustomerEdit extends Component {
                 telephone: telephone,
                 client_status: clientStatus,
                 remark: remark,
+                credentials: credentials
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -139,9 +149,48 @@ class CustomerEdit extends Component {
         }
     }
 
+    handleCredentialsChange = (e, inputType, index) => {
+        const { credentials } = this.state;
+        let credential = credentials[index];
+        switch (inputType) {
+            case "entityName":
+                credential[0] = e.target.value;
+                break
+            case "loginUrl":
+                credential[1] = e.target.value;
+                break
+            case "username":
+                credential[2] = e.target.value;
+                break
+            case "password":
+                credential[3] = e.target.value;
+                break
+            case "remarks":
+                credential[4] = e.target.value;
+                break
+            default:
+        }
+        this.setState({ credentials })
+    }
+
+    addRow = (event) => {
+        event.preventDefault();
+        let { credentials } = this.state;
+        credentials.push(["", "", "", "", ""])
+        this.setState({ credentials })
+    }
+
+    deleteRow = (event, rowId) => {
+        event.preventDefault();
+        let { credentials } = this.state;
+        console.log(credentials, rowId)
+        credentials.splice(rowId, 1)
+        this.setState({ credentials })
+    }
+
     render() {
         const { code, name, service, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
-            companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, errors, loading } = this.state;
+            companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, credentials, errors, loading } = this.state;
         return (
             <div>
                 <Header as="h1" icon color="blue" textAlign="center">
