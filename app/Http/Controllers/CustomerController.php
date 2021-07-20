@@ -106,7 +106,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validator = Validator::make($request->all(), [
-            "code" => "required|max:50|unique:customers,codes,$customer->id",
+            "code" => "required|max:50|unique:customers,code,$customer->id",
             "name" => "required|min:3|max:50",
             "service" => "required|max:50"
         ]);

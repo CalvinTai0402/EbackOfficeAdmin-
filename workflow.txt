@@ -11,12 +11,6 @@ TODO:
 
 2. Add task to events
 
-3.
-- relationship for company id and asignee (
-    tasklist: customerid,
-)
-2021_07_19_211427_create_customers_users_table ondeletecascade or ondeletenull
-
 5.
 - roles (basically get roles of loggedInUser then conditional rendering)
 - Task scheduler (after adding customers, need to fix)
