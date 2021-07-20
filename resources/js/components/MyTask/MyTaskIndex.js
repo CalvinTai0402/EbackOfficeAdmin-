@@ -21,6 +21,8 @@ class MyTaskIndex extends React.Component {
         myTasksIDs: [],
         isAllChecked: false,
         name: "",
+        customerCode: "",
+        customerId: 0,
         description: "",
         notes: "",
         duedate: "",
@@ -32,6 +34,8 @@ class MyTaskIndex extends React.Component {
         initialAssignees: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
+        availableCustomerCodes: [],
+        availableCustomerIds: [],
         userNames: [],
         userIds: [],
         rowId: "",
@@ -43,6 +47,7 @@ class MyTaskIndex extends React.Component {
     async componentDidMount() {
         await this.populateAvalableTaskNamesAndDecriptions()
         await this.populateAvailableUsers()
+        await this.populateAvalableCustomersForTaskList()
     }
 
     populateAvalableTaskNamesAndDecriptions = async () => {
@@ -95,6 +100,28 @@ class MyTaskIndex extends React.Component {
         });
     }
 
+    populateAvalableCustomersForTaskList = async () => {
+        let res = await axios.get(`${process.env.MIX_API_URL}/customers/populateAvailableCustomersForTaskList`);
+        let availableCustomerIdsAndCodes = res.data.availableCustomerIdsAndCodes;
+        let availableCustomerIds = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+            let availableCustomerId = {
+                value: availableCustomerIdAndCode.id,
+                name: availableCustomerIdAndCode.id,
+                index: i
+            };
+            return availableCustomerId;
+        });
+        let availableCustomerCodes = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+            let availableCustomerCodes = {
+                value: availableCustomerIdAndCode.code,
+                name: availableCustomerIdAndCode.code,
+                index: i
+            };
+            return availableCustomerCodes;
+        });
+        this.setState({ availableCustomerIds, availableCustomerCodes });
+    }
+
     check_all = React.createRef();
 
     handleCheckboxTableChange = (event) => {
@@ -121,16 +148,6 @@ class MyTaskIndex extends React.Component {
         let res = await axios.get(`${process.env.MIX_API_URL}/myTasks/${id}/edit`);
         let duedateParts = res.data.myTask.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
-        // let initialAssignees = []
-        // if (res.data.myTask.initialAssignees.length > 0) {
-        //     initialAssignees = res.data.myTask.initialAssignees.map((initialAssignee, i) => {
-        //         for (let i = 0; i < userNames.length; i++) {
-        //             if (userNames[i].name === initialAssignee) {
-        //                 return userNames[i].value;
-        //             }
-        //         }
-        //     });
-        // }
         this.setState({
             name: res.data.myTask.name,
             description: res.data.myTask.description,
@@ -143,7 +160,9 @@ class MyTaskIndex extends React.Component {
             rowId: id,
             asigneeIds: res.data.myTask.asigneeIds,
             initialAssignees: res.data.myTask.initialAssignees,
-            selected: true
+            selected: true,
+            customerCode: res.data.myTask.customer_code,
+            customerId: res.data.myTask.customer_id,
         });
     }
 
@@ -151,11 +170,12 @@ class MyTaskIndex extends React.Component {
 
     handleUpdate = async (event) => {
         event.preventDefault();
-        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/${rowId}`, {
                 name: name,
+                customer_code: customerCode,
                 description: description,
                 notes: notes,
                 duedate: duedate,
@@ -163,6 +183,7 @@ class MyTaskIndex extends React.Component {
                 priority: priority,
                 status: status,
                 asigneeIds: asigneeIds,
+                customer_id: customerId
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -191,12 +212,15 @@ class MyTaskIndex extends React.Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
-        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
+    isFormValid = ({ name, customerCode, description, duedate, repeat, priority, status, asigneeIds }) => {
+        if (name && customerCode, description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
                 errors.push("Name cannot be empty")
+            }
+            if (customerCode.length === 0) {
+                errors.push("Customer code cannot be empty")
             }
             if (description.length === 0) {
                 errors.push("Description cannot be empty")
@@ -229,7 +253,7 @@ class MyTaskIndex extends React.Component {
     }
 
     handleSelectChange = (value, obj, field) => {
-        const { availableTaskNames, availableTaskDescriptions } = this.state;
+        const { availableTaskNames, availableTaskDescriptions, availableCustomerIds, availableCustomerCodes } = this.state;
         switch (field) {
             case "availableTaskName":
                 let index;
@@ -244,6 +268,19 @@ class MyTaskIndex extends React.Component {
                     description: availableTaskDescriptions[index].name
                 })
                 break
+            case "availableCustomerCodes":
+                let selectedCode = obj.value;
+                for (let i = 0; i < availableCustomerCodes.length; i++) {
+                    if (selectedCode === availableCustomerCodes[i].value) {
+                        index = i
+                        break
+                    }
+                }
+                this.setState({
+                    customerCode: obj.value,
+                    customerId: availableCustomerIds[index].value
+                })
+                break;
             case "repeat":
                 this.setState({ repeat: obj.value })
                 break;
@@ -281,16 +318,16 @@ class MyTaskIndex extends React.Component {
     }
 
     render() {
-        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, userNames, errors, loading, selected } = this.state;
+        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
-        const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'actions']
+        const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
-            sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames'],
+            sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
             columnsWidth: { name: 20, description: 20, id: 5 },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
@@ -311,7 +348,7 @@ class MyTaskIndex extends React.Component {
             <div>
                 {loading ? <Spinner text="Updating..." /> :
                     <div>
-                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
+                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl search={false}>
                             {
                                 function (row, column) {
                                     switch (column) {
@@ -357,6 +394,17 @@ class MyTaskIndex extends React.Component {
                                                         options={availableTaskNames}
                                                         placeholder="Choose a task"
                                                         value={name}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "customer")}>
+                                                    <label>Customer Code</label>
+                                                    <SelectSearch
+                                                        search
+                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
+                                                        filterOptions={fuzzySearch}
+                                                        options={availableCustomerCodes}
+                                                        placeholder="Choose a customer code"
+                                                        value={customerCode}
                                                     />
                                                 </Form.Field>
                                                 <Form.Field>

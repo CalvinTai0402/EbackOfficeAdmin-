@@ -94,7 +94,7 @@ class User extends Authenticatable
 
     public function myTasks()
     {
-        return $this->belongsToMany(TaskList::class, 'tasklists_users', 'user_id', 'tasklist_id');
+        return $this->belongsToMany(TaskList::class, 'tasklists_users', 'user_id', 'tasklist_id')->wherePivot('user_id', Auth::id());
     }
 
     public function announcements()

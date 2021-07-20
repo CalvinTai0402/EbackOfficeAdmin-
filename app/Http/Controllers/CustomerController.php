@@ -51,7 +51,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "code" => "required|max:50",
+            "code" => "required|max:50|unique:customers,code",
             "name" => "required|min:3|max:50",
             "service" => "required|max:50"
         ]);
@@ -106,7 +106,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validator = Validator::make($request->all(), [
-            "code" => "required|max:50",
+            "code" => "required|max:50|unique:customers,codes,$customer->id",
             "name" => "required|min:3|max:50",
             "service" => "required|max:50"
         ]);
@@ -148,5 +148,11 @@ class CustomerController extends Controller
         $selectedCustomerIds = $request->selectedCustomerIds;
         $customersToDelete = Customer::whereIn('id', $selectedCustomerIds)->delete();
         return response()->json(['status' => 200, 'customers' => $customersToDelete]);
+    }
+
+    public function populateAvailableCustomersForTaskList()
+    {
+        $availableCustomerIdsAndCodes = Customer::select("id", "code")->get();
+        return response()->json(['status' => 200, 'availableCustomerIdsAndCodes' => $availableCustomerIdsAndCodes]);
     }
 }

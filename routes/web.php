@@ -33,8 +33,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get("credentials/{customer}/populateCredentialsForCustomers",  [CredentialController::class, 'populateCredentialsForCustomers'])->name('credentials.populateCredentialsForCustomers');
 
-        Route::resource("customers", CustomerController::class);
+        Route::get("customers/populateAvailableCustomersForTaskList",  [CustomerController::class, 'populateAvailableCustomersForTaskList'])->name('customers.populateAvailableCustomersForTaskList');
         Route::post("customers/deleteMany",  [CustomerController::class, 'destroyMany'])->name('customers.destroyMany');
+        Route::resource("customers", CustomerController::class);
 
         Route::put("users/readAnnouncement/{announcementId}",  [UserController::class, 'readAnnouncement'])->name('users.readAnnouncement');
         Route::put("users/unreadAnnouncement/{announcementId}",  [UserController::class, 'unreadAnnouncement'])->name('users.unreadAnnouncement');

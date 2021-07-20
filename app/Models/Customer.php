@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Credential;
+use App\Models\TaskList;
 
 class Customer extends Model
 {
@@ -76,5 +77,10 @@ class Customer extends Model
     public function credentials()
     {
         return $this->hasMany(Credential::class);
+    }
+
+    public function taskLists()
+    {
+        return $this->hasMany(TaskList::class);
     }
 }

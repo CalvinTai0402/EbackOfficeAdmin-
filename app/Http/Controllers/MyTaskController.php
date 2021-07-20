@@ -23,13 +23,7 @@ class MyTaskController extends Controller
         $orderBy = $request->input("orderBy");
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
-        $myTasks = Auth::user()->myTasks()->name($search)
-            ->description($search)
-            ->notes($search)
-            ->repeat($search)
-            ->priority($search)
-            ->status($search)
-            ->assigneenames($search)
+        $myTasks = Auth::user()->myTasks()
             ->order($orderBy, $order)
             ->skipPage($toSkip)
             ->take($limit)

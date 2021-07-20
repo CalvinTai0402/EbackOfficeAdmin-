@@ -18,6 +18,8 @@ import "react-datepicker/dist/react-datepicker.css";
 class TaskListEdit extends Component {
     state = {
         name: "",
+        customerCode: "",
+        customerId: 0,
         description: "",
         notes: "",
         duedate: "",
@@ -29,6 +31,8 @@ class TaskListEdit extends Component {
         initialAssignees: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
+        availableCustomerCodes: [],
+        availableCustomerIds: [],
         userNames: [],
         userIds: [],
         errors: [],
@@ -38,6 +42,7 @@ class TaskListEdit extends Component {
     async componentDidMount() {
         await this.populateAvalableTaskNamesAndDecriptions()
         await this.populateAvailableUsers()
+        await this.populateAvalableCustomersForTaskList()
         const { userNames } = this.state;
         const id = this.props.match.params.id;
         let res = await axios.get(`${process.env.MIX_API_URL}/taskLists/${id}/edit`);
@@ -54,6 +59,8 @@ class TaskListEdit extends Component {
             status: res.data.taskList.status,
             asigneeIds: res.data.taskList.asigneeIds,
             initialAssignees: res.data.taskList.initialAssignees,
+            customerCode: res.data.taskList.customer_code,
+            customerId: res.data.taskList.customer_id,
         });
     }
 
@@ -107,16 +114,39 @@ class TaskListEdit extends Component {
         });
     }
 
+    populateAvalableCustomersForTaskList = async () => {
+        let res = await axios.get(`${process.env.MIX_API_URL}/customers/populateAvailableCustomersForTaskList`);
+        let availableCustomerIdsAndCodes = res.data.availableCustomerIdsAndCodes;
+        let availableCustomerIds = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+            let availableCustomerId = {
+                value: availableCustomerIdAndCode.id,
+                name: availableCustomerIdAndCode.id,
+                index: i
+            };
+            return availableCustomerId;
+        });
+        let availableCustomerCodes = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+            let availableCustomerCodes = {
+                value: availableCustomerIdAndCode.code,
+                name: availableCustomerIdAndCode.code,
+                index: i
+            };
+            return availableCustomerCodes;
+        });
+        this.setState({ availableCustomerIds, availableCustomerCodes });
+    }
+
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
     handleUpdate = async (event) => {
         event.preventDefault();
-        const { name, description, notes, duedate, repeat, priority, status, asigneeIds } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, asigneeIds, customerId, customerCode } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const id = this.props.match.params.id;
             const res = await axios.put(`${process.env.MIX_API_URL}/taskLists/${id}`, {
                 name: name,
+                customer_code: customerCode,
                 description: description,
                 notes: notes,
                 duedate: duedate,
@@ -124,6 +154,7 @@ class TaskListEdit extends Component {
                 priority: priority,
                 status: status,
                 asigneeIds: asigneeIds,
+                customer_id: customerId
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -152,12 +183,15 @@ class TaskListEdit extends Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
-        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
+    isFormValid = ({ name, customerCode, description, duedate, repeat, priority, status, asigneeIds }) => {
+        if (name && customerCode && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
                 errors.push("Name cannot be empty")
+            }
+            if (customerCode.length === 0) {
+                errors.push("Customer code cannot be empty")
             }
             if (description.length === 0) {
                 errors.push("Description cannot be empty")
@@ -190,7 +224,7 @@ class TaskListEdit extends Component {
     }
 
     handleSelectChange = (value, obj, field) => {
-        const { availableTaskNames, availableTaskDescriptions } = this.state;
+        const { availableTaskNames, availableTaskDescriptions, availableCustomerIds, availableCustomerCodes } = this.state;
         switch (field) {
             case "availableTaskName":
                 let index;
@@ -205,6 +239,19 @@ class TaskListEdit extends Component {
                     description: availableTaskDescriptions[index].name
                 })
                 break
+            case "availableCustomerCodes":
+                let selectedCode = obj.value;
+                for (let i = 0; i < availableCustomerCodes.length; i++) {
+                    if (selectedCode === availableCustomerCodes[i].value) {
+                        index = i
+                        break
+                    }
+                }
+                this.setState({
+                    customerCode: obj.value,
+                    customerId: availableCustomerIds[index].value
+                })
+                break;
             case "repeat":
                 this.setState({ repeat: obj.value })
                 break;
@@ -242,7 +289,7 @@ class TaskListEdit extends Component {
     }
 
     render() {
-        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, userNames, errors, loading } = this.state;
+        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -263,6 +310,17 @@ class TaskListEdit extends Component {
                                         options={availableTaskNames}
                                         placeholder="Choose a task"
                                         value={name}
+                                    />
+                                </Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "customer")}>
+                                    <label>Customer Code</label>
+                                    <SelectSearch
+                                        search
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
+                                        filterOptions={fuzzySearch}
+                                        options={availableCustomerCodes}
+                                        placeholder="Choose a customer code"
+                                        value={customerCode}
                                     />
                                 </Form.Field>
                                 <Form.Field>

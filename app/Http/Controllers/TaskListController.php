@@ -6,6 +6,8 @@ use App\Models\TaskList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Customer;
+
 class TaskListController extends Controller
 {
     /**
@@ -22,6 +24,7 @@ class TaskListController extends Controller
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
         $taskLists = TaskList::name($search)
+            ->customer($search)
             ->description($search)
             ->notes($search)
             ->repeat($search)
@@ -55,6 +58,7 @@ class TaskListController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "name" => "required|max:200",
+            "customer_code" => "required|max:200",
             "description" => "required|max:200",
             "duedate" => "required|max:200",
             "repeat" => "required|max:200",
@@ -66,12 +70,13 @@ class TaskListController extends Controller
         }
         $assigneeNames = [];
         $assigneeNameArrays = User::select('name')->whereIn('id', $request["asigneeIds"])->get()->toArray();
-        foreach ($assigneeNameArrays as $assigneeNameArray){
+        foreach ($assigneeNameArrays as $assigneeNameArray) {
             array_push($assigneeNames, $assigneeNameArray["name"]);
         }
         $request["assigneeNames"] = implode(", ", $assigneeNames);
         $taskList = TaskList::create($request->all());
         $taskList->users()->attach($request["asigneeIds"]);
+        $taskList->customer()->associate(Customer::find($request["customer_id"]))->save();
         return response()->json(['status' => 200, 'taskList' => $taskList]);
     }
 
@@ -96,7 +101,7 @@ class TaskListController extends Controller
     {
         $asigneeIds = [];
         $initialAssignees = [];
-        foreach ($taskList->users()->select("user_id", "name")->get()->toArray() as $userInfo){
+        foreach ($taskList->users()->select("user_id", "name")->get()->toArray() as $userInfo) {
             array_push($asigneeIds, $userInfo["user_id"]);
             array_push($initialAssignees, $userInfo["name"]);
         }
@@ -116,6 +121,7 @@ class TaskListController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "name" => "required|max:200",
+            "customer_code" => "required|max:200",
             "description" => "required|max:200",
             "duedate" => "required|max:200",
             "repeat" => "required|max:200",
@@ -127,11 +133,12 @@ class TaskListController extends Controller
         }
         $assigneeNames = [];
         $assigneeNameArrays = User::select('name')->whereIn('id', $request["asigneeIds"])->get()->toArray();
-        foreach ($assigneeNameArrays as $assigneeNameArray){
+        foreach ($assigneeNameArrays as $assigneeNameArray) {
             array_push($assigneeNames, $assigneeNameArray["name"]);
         }
         $request["assigneeNames"] = implode(", ", $assigneeNames);
         $taskList->users()->sync($request["asigneeIds"]);
+        $taskList->customer()->associate(Customer::find($request["customer_id"]))->save();
         $taskList->update($request->all());
         return response()->json(['status' => 200, 'taskList' => $taskList]);
     }

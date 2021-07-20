@@ -29,7 +29,9 @@ class TaskListFactory extends Factory
             'repeat' => "Daily",
             'priority' => "High",
             'status' => "In progress",
-            'assigneeNames' => ""
+            'assigneeNames' => "Jian Tai",
+            'customer_code' => "fvbsdff890we03-fibfv",
+            'customer_id' => \App\Models\Customer::factory(),
         ];
     }
 }
