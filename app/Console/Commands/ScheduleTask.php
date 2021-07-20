@@ -42,32 +42,34 @@ class ScheduleTask extends Command
      */
     public function handle()
     {
-        foreach (TaskList::all()->toArray() as $taskList) {
+        foreach (TaskList::all() as $taskList) {
             $startDate = Carbon::now()->subDays(15);
             $endDate = Carbon::now()->addDays(30);
-            $currentTaskListDuedate = Carbon::createFromFormat('m-d-Y',  $taskList["duedate"]);
+            $taskListArray = $taskList->toArray();
+            $currentTaskListDuedate = Carbon::createFromFormat('m-d-Y',  $taskListArray["duedate"]);
             if ($currentTaskListDuedate->between($startDate, $endDate)) {
-                $this->handleHelper($taskList, $taskList["repeat"]);
+                $this->handleHelper($taskListArray, $taskListArray["repeat"], $taskList->customer["name"]);
             }
         }
     }
 
-    public function handleHelper($currentTaskList, $frequency)
+    public function handleHelper($currentTaskList, $frequency, $currentTaskListCompanyName)
     {
-        $allTaskLists = TaskList::all()->toArray();
+        $allTaskLists = TaskList::all();
         // $matchedTasks = []; // tasks with the same taskname and companycode
         // foreach ($allTasks as $task) {
         //     if ($task['taskname'] == $currentTask['taskname'] && $task['companycode'] == $currentTask['companycode']) {
         //         array_push($matchedTasks, $task);
         //     }
         // }
-        $matchedTaskLists = []; // tasks with the same taskname
+        $matchedTaskLists = []; // tasks with the same taskname and customer name
         foreach ($allTaskLists as $taskList) {
-            if ($taskList['name'] == $currentTaskList['name']) {
-                array_push($matchedTaskLists, $taskList);
+            $taskListArray = $taskList->toArray();
+            if ($taskListArray['name'] == $currentTaskList['name'] && $currentTaskListCompanyName == $taskList->customer["name"]) {
+                array_push($matchedTaskLists, $taskListArray);
             }
         }
-        // Now we have all the tasks that match the current task's taskname and companycode. Next, we check if the "next" (impending) task exists. If not, insert it. Note that "next" is defined by the "repeat" column.
+        // Now we have all the tasks that match the current task's taskname and customer name. Next, we check if the "next" (impending) task exists. If not, insert it. Note that "next" is defined by the "repeat" column.
         $nextTaskList = $currentTaskList;
         unset($nextTaskList["id"]);
         $nextTaskList["created_at"] = Carbon::now();
