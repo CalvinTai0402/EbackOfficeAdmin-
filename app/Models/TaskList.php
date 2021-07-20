@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \App\Models\User;
+use \App\Models\Customer;
 
 class TaskList extends Model
 {
@@ -18,12 +19,23 @@ class TaskList extends Model
         'priority',
         'status',
         'assigneeNames',
+        'customer_code',
+        'customer_id'
     ];
 
     public function scopeName($query, $filter)
     {
         if (!is_null($filter)) {
             return $query->where('name', 'LIKE', '%' . $filter . '%');
+        }
+
+        return $query;
+    }
+
+    public function scopeCustomer($query, $filter)
+    {
+        if (!is_null($filter)) {
+            return $query->orWhere('customer_code', 'LIKE', '%' . $filter . '%');
         }
 
         return $query;
@@ -103,5 +115,10 @@ class TaskList extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'tasklists_users', 'tasklist_id', 'user_id');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 }

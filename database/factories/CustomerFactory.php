@@ -22,7 +22,7 @@ class CustomerFactory extends Factory
     public function definition()
     {
         return [
-            'code' => $this->faker->uuid(),
+            'code' => $this->faker->unique()->uuid(),
             'name' => $this->faker->sentence(1),
             'service' => "Tax",
             'service_other' => '',

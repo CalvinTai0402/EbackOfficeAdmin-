@@ -18,6 +18,8 @@ import "react-datepicker/dist/react-datepicker.css";
 class TaskListCreate extends Component {
     state = {
         name: "",
+        customerCode: "",
+        customerId: 0,
         description: "",
         notes: "",
         duedate: "",
@@ -28,6 +30,8 @@ class TaskListCreate extends Component {
         asigneeIds: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
+        availableCustomerCodes: [],
+        availableCustomerIds: [],
         userNames: [],
         userIds: [],
         errors: [],
@@ -37,6 +41,7 @@ class TaskListCreate extends Component {
     async componentDidMount() {
         await this.populateAvalableTaskNamesAndDecriptions()
         await this.populateAvailableUsers()
+        await this.populateAvalableCustomersForTaskList()
     }
 
     populateAvalableTaskNamesAndDecriptions = async () => {
@@ -89,22 +94,46 @@ class TaskListCreate extends Component {
         });
     }
 
+    populateAvalableCustomersForTaskList = async () => {
+        let res = await axios.get(`${process.env.MIX_API_URL}/customers/populateAvailableCustomersForTaskList`);
+        let availableCustomerIdsAndCodes = res.data.availableCustomerIdsAndCodes;
+        let availableCustomerIds = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+            let availableCustomerId = {
+                value: availableCustomerIdAndCode.id,
+                name: availableCustomerIdAndCode.id,
+                index: i
+            };
+            return availableCustomerId;
+        });
+        let availableCustomerCodes = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+            let availableCustomerCodes = {
+                value: availableCustomerIdAndCode.code,
+                name: availableCustomerIdAndCode.code,
+                index: i
+            };
+            return availableCustomerCodes;
+        });
+        this.setState({ availableCustomerIds, availableCustomerCodes });
+    }
+
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
     handleStore = async event => {
         event.preventDefault();
-        const { name, description, notes, duedate, repeat, priority, status, asigneeIds } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, asigneeIds, customerId, customerCode } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.post(`${process.env.MIX_API_URL}/taskLists`, {
                 name: name,
+                customer_code: customerCode,
                 description: description,
                 notes: notes,
                 duedate: duedate,
                 repeat: repeat,
                 priority: priority,
                 status: status,
-                asigneeIds: asigneeIds
+                asigneeIds: asigneeIds,
+                customer_id: customerId
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -133,12 +162,15 @@ class TaskListCreate extends Component {
         return errors.some(error => error.toLowerCase().includes(inputName)) ? "error" : "";
     };
 
-    isFormValid = ({ name, description, duedate, repeat, priority, status, asigneeIds }) => {
-        if (name && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
+    isFormValid = ({ name, customerCode, description, duedate, repeat, priority, status, asigneeIds }) => {
+        if (name && customerCode && description && duedate && repeat && priority && status && asigneeIds.length != 0) { return true }
         this.setState({ errors: [] }, () => {
             const { errors } = this.state;
             if (name.length === 0) {
                 errors.push("Name cannot be empty")
+            }
+            if (customerCode.length === 0) {
+                errors.push("Customer code cannot be empty")
             }
             if (description.length === 0) {
                 errors.push("Description cannot be empty")
@@ -171,21 +203,35 @@ class TaskListCreate extends Component {
     }
 
     handleSelectChange = (value, obj, field) => {
-        const { availableTaskNames, availableTaskDescriptions } = this.state;
+        const { availableTaskNames, availableTaskDescriptions, availableCustomerIds, availableCustomerCodes } = this.state;
+        let index;
         switch (field) {
             case "availableTaskName":
-                let index;
                 let availableTaskName = obj.value;
                 for (let i = 0; i < availableTaskNames.length; i++) {
                     if (availableTaskName === availableTaskNames[i].value) {
                         index = i
+                        break
                     }
                 }
                 this.setState({
                     name: obj.value,
                     description: availableTaskDescriptions[index].name
                 })
-                break
+                break;
+            case "availableCustomerCodes":
+                let selectedCode = obj.value;
+                for (let i = 0; i < availableCustomerCodes.length; i++) {
+                    if (selectedCode === availableCustomerCodes[i].value) {
+                        index = i
+                        break
+                    }
+                }
+                this.setState({
+                    customerCode: obj.value,
+                    customerId: availableCustomerIds[index].value
+                })
+                break;
             case "repeat":
                 this.setState({ repeat: obj.value })
                 break;
@@ -223,7 +269,7 @@ class TaskListCreate extends Component {
     }
 
     render() {
-        const { description, notes, selectedDate, availableTaskNames, userNames, errors, loading } = this.state;
+        const { description, notes, selectedDate, availableTaskNames, availableCustomerCodes, userNames, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -242,6 +288,16 @@ class TaskListCreate extends Component {
                                         filterOptions={fuzzySearch}
                                         options={availableTaskNames}
                                         placeholder="Choose a task name"
+                                    />
+                                </Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "customer")}>
+                                    <label>Customer Code</label>
+                                    <SelectSearch
+                                        search
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
+                                        filterOptions={fuzzySearch}
+                                        options={availableCustomerCodes}
+                                        placeholder="Choose a customer code"
                                     />
                                 </Form.Field>
                                 <Form.Field>
