@@ -6,7 +6,7 @@
 
 
 TODO:
-1. add delete popups, fix modal taking up extra space
+1.fix modal taking up extra space
 
 2. Add task to events
 

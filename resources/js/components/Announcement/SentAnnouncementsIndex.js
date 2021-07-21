@@ -7,6 +7,7 @@ import {
     Header,
     Icon
 } from "semantic-ui-react";
+import swal from 'sweetalert'
 
 import '../../../css/SentAnnouncements.css';
 
@@ -41,23 +42,43 @@ class SentAnnouncementsIndex extends React.Component {
     }
 
     handleUnsendToAll = async (id) => {
-        this.setState({ deleting: true })
-        const res = await axios.delete(`${process.env.MIX_API_URL}/announcements/${id}`);
-        if (res.data.status === 200) {
-            this.setState({ deleting: false })
-        }
+        swal({
+            title: "Are you sure?",
+            text: "Once unsent, no one can see the announcement anymore.",
+            icon: "warning",
+            buttons: ["Cancel", "Unsend"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                this.setState({ deleting: true })
+                const res = await axios.delete(`${process.env.MIX_API_URL}/announcements/${id}`);
+                if (res.data.status === 200) {
+                    this.setState({ deleting: false })
+                }
+            }
+        });
     };
 
     handleManyUnsendToAll = async () => {
-        this.setState({ deleting: true })
-        const { selectedSentAnnouncements } = this.state
-        let selectedSentAnnouncementIds = selectedSentAnnouncements.map(Number);
-        const res = await axios.post(`${process.env.MIX_API_URL}/announcements/deleteMany`, {
-            selectedSentAnnouncementIds: selectedSentAnnouncementIds
+        swal({
+            title: "Are you sure?",
+            text: "Once unsent, no one can see the announcement anymore.",
+            icon: "warning",
+            buttons: ["Cancel", "Unsend"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                this.setState({ deleting: true })
+                const { selectedSentAnnouncements } = this.state
+                let selectedSentAnnouncementIds = selectedSentAnnouncements.map(Number);
+                const res = await axios.post(`${process.env.MIX_API_URL}/announcements/deleteMany`, {
+                    selectedSentAnnouncementIds: selectedSentAnnouncementIds
+                });
+                if (res.data.status === 200) {
+                    this.setState({ deleting: false })
+                }
+            }
         });
-        if (res.data.status === 200) {
-            this.setState({ deleting: false })
-        }
     }
 
     render() {

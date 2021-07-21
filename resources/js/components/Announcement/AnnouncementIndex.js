@@ -7,6 +7,7 @@ import {
     Header,
     Icon
 } from "semantic-ui-react";
+import swal from 'sweetalert'
 
 import '../../../css/Announcements.css';
 
@@ -41,23 +42,43 @@ class AnnouncementIndex extends React.Component {
     }
 
     handleDelete = async (id) => {
-        this.setState({ deleting: true })
-        const res = await axios.put(`${process.env.MIX_API_URL}/users/deleteAnnouncement/${id}`);
-        if (res.data.status === 200) {
-            this.setState({ deleting: false })
-        }
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you won't be able to recover the data.",
+            icon: "warning",
+            buttons: ["Cancel", "Delete"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                this.setState({ deleting: true })
+                const res = await axios.put(`${process.env.MIX_API_URL}/users/deleteAnnouncement/${id}`);
+                if (res.data.status === 200) {
+                    this.setState({ deleting: false })
+                }
+            }
+        });
     };
 
     handleDeleteMany = async () => {
-        this.setState({ deleting: true })
-        const { selectedAnnouncements } = this.state
-        let selectedAnnouncementIds = selectedAnnouncements.map(Number);
-        const res = await axios.put(`${process.env.MIX_API_URL}/users/deleteAnnouncements`, {
-            selectedAnnouncementIds: selectedAnnouncementIds
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you won't be able to recover the data.",
+            icon: "warning",
+            buttons: ["Cancel", "Delete"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                this.setState({ deleting: true })
+                const { selectedAnnouncements } = this.state
+                let selectedAnnouncementIds = selectedAnnouncements.map(Number);
+                const res = await axios.put(`${process.env.MIX_API_URL}/users/deleteAnnouncements`, {
+                    selectedAnnouncementIds: selectedAnnouncementIds
+                });
+                if (res.data.status === 200) {
+                    this.setState({ deleting: false })
+                }
+            }
         });
-        if (res.data.status === 200) {
-            this.setState({ deleting: false })
-        }
     }
 
     render() {

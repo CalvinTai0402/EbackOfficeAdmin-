@@ -7,6 +7,7 @@ import {
     Header,
     Icon
 } from "semantic-ui-react";
+import swal from 'sweetalert'
 
 import '../../../css/Customer.css';
 class CustomerIndex extends React.Component {
@@ -39,23 +40,43 @@ class CustomerIndex extends React.Component {
     }
 
     handleDelete = async (id) => {
-        this.setState({ deleting: true })
-        const res = await axios.delete(`${process.env.MIX_API_URL}/customers/${id}`);
-        if (res.data.status === 200) {
-            this.setState({ deleting: false })
-        }
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you won't be able to recover the data.",
+            icon: "warning",
+            buttons: ["Cancel", "Delete"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                this.setState({ deleting: true })
+                const res = await axios.delete(`${process.env.MIX_API_URL}/customers/${id}`);
+                if (res.data.status === 200) {
+                    this.setState({ deleting: false })
+                }
+            }
+        });
     };
 
     handleDeleteMany = async () => {
-        this.setState({ deleting: true })
-        const { selectedCustomers } = this.state
-        let selectedCustomerIds = selectedCustomers.map(Number);
-        const res = await axios.post(`${process.env.MIX_API_URL}/customers/deleteMany`, {
-            selectedCustomerIds: selectedCustomerIds
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you won't be able to recover the data.",
+            icon: "warning",
+            buttons: ["Cancel", "Delete"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                this.setState({ deleting: true })
+                const { selectedCustomers } = this.state
+                let selectedCustomerIds = selectedCustomers.map(Number);
+                const res = await axios.post(`${process.env.MIX_API_URL}/customers/deleteMany`, {
+                    selectedCustomerIds: selectedCustomerIds
+                });
+                if (res.data.status === 200) {
+                    this.setState({ deleting: false })
+                }
+            }
         });
-        if (res.data.status === 200) {
-            this.setState({ deleting: false })
-        }
     }
 
     render() {
