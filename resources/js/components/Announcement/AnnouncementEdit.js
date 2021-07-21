@@ -27,6 +27,9 @@ class AnnouncementEdit extends Component {
         userIds: [],
         thisAnnouncementDetails: [],
         editorState: EditorState.createEmpty(),
+        source: "",
+        canUpdate: false,
+        reading: 0,
         errors: [],
         loading: false
     }
@@ -47,9 +50,13 @@ class AnnouncementEdit extends Component {
             description: res.data.announcement.description,
             asigneeIds: res.data.announcement.asigneeIds,
             initialAssignees: res.data.announcement.initialAssignees,
-            editorState: editorState
+            editorState: editorState,
+            source: this.props.match.params.source,
+            reading: this.props.match.params.reading,
+            id: this.props.match.params.id
         });
-
+        await this.setCanUpdate();
+        await this.markReadOrUnread()
     }
 
     populateAvailableUsers = async () => {
@@ -80,9 +87,18 @@ class AnnouncementEdit extends Component {
     populateThisAnnouncementDetails = async () => {
         const id = this.props.match.params.id;
         let res = await axios.get(`${process.env.MIX_API_URL}/announcements/${id}/populateThisAnnouncementDetails`);
-        this.setState({
-            thisAnnouncementDetails: res.data.thisAnnouncementDetails
-        });
+        let thisAnnouncementDetails = res.data.thisAnnouncementDetails;
+        this.setState({ thisAnnouncementDetails });
+    }
+
+    setCanUpdate = async () => {
+        const { thisAnnouncementDetails, source } = this.state;
+        if (source === "sentAnnouncementIndex") {
+            for (let thisAnnouncementDetail of thisAnnouncementDetails) {
+                if (thisAnnouncementDetail[1] === 1) { return; }
+            }
+            this.setState({ canUpdate: true });
+        }
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
@@ -152,6 +168,15 @@ class AnnouncementEdit extends Component {
         }
     };
 
+    markReadOrUnread = async () => {
+        const { reading, id } = this.state;
+        if (reading === "1") {
+            await axios.put(`${process.env.MIX_API_URL}/users/readAnnouncement/${id}`);
+        } else {
+            await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
+        }
+    }
+
     displayErrors = errors => errors.map((error, i) => <p key={i}>{error}</p>);
 
     handleInputError = (errors, inputName) => {
@@ -199,7 +224,7 @@ class AnnouncementEdit extends Component {
     }
 
     render() {
-        const { name, userNames, initialAssignees, thisAnnouncementDetails, editorState, errors, loading } = this.state;
+        const { name, userNames, initialAssignees, thisAnnouncementDetails, editorState, source, canUpdate, errors, loading } = this.state;
         return (
             <div>
                 <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -250,15 +275,16 @@ class AnnouncementEdit extends Component {
                                         value={initialAssignees}
                                     />
                                 </Form.Field>
-                                <Button
-                                    disabled={loading}
-                                    className={loading ? "loading" : ""}
-                                    color="blue"
-                                    fluid
-                                    size="large"
-                                >
-                                    Update
-                                </Button>
+                                {canUpdate ?
+                                    <Button
+                                        disabled={loading}
+                                        className={loading ? "loading" : ""}
+                                        color="blue"
+                                        fluid
+                                        size="large"
+                                    >
+                                        Update
+                                    </Button> : ""}
                             </Segment>
                         </Form>
                         {errors.length > 0 && (
@@ -269,28 +295,29 @@ class AnnouncementEdit extends Component {
                         )}
                     </Grid.Column>
                 </Grid>
-                <Table style={{ marginTop: "30px" }}>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Sent to</th>
-                            <th>Read</th>
-                            <th>Deleted</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {thisAnnouncementDetails.map((thisAnnouncementDetail, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{thisAnnouncementDetail[0]}</td>
-                                    <td>{thisAnnouncementDetail[1] === 0 ? "No" : "Yes"}</td>
-                                    <td>{thisAnnouncementDetail[2] === 0 ? "No" : "Yes"}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </Table>
+                {source === "sentAnnouncementIndex" ?
+                    <Table style={{ marginTop: "30px" }}>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sent to</th>
+                                <th>Read</th>
+                                <th>Deleted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {thisAnnouncementDetails.map((thisAnnouncementDetail, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{thisAnnouncementDetail[0]}</td>
+                                        <td>{thisAnnouncementDetail[1] === 0 ? "No" : "Yes"}</td>
+                                        <td>{thisAnnouncementDetail[2] === 0 ? "No" : "Yes"}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </Table> : ""}
             </div>
         );
     }

@@ -10,7 +10,7 @@ use App\Http\Controllers\TaskListController;
 use App\Http\Controllers\MyTaskController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CredentialController;
-
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | Web Routes

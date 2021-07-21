@@ -62,10 +62,9 @@ class CustomerIndex extends React.Component {
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput, created_at: 'Created At' },
+            headings: { id: checkAllInput },
             sortable: ['code', 'name', 'service'],
-            columnsWidth: { name: 20, email: 20, id: 5 },
-            columnsAlign: { id: 'center' },
+            columnsWidth: { id: "5px", actions: "50px" },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let customersIDs = res.data.map(a => a.id.toString());
@@ -114,7 +113,7 @@ class CustomerIndex extends React.Component {
                                             );
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "50px" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'customers/' + row.id + '/edit'}>
                                                             <AiFillEdit color="white" />

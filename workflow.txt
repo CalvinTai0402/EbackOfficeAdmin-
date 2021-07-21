@@ -6,7 +6,6 @@
 
 
 TODO:
-1. Multiselct customer service
 
 2. Add task to events
 

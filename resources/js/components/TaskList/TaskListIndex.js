@@ -62,10 +62,12 @@ class TaskListIndex extends React.Component {
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput, created_at: 'Created At' },
+            headings: { id: checkAllInput },
             sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
-            columnsWidth: { name: 20, description: 20, id: 5 },
-            columnsAlign: { id: 'center' },
+            columnsWidth: {
+                id: "5px", description: "80px", notes: "80px", actions: "55px", assigneeNames: "60px", customer_code: "60px",
+                repeat: "30px", priority: "30px", status: "30px"
+            },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let taskListsIDs = res.data.map(a => a.id.toString());
@@ -112,9 +114,51 @@ class TaskListIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedTaskLists.includes(row.id.toString())} />
                                             );
+                                        case 'description':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "80px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'notes':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "80px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'repeat':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'priority':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'status':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'assigneeNames':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'customer_code':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "55px" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'taskLists/' + row.id + '/edit'}>
                                                             <AiFillEdit color="white" />

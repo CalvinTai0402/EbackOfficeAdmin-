@@ -328,7 +328,10 @@ class MyTaskIndex extends React.Component {
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
             sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
-            columnsWidth: { name: 20, description: 20, id: 5 },
+            columnsWidth: {
+                id: "5px", description: "120px", notes: "120px", actions: "30px", assigneeNames: "60px", customer_code: "60px",
+                repeat: "30px", priority: "30px", status: "30px"
+            },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
@@ -358,9 +361,51 @@ class MyTaskIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedMyTasks.includes(row.id.toString())} />
                                             );
+                                        case 'description':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "120px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'notes':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "120px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'repeat':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'priority':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'status':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'assigneeNames':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
+                                        case 'customer_code':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between" }} onClick={() => self.handleEditClicked(row.id.toString())}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }} onClick={() => self.handleEditClicked(row.id.toString())}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <AiFillEdit color="white" />
                                                         <div style={{ color: "white" }} >
