@@ -6,6 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import ReactModal from 'react-modal';
 import Spinner from '../Spinner'
 import ModalForm from './ModalForm'
+import swal from 'sweetalert'
 
 import '../../../css/App.css'
 
@@ -85,9 +86,20 @@ class Event extends React.Component {
     closeModal = () => { this.setState({ showModal: false }) }
 
     handleEventClick = (clickInfo) => {
-        if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-            clickInfo.event.remove()
-        }
+        swal({
+            title: `Are you sure you want to delete the event "${clickInfo.event.title}"`,
+            text: "Once deleted, you won't be able to recover the data.",
+            icon: "warning",
+            buttons: ["Cancel", "Delete"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                clickInfo.event.remove()
+            }
+        });
+        // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+        //     clickInfo.event.remove()
+        // }
     }
 
     handleEvents = (events) => {

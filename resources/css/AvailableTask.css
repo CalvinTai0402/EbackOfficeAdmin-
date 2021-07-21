@@ -1,0 +1,31 @@
+.table-id-th {
+    width: 5%;
+}
+
+.table-id-td {
+    width: 5%;
+}
+
+.table-name-th {
+    width: 10%;
+}
+
+.table-name-td {
+    width: 10%;
+}
+
+.table-description-th {
+    width: 30%;
+}
+
+.table-description-td {
+    width: 30%;
+}
+
+.table-actions-th {
+    width: 10% !important;
+}
+
+.table-actions-td {
+    width: 10% !important;
+}

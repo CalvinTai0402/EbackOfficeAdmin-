@@ -25,7 +25,7 @@ import AnnouncementIndex from "./Announcement/AnnouncementIndex";
 import AnnouncementCreate from "./Announcement/AnnouncementCreate";
 import AnnouncementEdit from "./Announcement/AnnouncementEdit";
 import SentAnnouncementsIndex from "./Announcement/SentAnnouncementsIndex";
-import ReadPage from "./Announcement/ReadPage";
+// import ReadPage from "./Announcement/ReadPage";
 import TaskListIndex from './TaskList/TaskListIndex';
 import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
@@ -143,7 +143,7 @@ class Sidebar extends React.Component {
                                 </div>
                             </SidebarFooter>
                         </ProSidebar>
-                        <div className="centerVandH">
+                        <div className="centerH">
                             <Switch>
                                 <Route exact path="/" render={(props) => <Home {...props} />} />
 

@@ -1,0 +1,39 @@
+.table-id-th {
+    width: 5%;
+}
+
+.table-id-td {
+    width: 5%;
+}
+
+.table-actions-th {
+    width: 10% !important;
+}
+
+.table-actions-td {
+    width: 10% !important;
+}
+
+.table-name-th {
+    width: 8% !important;
+}
+
+.table-name-td {
+    width: 8% !important;
+}
+
+.table-assignees-th {
+    width: 10% !important;
+}
+
+.table-assignees-td {
+    width: 10% !important;
+}
+
+.table-description-th {
+    width: 20% !important;
+}
+
+.table-description-td {
+    width: 20% !important;
+}

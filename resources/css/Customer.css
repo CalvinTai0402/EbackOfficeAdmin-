@@ -1,0 +1,39 @@
+.table-id-th {
+    width: 5%;
+}
+
+.table-id-td {
+    width: 5%;
+}
+
+.table-code-th {
+    width: 15%;
+}
+
+.table-code-td {
+    width: 15%;
+}
+
+.table-name-th {
+    width: 15%;
+}
+
+.table-name-td {
+    width: 15%;
+}
+
+.table-service-th {
+    width: 10%;
+}
+
+.table-service-td {
+    width: 10%;
+}
+
+.table-actions-th {
+    width: 10%;
+}
+
+.table-actions-td {
+    width: 10%;
+}
