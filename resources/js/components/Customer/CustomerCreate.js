@@ -104,14 +104,15 @@ class CustomerCreate extends Component {
         });
     };
 
-    handleSelectChange = (value, obj, field) => {
-        const { availableTaskNames, availableTaskDescriptions } = this.state;
+    handleMultipleSelectChange = (value, objArray, field) => {
         switch (field) {
             case "service":
-                this.setState({
-                    service: obj.value,
-                })
-                break
+                let service = "";
+                for (let obj of objArray) {
+                    service += obj.value + ", "
+                }
+                service = service.substring(0, service.length - 2); // remove last comma and space
+                this.setState({ service })
             default:
         }
     }
@@ -150,7 +151,6 @@ class CustomerCreate extends Component {
     deleteRow = (event, rowId) => {
         event.preventDefault();
         let { credentials } = this.state;
-        console.log(credentials, rowId)
         credentials.splice(rowId, 1)
         this.setState({ credentials })
     }
@@ -201,7 +201,8 @@ class CustomerCreate extends Component {
                                         closeOnSelect={false}
                                         printOptions="on-focus"
                                         placeholder="Choose service(s)"
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "service")}
+                                        multiple
+                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray, "service")}
                                         options={[
                                             { value: 'Tax', name: 'Tax' },
                                             { value: 'Acccounting', name: 'Acccounting' },
@@ -219,7 +220,7 @@ class CustomerCreate extends Component {
                                         onChange={this.handleChange}
                                         value={serviceOther}
                                         placeholder={"If other, please specify"}
-                                        disabled={service !== "Other"}
+                                        disabled={!service.includes("Other")}
                                     />
                                 </Form.Field>
                             </Grid.Column>

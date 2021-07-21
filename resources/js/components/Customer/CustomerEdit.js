@@ -37,10 +37,12 @@ class CustomerEdit extends Component {
         await this.populateCredentialsForCustomers();
         const id = this.props.match.params.id;
         let res = await axios.get(`${process.env.MIX_API_URL}/customers/${id}/edit`);
+        this.setState({ service: res.data.customer.service })
+        await this.populateServiceArray();
         this.setState({
             code: res.data.customer.code,
             name: res.data.customer.name,
-            service: res.data.customer.service,
+            serviceArray: this.state.serviceArray,
             serviceOther: res.data.customer.service_other,
             businessAddress: res.data.customer.business_address,
             mailingAddress: res.data.customer.mailing_address,
@@ -63,6 +65,15 @@ class CustomerEdit extends Component {
         this.setState({
             credentials: res.data.credentials,
         });
+    }
+
+    populateServiceArray = async () => {
+        const { service } = this.state;
+        let serviceArray = [];
+        for (let s of service.split(", ")) {
+            serviceArray.push(s)
+        }
+        this.setState({ serviceArray })
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
@@ -137,14 +148,17 @@ class CustomerEdit extends Component {
         });
     };
 
-    handleSelectChange = (value, obj, field) => {
-        const { availableTaskNames, availableTaskDescriptions } = this.state;
+    handleMultipleSelectChange = (value, objArray, field) => {
         switch (field) {
             case "service":
-                this.setState({
-                    service: obj.value,
+                let service = "";
+                for (let obj of objArray) {
+                    service += obj.value + ", "
+                }
+                service = service.substring(0, service.length - 2); // remove last comma and space
+                this.setState({ service }, () => {
+                    this.populateServiceArray();
                 })
-                break
             default:
         }
     }
@@ -189,7 +203,7 @@ class CustomerEdit extends Component {
     }
 
     render() {
-        const { code, name, service, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
+        const { code, name, service, serviceArray, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
             companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, credentials, errors, loading } = this.state;
         return (
             <div>
@@ -234,13 +248,14 @@ class CustomerEdit extends Component {
                                         closeOnSelect={false}
                                         printOptions="on-focus"
                                         placeholder="Choose service(s)"
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "service")}
+                                        multiple
+                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray, "service")}
                                         options={[
                                             { value: 'Tax', name: 'Tax' },
                                             { value: 'Acccounting', name: 'Acccounting' },
                                             { value: 'Other', name: 'Other' },
                                         ]}
-                                        value={service}
+                                        value={serviceArray}
                                     />
                                 </Form.Field>
                             </Grid.Column>
@@ -253,7 +268,7 @@ class CustomerEdit extends Component {
                                         onChange={this.handleChange}
                                         value={serviceOther}
                                         placeholder={"If other, please specify"}
-                                        disabled={service !== "Other"}
+                                        disabled={!service.includes("Other")}
                                     />
                                 </Form.Field>
                             </Grid.Column>
