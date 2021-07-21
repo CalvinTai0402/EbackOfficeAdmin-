@@ -68,7 +68,7 @@ class SentAnnouncementsIndex extends React.Component {
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
             sortable: ['name', 'description', 'assignees'],
-            columnsWidth: { name: 20, description: 20, id: 5 },
+            columnsWidth: { actions: "20px", assignees: "60px" },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
@@ -106,15 +106,21 @@ class SentAnnouncementsIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedSentAnnouncements.includes(row.id.toString())} />
                                             );
+                                        case 'assignees':
+                                            return (
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
+                                                    {row[column]}
+                                                </div>
+                                            )
                                         case 'description':
                                             return (
                                                 <div dangerouslySetInnerHTML={{ __html: `${row.description}` }} />
                                             )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "20px" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/edit'}>
+                                                        <Link to={'announcements/' + row.id + '/edit/2/sentAnnouncementIndex'}>
                                                             <AiFillEdit color="white" />
                                                             <div style={{ color: "white" }} >
                                                                 Edit

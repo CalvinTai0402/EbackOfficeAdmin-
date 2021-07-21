@@ -2,7 +2,7 @@ import React from "react";
 import '../../css/App.css';
 import { ProSidebar, SubMenu, Menu, MenuItem, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
 import 'react-pro-sidebar/dist/css/styles.css';
-import { FaBattleNet, FaGem } from "react-icons/fa";
+import { FaBattleNet, FaAdn, FaArtstation, FaGem, FaFantasyFlightGames, FaCriticalRole, FaDrupal, FaFreebsd, FaGitter, FaGratipay, FaGrav, FaGripfire } from "react-icons/fa";
 import Home from "./Home"
 import {
     BrowserRouter as Router,
@@ -34,6 +34,8 @@ class Sidebar extends React.Component {
     state = {
         menuCollapse: false,
         loggedInUserName: "Guest",
+        selected: "",
+        color: "yellow"
     };
 
     async componentDidMount() {
@@ -41,69 +43,88 @@ class Sidebar extends React.Component {
         this.setState({ loggedInUserName: res.data.loggedInUserName })
     }
 
-    menuIconClick = async () => {
-        const { menuCollapse } = this.state;
-        menuCollapse ? this.setState({ menuCollapse: false }) : this.setState({ menuCollapse: true })
-    };
-
     logout = async () => {
         await axios.post("/logout");
         window.location.href = "/"
     }
 
+    changeColorOnClick = (selectedLink) => {
+        this.setState({ selected: selectedLink })
+    }
+
     render() {
-        const { menuCollapse, loggedInUserName } = this.state;
+        const { menuCollapse, loggedInUserName, selected, color } = this.state;
         return (
             <div >
                 <Router>
                     <div id="sidebar" style={{ display: 'grid', gridTemplateColumns: '200px auto' }}>
-                        <ProSidebar className='sideBar' collapsed={menuCollapse}>
+                        <ProSidebar className='sideBar' collapsed={menuCollapse} image="sidebar/background.jpg">
                             <SidebarHeader className="sideBarHeader">
-                                <p className="clickable" onClick={this.menuIconClick}>{menuCollapse ? "E.B." : "EbackOffice"}{menuCollapse ? "" : ", " + loggedInUserName}</p>
+                                <p className="clickable">{"EbackOffice"}{", " + loggedInUserName}</p>
                             </SidebarHeader>
                             <SidebarContent>
                                 <Menu iconShape="square">
-                                    <MenuItem icon={<FaBattleNet />}>
-                                        Home
+                                    <MenuItem icon={<FaBattleNet />} onClick={() => { this.changeColorOnClick("Home") }}>
+                                        <span style={{ color: selected === "Home" ? color : "" }}>
+                                            Home
+                                        </span>
                                         <Link to="/" />
                                     </MenuItem>
-                                    <MenuItem icon={<FaBattleNet />}>
-                                        Users
+                                    <MenuItem icon={<FaAdn />} onClick={() => { this.changeColorOnClick("Users") }}>
+                                        <span style={{ color: selected === "Users" ? color : "" }}>
+                                            Users
+                                        </span>
                                         <Link to="/users" />
                                     </MenuItem>
-                                    <MenuItem icon={<FaBattleNet />}>
-                                        Customers
+                                    <MenuItem icon={<FaArtstation />} onClick={() => { this.changeColorOnClick("Customers") }}>
+                                        <span style={{ color: selected === "Customers" ? color : "" }}>
+                                            Customers
+                                        </span>
                                         <Link to="/customers" />
                                     </MenuItem>
-                                    <MenuItem icon={<FaBattleNet />}>
-                                        Events
+                                    <MenuItem icon={<FaFantasyFlightGames />} onClick={() => { this.changeColorOnClick("Events") }}>
+                                        <span style={{ color: selected === "Events" ? color : "" }}>
+                                            Events
+                                        </span>
                                         <Link to="/events" />
                                     </MenuItem>
-                                    <MenuItem icon={<FaBattleNet />}>
-                                        Files
+                                    <MenuItem icon={<FaCriticalRole />} onClick={() => { this.changeColorOnClick("Files") }}>
+                                        <span style={{ color: selected === "Files" ? color : "" }}>
+                                            Files
+                                        </span>
                                         <Link to="/filemanager" />
                                     </MenuItem>
-                                    <SubMenu title="Task Settings" icon={<FaGem />}>
-                                        <MenuItem icon={<FaBattleNet />}>
-                                            Available Tasks
+                                    <SubMenu title="Task Settings" icon={<FaDrupal />}>
+                                        <MenuItem icon={<FaFreebsd />} onClick={() => { this.changeColorOnClick("Available Tasks") }}>
+                                            <span style={{ color: selected === "Available Tasks" ? color : "" }}>
+                                                Available Tasks
+                                            </span>
                                             <Link to="/availableTasks" />
                                         </MenuItem>
-                                        <MenuItem icon={<FaBattleNet />}>
-                                            Task Lists
+                                        <MenuItem icon={<FaGitter />} onClick={() => { this.changeColorOnClick("Task Lists") }}>
+                                            <span style={{ color: selected === "Task Lists" ? color : "" }}>
+                                                Task Lists
+                                            </span>
                                             <Link to="/taskLists" />
                                         </MenuItem>
-                                        <MenuItem icon={<FaBattleNet />}>
-                                            My Tasks
+                                        <MenuItem icon={<FaGratipay />} onClick={() => { this.changeColorOnClick("My Tasks") }}>
+                                            <span style={{ color: selected === "My Tasks" ? color : "" }}>
+                                                My Tasks
+                                            </span>
                                             <Link to="/mytasks" />
                                         </MenuItem>
                                     </SubMenu>
                                     <SubMenu title="Announcements" icon={<FaGem />}>
-                                        <MenuItem icon={<FaBattleNet />}>
-                                            Announcments
+                                        <MenuItem icon={<FaGrav />} onClick={() => { this.changeColorOnClick("Announcments") }}>
+                                            <span style={{ color: selected === "Announcments" ? color : "" }}>
+                                                Announcments
+                                            </span>
                                             <Link to="/announcements" />
                                         </MenuItem>
-                                        <MenuItem icon={<FaBattleNet />}>
-                                            Sent Announcments
+                                        <MenuItem icon={<FaGripfire />} onClick={() => { this.changeColorOnClick("Sent Announcments") }}>
+                                            <span style={{ color: selected === "Sent Announcments" ? color : "" }}>
+                                                Sent Announcments
+                                            </span>
                                             <Link to="/announcementssent" />
                                         </MenuItem>
                                     </SubMenu>
@@ -150,8 +171,8 @@ class Sidebar extends React.Component {
                                 <Route exact path="/announcements" render={(props) => <AnnouncementIndex {...props} />} />
                                 <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
-                                <Route exact path="/announcements/:id/edit" render={(props) => <AnnouncementEdit {...props} />} />
-                                <Route exact path="/announcements/:id/readOrUnreadPage/:reading" render={(props) => <ReadPage {...props} />} />
+                                <Route exact path="/announcements/:id/edit/:reading/:source" render={(props) => <AnnouncementEdit {...props} />} />
+                                {/* <Route exact path="/announcements/:id/readOrUnreadPage/:reading" render={(props) => <ReadPage {...props} />} /> */}
                             </Switch>
                         </div>
                     </div>

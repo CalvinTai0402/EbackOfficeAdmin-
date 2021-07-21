@@ -91,13 +91,32 @@ class ModalForm extends Component {
                                         placeholder="Choose a priority"
                                     />
                                 </Form.Field>
-                                <Button
-                                    color="blue"
-                                    fluid
-                                    size="large"
-                                >
-                                    Create Event
-                                </Button>
+                                <Grid>
+                                    <Grid.Row>
+                                        <Grid.Column width={8} >
+                                            <Button
+                                                color="blue"
+                                                fluid
+                                                size="large"
+                                                style={{ marginLeft: "18px" }}
+                                            >
+                                                Create
+                                            </Button>
+                                        </Grid.Column>
+                                        <Grid.Column width={8}>
+                                            <Button
+                                                color="blue"
+                                                fluid
+                                                size="large"
+                                                onClick={this.props.closeModal}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+
+
                             </Segment>
                         </Form>
                         {errors.length > 0 && (

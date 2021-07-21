@@ -6,14 +6,12 @@
 
 
 TODO:
-1.
-- make pretty (logos, sidebar color)
 
 2. Add task to events
 
 5.
 - roles (basically get roles of loggedInUser then conditional rendering)
-- Task scheduler (after adding customers, need to fix)
 
 https://medium.com/@afrazahmad090/laravel-many-to-many-relationship-explained-822b554c1973
 https://www.itsolutionstuff.com/post/laravel-one-to-many-eloquent-relationship-tutorialexample.html
+https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files

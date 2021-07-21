@@ -62,10 +62,9 @@ class UserIndex extends React.Component {
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput, created_at: 'Created At' },
+            headings: { id: checkAllInput },
             sortable: ['name', 'email', 'role'],
-            columnsWidth: { name: 20, description: 20, id: 5 },
-            columnsAlign: { id: 'center' },
+            columnsWidth: { id: "5px", actions: "30px" },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let usersIDs = res.data.map(a => a.id.toString());
@@ -114,7 +113,7 @@ class UserIndex extends React.Component {
                                             );
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'users/' + row.id + '/edit'}>
                                                             <AiFillEdit color="white" />

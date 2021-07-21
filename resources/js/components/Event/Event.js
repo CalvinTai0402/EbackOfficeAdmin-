@@ -57,7 +57,7 @@ class Event extends React.Component {
         let calendarApi = selectInfo.view.calendar
         calendarApi.unselect() // clear date selection
         if (this.state.title && this.state.description && this.state.priority) {
-            calendarApi.addEvent({
+            await calendarApi.addEvent({
                 id: 0,
                 title: this.state.title,
                 description: this.state.description,
@@ -66,8 +66,14 @@ class Event extends React.Component {
                 end: selectInfo.endStr,
                 allDay: selectInfo.allDay
             })
+            this.setState({
+                title: "",
+                description: "",
+                priority: ""
+            })
+            await this.getEvents()
         }
-        await this.getEvents()
+
     }
 
     sleep = async (msec) => {

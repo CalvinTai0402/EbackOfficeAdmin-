@@ -68,7 +68,7 @@ class AnnouncementIndex extends React.Component {
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
             sortable: ['name', 'description', 'assignees', 'status'],
-            columnsWidth: { name: 20, description: 20, id: 5 },
+            columnsWidth: { actions: "55px" },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
@@ -123,16 +123,23 @@ class AnnouncementIndex extends React.Component {
                                             )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/edit'}>
-                                                            <AiFillEdit color="white" />
+                                                <div style={{ display: "flex", justifyContent: "space-between", width: "55px" }}>
+                                                    {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
+                                                        <Link to={'announcements/' + row.id + '/edit/0/announcementIndex'}>
+                                                            <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
-                                                                Edit
+                                                                Unread
                                                             </div>
                                                         </Link>
-                                                    </button>
-                                                    {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
+                                                    </button> : <button className="btn btn-success" style={{ marginRight: "5px" }}>
+                                                        <Link to={'announcements/' + row.id + '/edit/1/announcementIndex'}>
+                                                            <AiOutlineRead color="white" />
+                                                            <div style={{ color: "white" }} >
+                                                                New
+                                                            </div>
+                                                        </Link>
+                                                    </button>}
+                                                    {/* {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
                                                         <Link to={'announcements/' + row.id + '/readOrUnreadPage/0'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
@@ -146,7 +153,7 @@ class AnnouncementIndex extends React.Component {
                                                                 New
                                                             </div>
                                                         </Link>
-                                                    </button>}
+                                                    </button>} */}
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
                                                         <AiFillDelete color="white" />
                                                         <div style={{ color: "white" }}>
