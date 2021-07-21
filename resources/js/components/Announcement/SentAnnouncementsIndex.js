@@ -5,7 +5,10 @@ import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
 import {
     Header,
+    Icon
 } from "semantic-ui-react";
+
+import '../../../css/SentAnnouncements.css';
 
 class SentAnnouncementsIndex extends React.Component {
     state = {
@@ -68,8 +71,6 @@ class SentAnnouncementsIndex extends React.Component {
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, created_at: 'Created At' },
             sortable: ['name', 'description', 'assignees'],
-            columnsWidth: { actions: "20px", assignees: "60px" },
-            columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let sentAnnouncementsIDs = res.data.map(a => a.id.toString());
@@ -86,6 +87,10 @@ class SentAnnouncementsIndex extends React.Component {
 
         return (
             <div>
+                <Header as='h2' icon textAlign='center'>
+                    <Icon name='calendar alternate outline' circular />
+                    <Header.Content>Sent Announcements</Header.Content>
+                </Header>
                 <button className="btn btn-danger" onClick={() => { self.handleManyUnsendToAll() }} style={{ marginBottom: "15px" }}>
                     <div style={{ color: "white" }} >
                         <AiFillMinusSquare color="white" size="20" />
@@ -106,19 +111,13 @@ class SentAnnouncementsIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedSentAnnouncements.includes(row.id.toString())} />
                                             );
-                                        case 'assignees':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
                                         case 'description':
                                             return (
                                                 <div dangerouslySetInnerHTML={{ __html: `${row.description}` }} />
                                             )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "20px" }}>
+                                                <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'announcements/' + row.id + '/edit/2/sentAnnouncementIndex'}>
                                                             <AiFillEdit color="white" />

@@ -1,11 +1,14 @@
 import React from 'react';
 import ServerTable from 'react-strap-table';
-import { AiFillDelete, AiFillEdit, AiOutlineRead, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
+import { AiFillDelete, AiOutlineRead, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
 import {
     Header,
+    Icon
 } from "semantic-ui-react";
+
+import '../../../css/Announcements.css';
 
 class AnnouncementIndex extends React.Component {
     state = {
@@ -66,10 +69,8 @@ class AnnouncementIndex extends React.Component {
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput, created_at: 'Created At' },
+            headings: { id: checkAllInput },
             sortable: ['name', 'description', 'assignees', 'status'],
-            columnsWidth: { actions: "55px" },
-            columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let announcementsIDs = res.data.map(a => a.id.toString());
@@ -86,6 +87,10 @@ class AnnouncementIndex extends React.Component {
 
         return (
             <div>
+                <Header as='h2' icon textAlign='center'>
+                    <Icon name='calendar alternate' circular />
+                    <Header.Content>Announcements</Header.Content>
+                </Header>
                 <button className="btn btn-primary create" style={{ marginRight: "8px" }}>
                     <Link to={'announcements/create'}>
                         <div style={{ color: "white" }} >
@@ -123,7 +128,7 @@ class AnnouncementIndex extends React.Component {
                                             )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "55px" }}>
+                                                <div style={{ display: "flex", justifyContent: "start" }}>
                                                     {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
                                                         <Link to={'announcements/' + row.id + '/edit/0/announcementIndex'}>
                                                             <AiOutlineRead color="white" />
@@ -139,21 +144,6 @@ class AnnouncementIndex extends React.Component {
                                                             </div>
                                                         </Link>
                                                     </button>}
-                                                    {/* {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/readOrUnreadPage/0'}>
-                                                            <AiOutlineRead color="white" />
-                                                            <div style={{ color: "white" }} >
-                                                                Unread
-                                                            </div>
-                                                        </Link>
-                                                    </button> : <button className="btn btn-success" style={{ marginRight: "5px" }} >
-                                                        <Link to={'announcements/' + row.id + '/readOrUnreadPage/1'}>
-                                                            <AiOutlineRead color="white" />
-                                                            <div style={{ color: "white" }} >
-                                                                New
-                                                            </div>
-                                                        </Link>
-                                                    </button>} */}
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
                                                         <AiFillDelete color="white" />
                                                         <div style={{ color: "white" }}>

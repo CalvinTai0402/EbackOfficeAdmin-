@@ -3,7 +3,12 @@ import ServerTable from 'react-strap-table';
 import { AiFillDelete, AiFillEdit, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
+import {
+    Header,
+    Icon
+} from "semantic-ui-react";
 
+import '../../../css/TaskList.css';
 class TaskListIndex extends React.Component {
     state = {
         selectedTaskLists: [],
@@ -57,17 +62,13 @@ class TaskListIndex extends React.Component {
         const { deleting } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/taskLists`;
-        const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code', 'actions']
+        const columns = ['id', 'name', 'description', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput },
-            sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
-            columnsWidth: {
-                id: "5px", description: "80px", notes: "80px", actions: "55px", assigneeNames: "60px", customer_code: "60px",
-                repeat: "30px", priority: "30px", status: "30px"
-            },
+            headings: { id: checkAllInput, assigneeNames: "Assignee" },
+            sortable: ['name', 'description', 'duedate', 'priority', 'status', 'assigneeNames',],
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let taskListsIDs = res.data.map(a => a.id.toString());
@@ -84,6 +85,10 @@ class TaskListIndex extends React.Component {
 
         return (
             <div>
+                <Header as='h2' icon textAlign='center'>
+                    <Icon name='list' circular />
+                    <Header.Content>Task Lists</Header.Content>
+                </Header>
                 <button className="btn btn-primary create" style={{ marginRight: "8px" }}>
                     <Link to={'taskLists/create'}>
                         <div style={{ color: "white" }} >
@@ -114,51 +119,9 @@ class TaskListIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedTaskLists.includes(row.id.toString())} />
                                             );
-                                        case 'description':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "80px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'notes':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "80px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'repeat':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'priority':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'status':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'assigneeNames':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'customer_code':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "55px" }}>
+                                                <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'taskLists/' + row.id + '/edit'}>
                                                             <AiFillEdit color="white" />

@@ -9,11 +9,14 @@ import {
     Button,
     Header,
     Message,
+    Icon
 } from "semantic-ui-react";
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
+
+import '../../../css/TaskList.css';
 
 class MyTaskIndex extends React.Component {
     state = {
@@ -321,17 +324,13 @@ class MyTaskIndex extends React.Component {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
-        const columns = ['id', 'name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code', 'actions']
+        const columns = ['id', 'name', 'description', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput, created_at: 'Created At' },
+            headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
-            columnsWidth: {
-                id: "5px", description: "120px", notes: "120px", actions: "30px", assigneeNames: "60px", customer_code: "60px",
-                repeat: "30px", priority: "30px", status: "30px"
-            },
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
@@ -351,6 +350,10 @@ class MyTaskIndex extends React.Component {
             <div>
                 {loading ? <Spinner text="Updating..." /> :
                     <div>
+                        <Header as='h2' icon textAlign='center'>
+                            <Icon name='list' circular />
+                            <Header.Content>My Tasks</Header.Content>
+                        </Header>
                         <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl search={false}>
                             {
                                 function (row, column) {
@@ -361,51 +364,9 @@ class MyTaskIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedMyTasks.includes(row.id.toString())} />
                                             );
-                                        case 'description':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "120px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'notes':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "120px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'repeat':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'priority':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'status':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'assigneeNames':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
-                                        case 'customer_code':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "60px" }}>
-                                                    {row[column]}
-                                                </div>
-                                            )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "30px" }} onClick={() => self.handleEditClicked(row.id.toString())}>
+                                                <div style={{ display: "flex", justifyContent: "start" }} onClick={() => self.handleEditClicked(row.id.toString())}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <AiFillEdit color="white" />
                                                         <div style={{ color: "white" }} >

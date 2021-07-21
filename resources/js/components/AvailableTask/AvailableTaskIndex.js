@@ -3,7 +3,12 @@ import ServerTable from 'react-strap-table';
 import { AiFillDelete, AiFillEdit, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
+import {
+    Header,
+    Icon
+} from "semantic-ui-react";
 
+import '../../../css/AvailableTask.css';
 class AvailableTaskIndex extends React.Component {
     state = {
         selectedAvailableTasks: [],
@@ -64,7 +69,6 @@ class AvailableTaskIndex extends React.Component {
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput },
             sortable: ['name', 'description'],
-            columnsWidth: { id: "5px", actions: "55px" },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let availableTasksIDs = res.data.map(a => a.id.toString());
@@ -81,6 +85,10 @@ class AvailableTaskIndex extends React.Component {
 
         return (
             <div>
+                <Header as='h2' icon textAlign='center'>
+                    <Icon name='list ul' circular />
+                    <Header.Content>Available Tasks</Header.Content>
+                </Header>
                 <button className="btn btn-primary create" style={{ marginRight: "8px" }}>
                     <Link to={'availableTasks/create'}>
                         <div style={{ color: "white" }} >
@@ -113,7 +121,7 @@ class AvailableTaskIndex extends React.Component {
                                             );
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "space-between", width: "55px" }}>
+                                                <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'availableTasks/' + row.id + '/edit'}>
                                                             <AiFillEdit color="white" />

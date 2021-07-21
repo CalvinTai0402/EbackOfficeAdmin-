@@ -1,0 +1,31 @@
+.table-id-th {
+    width: 5%;
+}
+
+.table-id-td {
+    width: 5%;
+}
+
+.table-email-th {
+    width: 25%;
+}
+
+.table-email-td {
+    width: 25%;
+}
+
+.table-role-th {
+    width: 20%;
+}
+
+.table-role-td {
+    width: 20%;
+}
+
+.table-actions-th {
+    width: 10%;
+}
+
+.table-actions-td {
+    width: 10%;
+}
