@@ -60,6 +60,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::resource("myTasks", MyTaskController::class);
 
+        Route::get('events/getTaskId/{event}',  [EventController::class, 'getTaskId'])->name('events.getTaskId');
         Route::resource('events', EventController::class);
     });
     Route::view('/{path?}', 'reactApp')->where('path', '.*')->name('reactApp');
