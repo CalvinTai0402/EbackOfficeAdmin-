@@ -25,19 +25,16 @@ class Event extends React.Component {
 
     async componentDidMount() {
         await this.getEvents();
-        document.body.style.overflow = "hidden" // fix for ReactModal taking up white space
-    }
-
-    componentWillUnmount() {
-        document.body.style.overflow = "visible" // fix for ReactModal taking up white space
     }
 
     getEvents = async () => {
         this.setState({ loading: true })
         const res = await axios.get(`${process.env.MIX_API_URL}/events`);
         if (res.data.status == 200) {
-            this.setState({ loading: false })
-            this.setState({ events: res.data.events })
+            this.setState({
+                loading: false,
+                events: res.data.events
+            })
         }
     }
 
@@ -98,9 +95,9 @@ class Event extends React.Component {
             }).then(async (willDelete) => {
                 if (willDelete) {
                     clickInfo.event.remove()
+                    await this.getEvents()
                 }
             });
-            await this.getEvents()
         } else {
             this.setState({ loading: true });
             swal("Edit details?", {
@@ -135,15 +132,13 @@ class Event extends React.Component {
                     //     break;
                     case "edit":
                         let res = await axios.get(`${process.env.MIX_API_URL}/events/getTaskId/${clickInfo.event.id}`)
-                        console.log(res.data.taskId)
+                        this.setState({ loading: false });
                         this.props.history.push(`/taskLists/${res.data.taskId.toString()}/edit`)
                         break;
                     case "cancel":
-                        break;
                     default:
+                        this.setState({ loading: false });
                 }
-            }).then(() => {
-                this.setState({ loading: false });
             })
         }
 
