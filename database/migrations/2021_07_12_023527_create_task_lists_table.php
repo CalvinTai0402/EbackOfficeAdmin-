@@ -24,7 +24,7 @@ class CreateTaskListsTable extends Migration
             $table->string('status');
             $table->string('assigneeNames');
             $table->string('customer_code');
-            $table->bigInteger('customer_id')->unsigned()->default(0);
+            $table->bigInteger('customer_id')->unsigned();
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->timestamps();
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\TaskList;
 use Illuminate\Http\Request;
 use DateTime;
 use DateTimeZone;
@@ -42,6 +43,7 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        $request["title"] = "E: " . $request["title"];
         $startDate = new DateTime($request["start"], new DateTimeZone('UTC'));
         $startDate->setTimezone(new DateTimeZone('America/Denver'));
         $endDate = new DateTime($request["end"], new DateTimeZone('UTC'));
@@ -109,8 +111,23 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        if ($event->delete()) {
-            return response()->json(["status" => 200]);
+        if ($event->title[0] == "E") {
+            if ($event->delete()) {
+                return response()->json(["status" => 200]);
+            }
         }
+        // else {
+        //     $taskList = TaskList::find($event->task_id);
+        //     if ($taskList->delete()) {
+        //         if ($event->delete()) {
+        //             return response()->json(["status" => 200]);
+        //         }
+        //     }
+        // }
+    }
+
+    public function getTaskId(Event $event)
+    {
+        return response()->json(['status' => 200, 'taskId' => $event->task_id]);
     }
 }

@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/token', [UtilitiesController::class, 'token']);
@@ -60,6 +60,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::resource("myTasks", MyTaskController::class);
 
+        Route::get('events/getTaskId/{event}',  [EventController::class, 'getTaskId'])->name('events.getTaskId');
         Route::resource('events', EventController::class);
     });
     Route::view('/{path?}', 'reactApp')->where('path', '.*')->name('reactApp');

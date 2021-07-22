@@ -81,12 +81,12 @@ class ModalForm extends Component {
                                     <label>Priority</label>
                                     <SelectSearch
                                         search
-                                        onChange={(value, obj) => this.props.handleSelectChange(value, obj)}
+                                        onChange={(value, obj) => this.props.handleSelectChange(value, obj, "priority")}
                                         filterOptions={fuzzySearch}
                                         options={[
-                                            { value: 'priority0', name: 'High' },
-                                            { value: 'priority1', name: 'Medium' },
-                                            { value: 'priority2', name: 'Low' },
+                                            { value: 'High', name: 'High' },
+                                            { value: 'Medium', name: 'Medium' },
+                                            { value: 'Low', name: 'Low' },
                                         ]}
                                         placeholder="Choose a priority"
                                     />

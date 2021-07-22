@@ -9,6 +9,7 @@ import ModalForm from './ModalForm'
 import swal from 'sweetalert'
 
 import '../../../css/App.css'
+import axios from 'axios'
 
 class Event extends React.Component {
     state = {
@@ -24,19 +25,16 @@ class Event extends React.Component {
 
     async componentDidMount() {
         await this.getEvents();
-        document.body.style.overflow = "hidden" // fix for ReactModal taking up white space
-    }
-
-    async componentWillUnmount() {
-        document.body.style.overflow = "visible" // fix for ReactModal taking up white space
     }
 
     getEvents = async () => {
         this.setState({ loading: true })
         const res = await axios.get(`${process.env.MIX_API_URL}/events`);
         if (res.data.status == 200) {
-            this.setState({ loading: false })
-            this.setState({ events: res.data.events })
+            this.setState({
+                loading: false,
+                events: res.data.events
+            })
         }
     }
 
@@ -85,21 +83,65 @@ class Event extends React.Component {
 
     closeModal = () => { this.setState({ showModal: false }) }
 
-    handleEventClick = (clickInfo) => {
-        swal({
-            title: `Are you sure you want to delete the event "${clickInfo.event.title}"`,
-            text: "Once deleted, you won't be able to recover the data.",
-            icon: "warning",
-            buttons: ["Cancel", "Delete"],
-            dangerMode: true,
-        }).then(async (willDelete) => {
-            if (willDelete) {
-                clickInfo.event.remove()
-            }
-        });
-        // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-        //     clickInfo.event.remove()
-        // }
+    handleEventClick = async (clickInfo) => {
+        let eventOrTaskTitle = clickInfo.event.title.substring(3);
+        if (clickInfo.event.title.charAt(0) === "E") {
+            await swal({
+                title: `Are you sure you want to delete the event "${eventOrTaskTitle}"`,
+                text: "Once deleted, you won't be able to recover the data.",
+                icon: "warning",
+                buttons: ["Cancel", "Delete"],
+                dangerMode: true,
+            }).then(async (willDelete) => {
+                if (willDelete) {
+                    clickInfo.event.remove()
+                    await this.getEvents()
+                }
+            });
+        } else {
+            this.setState({ loading: true });
+            swal("Edit details?", {
+                buttons: {
+                    // delete: {
+                    //     text: "Delete",
+                    //     value: "delete",
+                    // },
+                    edit: {
+                        text: "Edit details",
+                        value: "edit",
+                    },
+                    cancelClick: {
+                        text: "Cancel",
+                        value: "cancel",
+                    },
+                },
+            }).then(async (value) => {
+                switch (value) {
+                    // case "delete":
+                    //     swal({
+                    //         title: `Are you sure you want to delete the task "${eventOrTaskTitle}"`,
+                    //         text: "Once deleted, you won't be able to recover the data.",
+                    //         icon: "warning",
+                    //         buttons: ["Cancel", "Delete"],
+                    //         dangerMode: true,
+                    //     }).then(async (willDelete) => {
+                    //         if (willDelete) {
+                    //             clickInfo.event.remove()
+                    //         }
+                    //     });
+                    //     break;
+                    case "edit":
+                        let res = await axios.get(`${process.env.MIX_API_URL}/events/getTaskId/${clickInfo.event.id}`)
+                        this.setState({ loading: false });
+                        this.props.history.push(`/taskLists/${res.data.taskId.toString()}/edit`)
+                        break;
+                    case "cancel":
+                    default:
+                        this.setState({ loading: false });
+                }
+            })
+        }
+
     }
 
     handleEvents = (events) => {
@@ -119,12 +161,25 @@ class Event extends React.Component {
     }
 
     handleCalendarChange = async (changeInfo) => {
-        const id = changeInfo.event.id;
-        await axios.put(`${process.env.MIX_API_URL}/events/${id}`, {
-            title: changeInfo.event.title,
-            start: changeInfo.event.start,
-            end: changeInfo.event.end
-        });
+        if (changeInfo.event.title.charAt(0) === "E") {
+            const id = changeInfo.event.id;
+            await axios.put(`${process.env.MIX_API_URL}/events/${id}`, {
+                title: changeInfo.event.title,
+                start: changeInfo.event.start,
+                end: changeInfo.event.end
+            });
+        } else {
+            this.setState({ loading: true });
+            let taskTitle = changeInfo.event.title.substring(3);
+            swal({
+                title: `You can't change the due date here for "${taskTitle}"`,
+                text: "Go to My Task instead.",
+                icon: "warning",
+                buttons: "OK",
+            }).then(() => {
+                this.setState({ loading: false });
+            })
+        }
     }
 
     handleRemove = async (removeInfo) => {
@@ -133,7 +188,6 @@ class Event extends React.Component {
     }
 
     renderSidebar = () => {
-        const { events } = this.state;
         return (
             <div className='demo-app-sidebar'>
                 <div className='demo-app-sidebar-section'>
@@ -170,8 +224,8 @@ class Event extends React.Component {
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
-    handleSelectChange = (value, obj) => {
-        switch (obj.value.slice(0, -1)) {
+    handleSelectChange = (value, obj, inputType) => {
+        switch (inputType) {
             case "priority":
                 this.setState({ priority: obj.name })
                 break;
@@ -226,6 +280,8 @@ class Event extends React.Component {
                                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                                 }}
                                 initialView='dayGridMonth'
+                                allDaySlot={false}
+                                displayEventTime={false}
                                 editable={true}
                                 selectable={true}
                                 selectMirror={true}

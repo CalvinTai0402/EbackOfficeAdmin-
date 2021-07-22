@@ -6,9 +6,7 @@
 
 
 TODO:
-1.fix modal taking up extra space
-
-2. Add task to events
+1. assignee drop down
 
 5.
 - roles (basically get roles of loggedInUser then conditional rendering)
