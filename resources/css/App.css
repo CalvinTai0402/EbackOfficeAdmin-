@@ -5,6 +5,17 @@
     padding: 10px;
 }
 
+.homeImage {
+    margin: auto;
+    margin-top: 300px !important;
+    width: 80%;
+    padding: 10px;
+}
+
+.centerVaH {
+    margin-top: 10%;
+}
+
 .sideBarHeader {
     margin: auto;
     padding: 10px;

@@ -12,7 +12,7 @@ class FileManager extends Component {
     render() {
         return (
             <React.Fragment>
-                <div style={{ height: "800px" }} >
+                <div style={{ height: "800px" }} className="centerVaH" >
                     <div id="fm"></div>
                 </div>
             </React.Fragment >

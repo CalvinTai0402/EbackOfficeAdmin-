@@ -5,7 +5,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import ReactModal from 'react-modal';
 import Spinner from '../Spinner'
-import ModalForm from './ModalForm'
+import CreateModal from './CreateModal'
+import EditModal from './EditModal'
 import swal from 'sweetalert'
 
 import '../../../css/App.css'
@@ -18,9 +19,14 @@ class Event extends React.Component {
         events: [],
         loading: false,
         showModal: false,
+        showEditModal: false,
         title: "",
         description: "",
-        priority: ""
+        priority: "",
+        editTitle: "",
+        editDescription: "",
+        editPriority: "",
+        edited: false,
     }
 
     async componentDidMount() {
@@ -48,7 +54,7 @@ class Event extends React.Component {
         this.openModal();
         let seconds = 0
         do {
-            console.log("Polling...")
+            // console.log("Polling...")
             await this.sleep(1000);
             seconds += 1
         } while (this.state.showModal && seconds < 100)
@@ -72,7 +78,35 @@ class Event extends React.Component {
             })
             await this.getEvents()
         }
+    }
 
+    handleEditEvent = async (id) => {
+        this.openEditModal();
+        let seconds = 0
+        do {
+            console.log("Polling...")
+            await this.sleep(1000);
+            seconds += 1
+        } while (this.state.showEditModal && seconds < 100)
+        this.closeEditModal();
+        await this.updateEventContent(id);
+    }
+
+    updateEventContent = async (id) => {
+        const { editTitle, editDescription, editPriority } = this.state;
+        await axios.put(`${process.env.MIX_API_URL}/events/${id}`, {
+            title: editTitle,
+            description: editDescription,
+            priority: editPriority,
+            editType: "content"
+        });
+        this.setState({
+            editTitle: "",
+            editDescription: "",
+            editPriority: "",
+            edited: false
+        })
+        await this.getEvents()
     }
 
     sleep = async (msec) => {
@@ -83,31 +117,22 @@ class Event extends React.Component {
 
     closeModal = () => { this.setState({ showModal: false }) }
 
+    openEditModal = () => { this.setState({ showEditModal: true }) }
+
+    closeEditModal = () => { this.setState({ showEditModal: false }) }
+
     handleEventClick = async (clickInfo) => {
         let eventOrTaskTitle = clickInfo.event.title.substring(3);
         if (clickInfo.event.title.charAt(0) === "E") {
-            await swal({
-                title: `Are you sure you want to delete the event "${eventOrTaskTitle}"`,
-                text: "Once deleted, you won't be able to recover the data.",
-                icon: "warning",
-                buttons: ["Cancel", "Delete"],
-                dangerMode: true,
-            }).then(async (willDelete) => {
-                if (willDelete) {
-                    clickInfo.event.remove()
-                    await this.getEvents()
-                }
-            });
-        } else {
-            this.setState({ loading: true });
-            swal("Edit details?", {
+            // this.setState({ loading: true });
+            await swal("Would you like to edit or delete the event?", {
                 buttons: {
-                    // delete: {
-                    //     text: "Delete",
-                    //     value: "delete",
-                    // },
+                    delete: {
+                        text: "Delete",
+                        value: "delete",
+                    },
                     edit: {
-                        text: "Edit details",
+                        text: "Edit",
                         value: "edit",
                     },
                     cancelClick: {
@@ -117,27 +142,61 @@ class Event extends React.Component {
                 },
             }).then(async (value) => {
                 switch (value) {
-                    // case "delete":
-                    //     swal({
-                    //         title: `Are you sure you want to delete the task "${eventOrTaskTitle}"`,
-                    //         text: "Once deleted, you won't be able to recover the data.",
-                    //         icon: "warning",
-                    //         buttons: ["Cancel", "Delete"],
-                    //         dangerMode: true,
-                    //     }).then(async (willDelete) => {
-                    //         if (willDelete) {
-                    //             clickInfo.event.remove()
-                    //         }
-                    //     });
-                    //     break;
+                    case "delete":
+                        swal({
+                            title: `Are you sure you want to delete the event "${eventOrTaskTitle}"`,
+                            text: "Once deleted, you won't be able to recover the data.",
+                            icon: "warning",
+                            buttons: ["Cancel", "Delete"],
+                            dangerMode: true,
+                        }).then(async (willDelete) => {
+                            if (willDelete) {
+                                clickInfo.event.remove()
+                                await this.getEvents()
+                            }
+                        });
+                        break;
+                    case "edit":
+                        console.log(clickInfo.event.id)
+                        let res = await axios.get(`${process.env.MIX_API_URL}/events/${clickInfo.event.id}/edit`)
+                        console.log(res)
+                        this.setState({
+                            editTitle: res.data.event.title.substring(3),
+                            editDescription: res.data.event.description,
+                            editPriority: res.data.event.priority,
+                        })
+                        this.handleEditEvent(clickInfo.event.id);
+                        // this.setState({ loading: false });
+                        // this.props.history.push(`/taskLists/${res.data.taskId.toString()}/edit`)
+                        break;
+                    case "cancel":
+                    default:
+                    // this.setState({ loading: false });
+                }
+            })
+        } else {
+            // this.setState({ loading: true });
+            swal("Edit details?", {
+                buttons: {
+                    edit: {
+                        text: "Edit",
+                        value: "edit",
+                    },
+                    cancelClick: {
+                        text: "Cancel",
+                        value: "cancel",
+                    },
+                },
+            }).then(async (value) => {
+                switch (value) {
                     case "edit":
                         let res = await axios.get(`${process.env.MIX_API_URL}/events/getTaskId/${clickInfo.event.id}`)
-                        this.setState({ loading: false });
+                        // this.setState({ loading: false });
                         this.props.history.push(`/taskLists/${res.data.taskId.toString()}/edit`)
                         break;
                     case "cancel":
                     default:
-                        this.setState({ loading: false });
+                    // this.setState({ loading: false });
                 }
             })
         }
@@ -166,7 +225,8 @@ class Event extends React.Component {
             await axios.put(`${process.env.MIX_API_URL}/events/${id}`, {
                 title: changeInfo.event.title,
                 start: changeInfo.event.start,
-                end: changeInfo.event.end
+                end: changeInfo.event.end,
+                editType: "date"
             });
         } else {
             this.setState({ loading: true });
@@ -229,9 +289,22 @@ class Event extends React.Component {
             case "priority":
                 this.setState({ priority: obj.name })
                 break;
+            case "editPriority":
+                this.setState({
+                    editPriority: obj.name,
+                    edited: true
+                })
+                break;
             default:
         }
     }
+
+    handleEditChange = event => {
+        this.setState({
+            [event.target.name]: event.target.value,
+            edited: true
+        });
+    };
 
     renderModal = () => {
         const { title, description, priority, showModal } = this.state;
@@ -251,7 +324,7 @@ class Event extends React.Component {
                         }
                     }}
                 >
-                    <ModalForm
+                    <CreateModal
                         title={title}
                         description={description}
                         priority={priority}
@@ -263,14 +336,45 @@ class Event extends React.Component {
         )
     }
 
+    renderEditModal = () => {
+        const { editTitle, editDescription, editPriority, showEditModal } = this.state;
+        return (
+            <div >
+                <ReactModal
+                    isOpen={showEditModal}
+                    ariaHideApp={false}
+                    style={{
+                        overlay: {
+                            position: "absolute",
+                            left: "350px",
+                            margin: "auto",
+                            width: "700px",
+                            height: "500px",
+                            zIndex: 9999
+                        }
+                    }}
+                >
+                    <EditModal
+                        title={editTitle}
+                        description={editDescription}
+                        priority={editPriority}
+                        closeModal={this.closeEditModal}
+                        handleEditChange={this.handleEditChange}
+                        handleSelectChange={this.handleSelectChange} />
+                </ReactModal>
+            </div >
+        )
+    }
+
     render() {
         const { weekendsVisible, events, loading } = this.state;
         return (
-            <div>
+            <div className="centerVaH">
                 {loading ? <Spinner text="Loading..." /> :
                     <div className='demo-app'>
                         {this.renderSidebar()}
                         {this.renderModal()}
+                        {this.renderEditModal()}
                         <div className='demo-app-main'>
                             <FullCalendar
                                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
