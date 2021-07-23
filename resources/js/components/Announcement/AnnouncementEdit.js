@@ -248,6 +248,7 @@ class AnnouncementEdit extends Component {
                                 <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
                                     <Editor
+                                        editorStyle={{ height: "250px" }}
                                         editorState={editorState}
                                         wrapperClassName="demo-wrapper"
                                         editorClassName="editor-class"
