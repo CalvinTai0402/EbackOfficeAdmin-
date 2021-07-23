@@ -1,7 +1,5 @@
 import React from "react";
-import '../../css/App.css';
 import { ProSidebar, SubMenu, Menu, MenuItem, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
-import 'react-pro-sidebar/dist/css/styles.css';
 import { FaBattleNet, FaAdn, FaArtstation, FaGem, FaFantasyFlightGames, FaCriticalRole, FaDrupal, FaFreebsd, FaGitter, FaGratipay, FaGrav, FaGripfire } from "react-icons/fa";
 import Home from "./Home"
 import {
@@ -30,6 +28,9 @@ import TaskListIndex from './TaskList/TaskListIndex';
 import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
 import MyTaskIndex from "./MyTask/MyTaskIndex";
+
+import '../../css/App.css';
+import 'react-pro-sidebar/dist/css/styles.css';
 class Sidebar extends React.Component {
     state = {
         menuCollapse: false,

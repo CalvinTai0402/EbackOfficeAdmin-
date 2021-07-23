@@ -54,7 +54,6 @@ class Event extends React.Component {
         this.openModal();
         let seconds = 0
         do {
-            // console.log("Polling...")
             await this.sleep(1000);
             seconds += 1
         } while (this.state.showModal && seconds < 100)
@@ -84,12 +83,13 @@ class Event extends React.Component {
         this.openEditModal();
         let seconds = 0
         do {
-            console.log("Polling...")
             await this.sleep(1000);
             seconds += 1
         } while (this.state.showEditModal && seconds < 100)
         this.closeEditModal();
-        await this.updateEventContent(id);
+        const { edited } = this.state;
+        if (edited) { await this.updateEventContent(id); }
+
     }
 
     updateEventContent = async (id) => {
@@ -124,7 +124,6 @@ class Event extends React.Component {
     handleEventClick = async (clickInfo) => {
         let eventOrTaskTitle = clickInfo.event.title.substring(3);
         if (clickInfo.event.title.charAt(0) === "E") {
-            // this.setState({ loading: true });
             await swal("Would you like to edit or delete the event?", {
                 buttons: {
                     delete: {
@@ -157,25 +156,19 @@ class Event extends React.Component {
                         });
                         break;
                     case "edit":
-                        console.log(clickInfo.event.id)
                         let res = await axios.get(`${process.env.MIX_API_URL}/events/${clickInfo.event.id}/edit`)
-                        console.log(res)
                         this.setState({
                             editTitle: res.data.event.title.substring(3),
                             editDescription: res.data.event.description,
                             editPriority: res.data.event.priority,
                         })
                         this.handleEditEvent(clickInfo.event.id);
-                        // this.setState({ loading: false });
-                        // this.props.history.push(`/taskLists/${res.data.taskId.toString()}/edit`)
                         break;
                     case "cancel":
                     default:
-                    // this.setState({ loading: false });
                 }
             })
         } else {
-            // this.setState({ loading: true });
             swal("Edit details?", {
                 buttons: {
                     edit: {
@@ -191,12 +184,10 @@ class Event extends React.Component {
                 switch (value) {
                     case "edit":
                         let res = await axios.get(`${process.env.MIX_API_URL}/events/getTaskId/${clickInfo.event.id}`)
-                        // this.setState({ loading: false });
                         this.props.history.push(`/taskLists/${res.data.taskId.toString()}/edit`)
                         break;
                     case "cancel":
                     default:
-                    // this.setState({ loading: false });
                 }
             })
         }
@@ -399,6 +390,7 @@ class Event extends React.Component {
                                 eventAdd={this.handleAdd}
                                 eventChange={this.handleCalendarChange}
                                 eventRemove={this.handleRemove}
+                                eventDisplay="block"
                             />
                         </div>
                     </div>}

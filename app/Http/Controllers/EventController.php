@@ -18,9 +18,6 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        // $data = Event::whereDate('start', '>=', $request->start)
-        //     ->whereDate('end',   '<=', $request->end)
-        //     ->get(['id', 'title', 'start', 'end']);
         $events =  Auth::user()->events;
         return response()->json(['status' => 200, 'events' => $events]);
     }
