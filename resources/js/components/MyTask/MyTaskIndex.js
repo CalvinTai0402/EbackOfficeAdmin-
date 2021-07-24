@@ -349,7 +349,7 @@ class MyTaskIndex extends React.Component {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
-        const columns = ['id', 'name', 'description', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
+        const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
@@ -379,7 +379,7 @@ class MyTaskIndex extends React.Component {
                             <Icon name='list' circular />
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
-                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl search={false}>
+                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
                             {
                                 function (row, column) {
                                     switch (column) {
