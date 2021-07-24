@@ -8,7 +8,7 @@ class Home extends Component {
                 <img style={{
                     height: "400px",
                     width: "800px"
-                }} src={"home/home.jpeg"} alt={"Homepage image"} />
+                }} src={"/home/home.jpeg"} alt={"Homepage image"} />
             </div>
         );
     }

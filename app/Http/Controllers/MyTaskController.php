@@ -123,4 +123,16 @@ class MyTaskController extends Controller
     {
         //
     }
+
+    public function updateStatus(Request $request, MyTask $myTask)
+    {
+        $validator = Validator::make($request->all(), [
+            "status" => "required|max:200",
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => 422, 'errors' => $validator->messages()]);
+        }
+        $myTask->update($request->all());
+        return response()->json(['status' => 200, 'myTask' => $myTask]);
+    }
 }

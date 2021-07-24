@@ -276,8 +276,8 @@
 
 
 .select-search:not(.select-search--multiple) .select-search__select {
-    position: absolute;
-    z-index: 2;
+    /* position: absolute;
+    z-index: 2; */
     top: 44px;
     right: 0;
     left: 0;
@@ -370,3 +370,8 @@ b { /* used for event dates/times */
 .ReactModalPortal {
     display: inline;
 }
+
+/* .card, .card-body, .react-strap-table, .text-center, .card-footer{
+    position:relative;
+    z-index:0;
+} */
