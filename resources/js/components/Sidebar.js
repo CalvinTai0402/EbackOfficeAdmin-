@@ -1,7 +1,5 @@
 import React from "react";
-import '../../css/App.css';
 import { ProSidebar, SubMenu, Menu, MenuItem, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
-import 'react-pro-sidebar/dist/css/styles.css';
 import { FaBattleNet, FaAdn, FaArtstation, FaGem, FaFantasyFlightGames, FaCriticalRole, FaDrupal, FaFreebsd, FaGitter, FaGratipay, FaGrav, FaGripfire } from "react-icons/fa";
 import Home from "./Home"
 import {
@@ -30,6 +28,9 @@ import TaskListIndex from './TaskList/TaskListIndex';
 import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
 import MyTaskIndex from "./MyTask/MyTaskIndex";
+
+import '../../css/App.css';
+import 'react-pro-sidebar/dist/css/styles.css';
 class Sidebar extends React.Component {
     state = {
         menuCollapse: false,
@@ -58,7 +59,7 @@ class Sidebar extends React.Component {
             <div >
                 <Router>
                     <div id="sidebar" style={{ display: 'grid', gridTemplateColumns: '200px auto' }}>
-                        <ProSidebar className='sideBar' collapsed={menuCollapse} image="sidebar/background.jpg">
+                        <ProSidebar className='sideBar' collapsed={menuCollapse} image="/sidebar/background.jpg">
                             <SidebarHeader className="sideBarHeader">
                                 <p className="clickable">{"EbackOffice"}{", " + loggedInUserName}</p>
                             </SidebarHeader>
@@ -145,8 +146,6 @@ class Sidebar extends React.Component {
                         </ProSidebar>
                         <div className="centerH">
                             <Switch>
-                                <Route exact path="/" render={(props) => <Home {...props} />} />
-
                                 <Route exact path="/users" render={(props) => <UserIndex {...props} />} />
                                 <Route exact path="/users/create" render={(props) => <UserCreate {...props} />} />
                                 <Route exact path="/users/:id/edit" render={(props) => <UserEdit {...props} />} />
@@ -171,8 +170,10 @@ class Sidebar extends React.Component {
                                 <Route exact path="/announcements" render={(props) => <AnnouncementIndex {...props} />} />
                                 <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
-                                <Route exact path="/announcements/:id/edit/:reading/:source" render={(props) => <AnnouncementEdit {...props} />} />
+                                <Route exact path="/announcements/:id/edit/:source" render={(props) => <AnnouncementEdit {...props} />} />
                                 {/* <Route exact path="/announcements/:id/readOrUnreadPage/:reading" render={(props) => <ReadPage {...props} />} /> */}
+
+                                <Route path="/" render={(props) => <Home {...props} />} />
                             </Switch>
                         </div>
                     </div>

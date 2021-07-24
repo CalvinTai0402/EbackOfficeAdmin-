@@ -209,6 +209,31 @@ class MyTaskIndex extends React.Component {
         }
     };
 
+    handleUpdateStatus = async (value, obj, rowId) => {
+        this.setState({ loading: true });
+        const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/updateStatus/${rowId}`, {
+            status: obj.value,
+        });
+        if (res.data.status === 422) {
+            this.setState({ loading: false });
+            let validationErrors = res.data.errors;
+            this.setState({ errors: [] }, () => {
+                const { errors } = this.state;
+                for (let key of Object.keys(validationErrors)) {
+                    let errorArrayForOneField = validationErrors[key]
+                    errorArrayForOneField.forEach(function (errorMessage, index) {
+                        errors.push(errorMessage)
+                    });
+                }
+                this.setState({ errors })
+            });
+        }
+        else if (res.data.status === 200) {
+            this.setState({ loading: false, selected: false });
+            this.props.history.push("/myTasks");
+        }
+    };
+
     displayErrors = errors => errors.map((error, i) => <p key={i}>{error}</p>);
 
     handleInputError = (errors, inputName) => {
@@ -324,7 +349,7 @@ class MyTaskIndex extends React.Component {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
-        const columns = ['id', 'name', 'description', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
+        const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,
@@ -354,7 +379,7 @@ class MyTaskIndex extends React.Component {
                             <Icon name='list' circular />
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
-                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl search={false}>
+                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
                             {
                                 function (row, column) {
                                     switch (column) {
@@ -364,6 +389,27 @@ class MyTaskIndex extends React.Component {
                                                     onChange={self.handleCheckboxTableChange}
                                                     checked={self.state.selectedMyTasks.includes(row.id.toString())} />
                                             );
+                                        case 'status':
+                                            return (
+                                                <SelectSearch
+                                                    search
+                                                    onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
+                                                    filterOptions={fuzzySearch}
+                                                    options={[
+                                                        { value: 'No Status', name: 'No Status' },
+                                                        { value: 'Not Started', name: 'Not Started' },
+                                                        { value: 'In progress', name: 'In progress' },
+                                                        { value: "On Hold", name: "On Hold" },
+                                                        { value: 'Completed', name: 'Completed' },
+                                                        { value: 'Draft', name: 'Draft' },
+                                                        { value: "Needs Review", name: "Needs Review" },
+                                                        { value: 'With Client', name: 'With Client' },
+                                                        { value: 'Waiting on Client', name: 'Waiting on Client' },
+                                                    ]}
+                                                    placeholder="Choose a status"
+                                                    value={row.status}
+                                                />
+                                            )
                                         case 'actions':
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "start" }} onClick={() => self.handleEditClicked(row.id.toString())}>
@@ -479,9 +525,15 @@ class MyTaskIndex extends React.Component {
                                                         onChange={(value, obj) => this.handleSelectChange(value, obj, "status")}
                                                         filterOptions={fuzzySearch}
                                                         options={[
-                                                            { value: 'Done', name: 'Done' },
+                                                            { value: 'No Status', name: 'No Status' },
+                                                            { value: 'Not Started', name: 'Not Started' },
                                                             { value: 'In progress', name: 'In progress' },
-                                                            { value: "Haven't started", name: "Haven't started" },
+                                                            { value: "On Hold", name: "On Hold" },
+                                                            { value: 'Completed', name: 'Completed' },
+                                                            { value: 'Draft', name: 'Draft' },
+                                                            { value: "Needs Review", name: "Needs Review" },
+                                                            { value: 'With Client', name: 'With Client' },
+                                                            { value: 'Waiting on Client', name: 'Waiting on Client' },
                                                         ]}
                                                         placeholder="Choose a status"
                                                         value={status}

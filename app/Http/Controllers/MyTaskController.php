@@ -24,10 +24,17 @@ class MyTaskController extends Controller
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
         $myTasks = Auth::user()->myTasks()
+            ->name($search)
+            ->customer($search)
+            ->description($search)
+            ->priority($search)
+            ->status($search)
+            ->assigneenames($search)
             ->order($orderBy, $order)
             ->skipPage($toSkip)
             ->take($limit)
             ->get();
+        $myTasks = $myTasks->unique("id")->all();
         return response()->json(['count' => Auth::user()->myTasks()->count(), 'total' => Auth::user()->myTasks()->count(), 'data' => $myTasks]);
     }
 
@@ -122,5 +129,17 @@ class MyTaskController extends Controller
     public function destroy(MyTask $myTask)
     {
         //
+    }
+
+    public function updateStatus(Request $request, MyTask $myTask)
+    {
+        $validator = Validator::make($request->all(), [
+            "status" => "required|max:200",
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => 422, 'errors' => $validator->messages()]);
+        }
+        $myTask->update($request->all());
+        return response()->json(['status' => 200, 'myTask' => $myTask]);
     }
 }

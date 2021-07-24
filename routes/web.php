@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("taskLists/deleteMany",  [TaskListController::class, 'destroyMany'])->name('taskLists.destroyMany');
         Route::resource("taskLists", TaskListController::class);
 
+        Route::put("myTasks/updateStatus/{myTask}",  [MyTaskController::class, 'updateStatus'])->name('myTasks.updateStatus');
         Route::resource("myTasks", MyTaskController::class);
 
         Route::get('events/getTaskId/{event}',  [EventController::class, 'getTaskId'])->name('events.getTaskId');

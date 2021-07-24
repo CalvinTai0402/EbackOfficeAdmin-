@@ -15,6 +15,7 @@ import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
+import { AiOutlineRead } from "react-icons/ai";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 class AnnouncementEdit extends Component {
@@ -29,7 +30,6 @@ class AnnouncementEdit extends Component {
         editorState: EditorState.createEmpty(),
         source: "",
         canUpdate: false,
-        reading: 0,
         errors: [],
         loading: false
     }
@@ -52,11 +52,10 @@ class AnnouncementEdit extends Component {
             initialAssignees: res.data.announcement.initialAssignees,
             editorState: editorState,
             source: this.props.match.params.source,
-            reading: this.props.match.params.reading,
             id: this.props.match.params.id
         });
         await this.setCanUpdate();
-        await this.markReadOrUnread()
+        await this.markRead()
     }
 
     populateAvailableUsers = async () => {
@@ -168,13 +167,21 @@ class AnnouncementEdit extends Component {
         }
     };
 
-    markReadOrUnread = async () => {
-        const { reading, id } = this.state;
-        if (reading === "1") {
-            await axios.put(`${process.env.MIX_API_URL}/users/readAnnouncement/${id}`);
-        } else {
-            await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
-        }
+    markRead = async () => {
+        const { source, id } = this.state;
+        if (source === "announcementIndex") { await axios.put(`${process.env.MIX_API_URL}/users/readAnnouncement/${id}`); }
+    }
+
+    markUnread = async () => {
+        const { id } = this.state;
+        await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
+        this.props.history.push("/announcements");
+    }
+
+    cancel = () => {
+        const { source } = this.state;
+        if (source === "sentAnnouncementIndex") this.props.history.push("/announcementssent")
+        else this.props.history.push("/announcements")
     }
 
     displayErrors = errors => errors.map((error, i) => <p key={i}>{error}</p>);
@@ -231,7 +238,7 @@ class AnnouncementEdit extends Component {
                     <Grid.Column style={{ width: "80%" }}>
                         <Header as="h1" icon color="blue" textAlign="center">
                             <Icon name="tasks" color="blue" />
-                            Edit Announcement
+                            Reading Announcement
                         </Header>
                         <Form onSubmit={this.handleUpdate} size="large">
                             <Segment stacked>
@@ -248,6 +255,7 @@ class AnnouncementEdit extends Component {
                                 <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
                                     <Editor
+                                        editorStyle={{ height: "250px" }}
                                         editorState={editorState}
                                         wrapperClassName="demo-wrapper"
                                         editorClassName="editor-class"
@@ -295,7 +303,7 @@ class AnnouncementEdit extends Component {
                         )}
                     </Grid.Column>
                 </Grid>
-                {source === "sentAnnouncementIndex" ?
+                {source === "sentAnnouncementIndex" ? <div>
                     <Table style={{ marginTop: "30px" }}>
                         <thead>
                             <tr>
@@ -317,7 +325,39 @@ class AnnouncementEdit extends Component {
                                 );
                             })}
                         </tbody>
-                    </Table> : ""}
+                    </Table>
+                    <Button.Group floated="right">
+                        <button className="btn btn-primary" style={{ marginTop: "8px" }} onClick={this.cancel}>
+                            <div style={{ color: "white" }} >
+                                <span >
+                                    Back
+                                </span>
+                            </div>
+                        </button>
+                    </Button.Group>
+                </div>
+                    : source === "announcementIndex" ?
+                        <Grid textAlign="center" verticalAlign="middle" className="app">
+                            <Grid.Column style={{ width: "80%" }}>
+                                <Button.Group floated="right">
+                                    <button className="btn btn-primary" style={{ marginRight: "8px" }} onClick={this.cancel}>
+                                        <div style={{ color: "white" }} >
+                                            <span  >
+                                                Cancel
+                                            </span>
+                                        </div>
+                                    </button>
+                                    <button className="btn btn-success" onClick={this.markUnread}>
+                                        <div style={{ color: "white" }} >
+                                            <AiOutlineRead color="white" />
+                                            <span style={{ marginLeft: "8px" }} >
+                                                Mark as Unread
+                                            </span>
+                                        </div>
+                                    </button>
+                                </Button.Group>
+                            </Grid.Column>
+                        </Grid> : ""}
             </div>
         );
     }

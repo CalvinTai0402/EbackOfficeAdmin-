@@ -83,7 +83,7 @@ class TaskListIndex extends React.Component {
         const { deleting } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/taskLists`;
-        const columns = ['id', 'name', 'description', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
+        const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: 5,

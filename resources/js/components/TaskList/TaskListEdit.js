@@ -388,9 +388,15 @@ class TaskListEdit extends Component {
                                         onChange={(value, obj) => this.handleSelectChange(value, obj, "status")}
                                         filterOptions={fuzzySearch}
                                         options={[
-                                            { value: 'Done', name: 'Done' },
+                                            { value: 'No Status', name: 'No Status' },
+                                            { value: 'Not Started', name: 'Not Started' },
                                             { value: 'In progress', name: 'In progress' },
-                                            { value: "Haven't started", name: "Haven't started" },
+                                            { value: "On Hold", name: "On Hold" },
+                                            { value: 'Completed', name: 'Completed' },
+                                            { value: 'Draft', name: 'Draft' },
+                                            { value: "Needs Review", name: "Needs Review" },
+                                            { value: 'With Client', name: 'With Client' },
+                                            { value: 'Waiting on Client', name: 'Waiting on Client' },
                                         ]}
                                         placeholder="Choose a status"
                                         value={status}

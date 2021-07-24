@@ -4,8 +4,11 @@ import '../../css/App.css';
 class Home extends Component {
     render() {
         return (
-            <div className='centerVandH'>
-                EbackOffice Admin Panel
+            <div className='homeImage'>
+                <img style={{
+                    height: "400px",
+                    width: "800px"
+                }} src={"/home/home.jpeg"} alt={"Homepage image"} />
             </div>
         );
     }

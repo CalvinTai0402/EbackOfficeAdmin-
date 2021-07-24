@@ -18,9 +18,6 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        // $data = Event::whereDate('start', '>=', $request->start)
-        //     ->whereDate('end',   '<=', $request->end)
-        //     ->get(['id', 'title', 'start', 'end']);
         $events =  Auth::user()->events;
         return response()->json(['status' => 200, 'events' => $events]);
     }
@@ -81,7 +78,7 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        //
+        return response()->json(['status' => 200, 'event' => $event]);
     }
 
     /**
@@ -93,13 +90,25 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        $startDate = new DateTime($request["start"], new DateTimeZone('UTC'));
-        $startDate->setTimezone(new DateTimeZone('America/Denver'));
-        $endDate = new DateTime($request["end"], new DateTimeZone('UTC'));
-        $endDate->setTimezone(new DateTimeZone('America/Denver'));
-        $request["start"] = $startDate->format('Y-m-d H:i:s');
-        $request["end"] = $endDate->format('Y-m-d H:i:s');
-        $event->update($request->all());
+        if ($request->editType == "date") {
+            $startDate = new DateTime($request["start"], new DateTimeZone('UTC'));
+            $startDate->setTimezone(new DateTimeZone('America/Denver'));
+            $endDate = new DateTime($request["end"], new DateTimeZone('UTC'));
+            $endDate->setTimezone(new DateTimeZone('America/Denver'));
+            $request["start"] = $startDate->format('Y-m-d H:i:s');
+            $request["end"] = $endDate->format('Y-m-d H:i:s');
+            $event->update($request->all());
+        } else if ($request->editType == "content") {
+            $request["title"] = "E: " . $request["title"];
+            if ($request["priority"] == "High") {
+                $request["color"] = "Red";
+            } elseif ($request["priority"] == "Medium") {
+                $request["color"] = "Blue";
+            } else {
+                $request["color"] = "Green";
+            }
+            $event->update($request->all());
+        }
         return response()->json(['status' => 200, 'event' => $event]);
     }
 
