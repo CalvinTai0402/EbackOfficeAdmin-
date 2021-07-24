@@ -6,7 +6,8 @@ import {
     Button,
     Header,
     Message,
-    Icon
+    Icon,
+    TextArea
 } from "semantic-ui-react";
 
 class AvailableTaskCreate extends Component {
@@ -91,14 +92,12 @@ class AvailableTaskCreate extends Component {
                                         className={this.handleInputError(errors, "name")}
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
-                                    <Form.Input
-                                        fluid
+                                    <TextArea
                                         name="description"
                                         onChange={this.handleChange}
                                         value={description}
-                                        className={this.handleInputError(errors, "description")}
                                     />
                                 </Form.Field>
                                 <Button
@@ -120,7 +119,7 @@ class AvailableTaskCreate extends Component {
                         )}
                     </Grid.Column>
                 </Grid>
-            </div>
+            </div >
         );
     }
 }

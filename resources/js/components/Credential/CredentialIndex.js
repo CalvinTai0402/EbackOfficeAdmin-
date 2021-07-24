@@ -2,6 +2,7 @@ import React from 'react';
 import {
     Table,
     Form,
+    Button
 } from 'semantic-ui-react'
 import { AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
 
@@ -44,9 +45,10 @@ class CredentialIndex extends React.Component {
                                         />
                                     </Form.Field>
                                 </Table.Cell>
-                                <Table.Cell>
-                                    <Form.Field>
+                                <Table.Cell >
+                                    <Form.Field >
                                         <Form.Input
+                                            type="url"
                                             value={credential[1]}
                                             onChange={(e) => this.props.handleCredentialsChange(e, "loginUrl", index)}
                                         />
@@ -77,11 +79,15 @@ class CredentialIndex extends React.Component {
                                     </Form.Field>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={(event) => this.props.deleteRow(event, index)}>
-                                        <AiFillMinusSquare color="white" />
+                                    <button className="btn btn-danger" onClick={(event) => this.props.deleteRow(event, index)}>
                                         <div style={{ color: "white" }}>
                                             Delete row
                                         </div>
+                                    </button>
+                                    <button className="btn btn-success" style={{ marginLeft: "5px" }}>
+                                        <a target="_blank" href={credential[1]}>
+                                            Go to URL
+                                        </a>
                                     </button>
                                 </Table.Cell>
                             </Table.Row>

@@ -6,7 +6,8 @@ import {
     Button,
     Header,
     Message,
-    Icon
+    Icon,
+    TextArea
 } from "semantic-ui-react";
 
 class AvailableTaskEdit extends Component {
@@ -99,14 +100,12 @@ class AvailableTaskEdit extends Component {
                                         className={this.handleInputError(errors, "name")}
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
-                                    <Form.Input
-                                        fluid
+                                    <TextArea
                                         name="description"
                                         onChange={this.handleChange}
                                         value={description}
-                                        className={this.handleInputError(errors, "description")}
                                     />
                                 </Form.Field>
                                 <Button

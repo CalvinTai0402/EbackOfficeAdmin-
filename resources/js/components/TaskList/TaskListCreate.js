@@ -6,7 +6,9 @@ import {
     Button,
     Header,
     Message,
-    Icon
+    Icon,
+    GridColumn,
+    TextArea
 } from "semantic-ui-react";
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -272,14 +274,14 @@ class TaskListCreate extends Component {
         const { description, notes, selectedDate, availableTaskNames, availableCustomerCodes, userNames, errors, loading } = this.state;
         return (
             <div>
-                <Grid textAlign="center" verticalAlign="middle" className="app">
-                    <Grid.Column style={{ maxWidth: 450 }}>
-                        <Header as="h1" icon color="blue" textAlign="center">
-                            <Icon name="tasks" color="blue" />
-                            Create Task
-                        </Header>
-                        <Form onSubmit={this.handleStore} size="large" autoComplete="off">
-                            <Segment stacked>
+                <Form onSubmit={this.handleStore} size="large" autoComplete="off">
+                    <Header as="h1" icon color="blue" textAlign="center">
+                        <Icon name="tasks" color="blue" />
+                        Create Task
+                    </Header>
+                    <Grid className="app">
+                        <Grid.Row>
+                            <Grid.Column width={8}>
                                 <Form.Field className={this.handleInputError(errors, "name")}>
                                     <label>Name</label>
                                     <SelectSearch
@@ -300,24 +302,24 @@ class TaskListCreate extends Component {
                                         placeholder="Choose a customer code"
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
-                                    <Form.Input
-                                        fluid
+                                    <TextArea
                                         name="description"
+                                        onChange={this.handleChange}
                                         value={description}
-                                        className={this.handleInputError(errors, "description")}
                                     />
                                 </Form.Field>
                                 <Form.Field>
                                     <label>Notes</label>
-                                    <Form.Input
-                                        fluid
+                                    <TextArea
                                         name="notes"
                                         onChange={this.handleChange}
                                         value={notes}
                                     />
                                 </Form.Field>
+                            </Grid.Column>
+                            <Grid.Column width={8}>
                                 <Form.Field className={this.handleInputError(errors, "due")}>
                                     <label>Due date</label>
                                     <DatePicker
@@ -399,17 +401,17 @@ class TaskListCreate extends Component {
                                 >
                                     Create Task
                                 </Button>
-                            </Segment>
-                        </Form>
-                        {errors.length > 0 && (
-                            <Message error>
-                                <h3>Error</h3>
-                                {this.displayErrors(errors)}
-                            </Message>
-                        )}
-                    </Grid.Column>
-                </Grid>
-            </div>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Form>
+                {errors.length > 0 && (
+                    <Message error>
+                        <h3>Error</h3>
+                        {this.displayErrors(errors)}
+                    </Message>
+                )}
+            </div >
         );
     }
 }
