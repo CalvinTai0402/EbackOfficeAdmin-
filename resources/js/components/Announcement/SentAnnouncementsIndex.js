@@ -140,7 +140,7 @@ class SentAnnouncementsIndex extends React.Component {
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/edit/2/sentAnnouncementIndex'}>
+                                                        <Link to={'announcements/' + row.id + '/edit/sentAnnouncementIndex'}>
                                                             <AiFillEdit color="white" />
                                                             <div style={{ color: "white" }} >
                                                                 Edit

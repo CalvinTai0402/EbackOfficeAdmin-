@@ -151,14 +151,14 @@ class AnnouncementIndex extends React.Component {
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/edit/0/announcementIndex'}>
+                                                        <Link to={'announcements/' + row.id + '/edit/announcementIndex'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
-                                                                Unread
+                                                                Read
                                                             </div>
                                                         </Link>
                                                     </button> : <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/edit/1/announcementIndex'}>
+                                                        <Link to={'announcements/' + row.id + '/edit/announcementIndex'}>
                                                             <AiOutlineRead color="white" />
                                                             <div style={{ color: "white" }} >
                                                                 New
