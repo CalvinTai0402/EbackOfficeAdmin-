@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import {
     Grid,
     Form,
-    Segment,
     Button,
     Header,
     Message,
-    Icon
+    Icon,
+    TextArea
 } from "semantic-ui-react";
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -116,19 +116,19 @@ class TaskListEdit extends Component {
 
     populateAvalableCustomersForTaskList = async () => {
         let res = await axios.get(`${process.env.MIX_API_URL}/customers/populateAvailableCustomersForTaskList`);
-        let availableCustomerIdsAndCodes = res.data.availableCustomerIdsAndCodes;
-        let availableCustomerIds = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+        let availableCustomerDetails = res.data.availableCustomerDetails;
+        let availableCustomerIds = availableCustomerDetails.map((availableCustomerDetail, i) => {
             let availableCustomerId = {
-                value: availableCustomerIdAndCode.id,
-                name: availableCustomerIdAndCode.id,
+                value: availableCustomerDetail.id,
+                name: availableCustomerDetail.id,
                 index: i
             };
             return availableCustomerId;
         });
-        let availableCustomerCodes = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+        let availableCustomerCodes = availableCustomerDetails.map((availableCustomerDetail, i) => {
             let availableCustomerCodes = {
-                value: availableCustomerIdAndCode.code,
-                name: availableCustomerIdAndCode.code,
+                value: availableCustomerDetail.code,
+                name: availableCustomerDetail.code,
                 index: i
             };
             return availableCustomerCodes;
@@ -292,14 +292,14 @@ class TaskListEdit extends Component {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading } = this.state;
         return (
             <div>
-                <Grid textAlign="center" verticalAlign="middle" className="app">
-                    <Grid.Column style={{ maxWidth: 450 }}>
-                        <Header as="h1" icon color="blue" textAlign="center">
-                            <Icon name="tasks" color="blue" />
-                            Edit Task
-                        </Header>
-                        <Form onSubmit={this.handleUpdate} size="large">
-                            <Segment stacked>
+                <Form onSubmit={this.handleUpdate} size="large">
+                    <Header as="h1" icon color="blue" textAlign="center">
+                        <Icon name="tasks" color="blue" />
+                        Edit Task
+                    </Header>
+                    <Grid className="app">
+                        <Grid.Row>
+                            <Grid.Column width={8}>
                                 <Form.Field className={this.handleInputError(errors, "name")}>
                                     <label>Name</label>
                                     <SelectSearch
@@ -323,24 +323,24 @@ class TaskListEdit extends Component {
                                         value={customerCode}
                                     />
                                 </Form.Field>
-                                <Form.Field>
+                                <Form.Field className={this.handleInputError(errors, "description")}>
                                     <label>Description</label>
-                                    <Form.Input
-                                        fluid
+                                    <TextArea
                                         name="description"
+                                        onChange={this.handleChange}
                                         value={description}
-                                        className={this.handleInputError(errors, "description")}
                                     />
                                 </Form.Field>
                                 <Form.Field>
                                     <label>Notes</label>
-                                    <Form.Input
-                                        fluid
+                                    <TextArea
                                         name="notes"
                                         onChange={this.handleChange}
                                         value={notes}
                                     />
                                 </Form.Field>
+                            </Grid.Column>
+                            <Grid.Column width={8}>
                                 <Form.Field className={this.handleInputError(errors, "due")}>
                                     <label>Due date</label>
                                     <DatePicker
@@ -425,16 +425,17 @@ class TaskListEdit extends Component {
                                 >
                                     Update
                                 </Button>
-                            </Segment>
-                        </Form>
-                        {errors.length > 0 && (
-                            <Message error>
-                                <h3>Error</h3>
-                                {this.displayErrors(errors)}
-                            </Message>
-                        )}
-                    </Grid.Column>
-                </Grid>
+
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Form>
+                {errors.length > 0 && (
+                    <Message error>
+                        <h3>Error</h3>
+                        {this.displayErrors(errors)}
+                    </Message>
+                )}
             </div>
         );
     }

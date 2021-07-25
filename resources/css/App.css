@@ -371,6 +371,10 @@ b { /* used for event dates/times */
     display: inline;
 }
 
+a:visited{
+    color:white;
+}
+
 /* .card, .card-body, .react-strap-table, .text-center, .card-footer{
     position:relative;
     z-index:0;

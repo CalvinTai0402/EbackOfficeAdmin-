@@ -415,6 +415,7 @@ class CustomerEdit extends Component {
                         <Grid.Row>
                             <Grid.Column width={16}>
                                 <CredentialIndex
+                                    editable={true}
                                     addRow={this.addRow}
                                     deleteRow={this.deleteRow}
                                     handleCredentialsChange={this.handleCredentialsChange}

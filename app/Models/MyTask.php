@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Customer;
 
 class MyTask extends Model
 {
@@ -116,8 +117,8 @@ class MyTask extends Model
         return $this->belongsToMany(User::class, 'tasklists_users', 'tasklist_id', 'user_id');
     }
 
-    // public function __toString()
-    // {
-    //     return $this->id;
-    // }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
 }

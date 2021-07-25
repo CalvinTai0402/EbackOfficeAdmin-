@@ -86,6 +86,7 @@ class MyTaskController extends Controller
         }
         $myTask["asigneeIds"] = $asigneeIds;
         $myTask["initialAssignees"] = $initialAssignees;
+        $myTask["customer"] = $myTask->customer;
         return response()->json(['status' => 200, 'myTask' => $myTask]);
     }
 

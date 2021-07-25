@@ -5,7 +5,7 @@ import Spinner from "../Spinner";
 import {
     Grid,
     Form,
-    Segment,
+    TextArea,
     Button,
     Header,
     Message,
@@ -15,6 +15,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
+import CredentialIndex from '../Credential/CredentialIndex';
 
 import '../../../css/TaskList.css';
 
@@ -26,6 +27,8 @@ class MyTaskIndex extends React.Component {
         name: "",
         customerCode: "",
         customerId: 0,
+        customerName: "",
+        customerRemark: "",
         description: "",
         notes: "",
         duedate: "",
@@ -37,8 +40,11 @@ class MyTaskIndex extends React.Component {
         initialAssignees: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
+        availableCustomerNames: [],
+        availableCustomerRemarks: [],
         availableCustomerCodes: [],
         availableCustomerIds: [],
+        credentials: [],
         userNames: [],
         userIds: [],
         rowId: "",
@@ -50,7 +56,7 @@ class MyTaskIndex extends React.Component {
     async componentDidMount() {
         await this.populateAvalableTaskNamesAndDecriptions()
         await this.populateAvailableUsers()
-        await this.populateAvalableCustomersForTaskList()
+        await this.populateAvailableCustomersForTaskList()
     }
 
     populateAvalableTaskNamesAndDecriptions = async () => {
@@ -103,26 +109,42 @@ class MyTaskIndex extends React.Component {
         });
     }
 
-    populateAvalableCustomersForTaskList = async () => {
+    populateAvailableCustomersForTaskList = async () => {
         let res = await axios.get(`${process.env.MIX_API_URL}/customers/populateAvailableCustomersForTaskList`);
-        let availableCustomerIdsAndCodes = res.data.availableCustomerIdsAndCodes;
-        let availableCustomerIds = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+        let availableCustomerDetails = res.data.availableCustomerDetails;
+        let availableCustomerIds = availableCustomerDetails.map((availableCustomerDetail, i) => {
             let availableCustomerId = {
-                value: availableCustomerIdAndCode.id,
-                name: availableCustomerIdAndCode.id,
+                value: availableCustomerDetail.id,
+                name: availableCustomerDetail.id,
                 index: i
             };
             return availableCustomerId;
         });
-        let availableCustomerCodes = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
-            let availableCustomerCodes = {
-                value: availableCustomerIdAndCode.code,
-                name: availableCustomerIdAndCode.code,
+        let availableCustomerCodes = availableCustomerDetails.map((availableCustomerDetail, i) => {
+            let availableCustomerCode = {
+                value: availableCustomerDetail.code,
+                name: availableCustomerDetail.code,
                 index: i
             };
-            return availableCustomerCodes;
+            return availableCustomerCode;
         });
-        this.setState({ availableCustomerIds, availableCustomerCodes });
+        let availableCustomerNames = availableCustomerDetails.map((availableCustomerDetail, i) => {
+            let availableCustomerName = {
+                value: availableCustomerDetail.name,
+                name: availableCustomerDetail.name,
+                index: i
+            };
+            return availableCustomerName;
+        });
+        let availableCustomerRemarks = availableCustomerDetails.map((availableCustomerDetail, i) => {
+            let availableCustomerRemark = {
+                value: availableCustomerDetail.remark,
+                name: availableCustomerDetail.remark,
+                index: i
+            };
+            return availableCustomerRemark;
+        });
+        this.setState({ availableCustomerIds, availableCustomerCodes, availableCustomerNames, availableCustomerRemarks });
     }
 
     check_all = React.createRef();
@@ -147,7 +169,6 @@ class MyTaskIndex extends React.Component {
     }
 
     handleEditClicked = async (id) => {
-        const { userNames } = this.state;
         let res = await axios.get(`${process.env.MIX_API_URL}/myTasks/${id}/edit`);
         let duedateParts = res.data.myTask.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
@@ -164,9 +185,17 @@ class MyTaskIndex extends React.Component {
             asigneeIds: res.data.myTask.asigneeIds,
             initialAssignees: res.data.myTask.initialAssignees,
             selected: true,
-            customerCode: res.data.myTask.customer_code,
-            customerId: res.data.myTask.customer_id,
+            customerCode: res.data.myTask.customer.code,
+            customerId: res.data.myTask.customer.id,
+            customerName: res.data.myTask.customer.name,
+            customerRemark: res.data.myTask.customer.remark,
         });
+        await this.populateCredentialsForCustomers(this.state.customerId);
+    }
+
+    populateCredentialsForCustomers = async (id) => {
+        let res = await axios.get(`${process.env.MIX_API_URL}/credentials/${id}/populateCredentialsForCustomers`);
+        this.setState({ credentials: res.data.credentials });
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
@@ -346,7 +375,8 @@ class MyTaskIndex extends React.Component {
     }
 
     render() {
-        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected } = this.state;
+        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
+            status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected, credentials } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
@@ -429,18 +459,20 @@ class MyTaskIndex extends React.Component {
                             }
                         </ServerTable >
                         <div>
-                            <Grid textAlign="center" verticalAlign="middle" className="app">
-                                <Grid.Column style={{ maxWidth: 450 }}>
-                                    {selected ? <div><Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
-                                        Editing: {name}
-                                    </Header>
-                                        <Form onSubmit={this.handleUpdate} size="large">
-                                            <Segment stacked>
+                            <Form onSubmit={this.handleUpdate} size="large">
+                                {selected ?
+                                    <Grid className="app">
+                                        <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
+                                            Editing: {name}
+                                        </Header>
+                                        <Grid.Row>
+                                            <Grid.Column width={6}>
                                                 <Form.Field className={this.handleInputError(errors, "name")}>
                                                     <label>Name</label>
                                                     <SelectSearch
                                                         style={{ color: "black" }}
                                                         search
+                                                        disabled
                                                         onChange={(value, obj) => this.handleSelectChange(value, obj, "availableTaskName")}
                                                         filterOptions={fuzzySearch}
                                                         options={availableTaskNames}
@@ -448,7 +480,7 @@ class MyTaskIndex extends React.Component {
                                                         value={name}
                                                     />
                                                 </Form.Field>
-                                                <Form.Field className={this.handleInputError(errors, "customer")}>
+                                                {/* <Form.Field className={this.handleInputError(errors, "customer")}>
                                                     <label>Customer Code</label>
                                                     <SelectSearch
                                                         search
@@ -458,29 +490,64 @@ class MyTaskIndex extends React.Component {
                                                         placeholder="Choose a customer code"
                                                         value={customerCode}
                                                     />
-                                                </Form.Field>
-                                                <Form.Field>
+                                                </Form.Field> */}
+                                                <Form.Field className={this.handleInputError(errors, "description")}>
                                                     <label>Description</label>
-                                                    <Form.Input
-                                                        fluid
+                                                    <TextArea
+                                                        disabled
                                                         name="description"
-                                                        // onChange={this.handleChange}
+                                                        onChange={this.handleChange}
                                                         value={description}
-                                                        className={this.handleInputError(errors, "description")}
                                                     />
                                                 </Form.Field>
                                                 <Form.Field>
                                                     <label>Notes</label>
-                                                    <Form.Input
-                                                        fluid
+                                                    <TextArea
                                                         name="notes"
                                                         onChange={this.handleChange}
                                                         value={notes}
                                                     />
                                                 </Form.Field>
+                                            </Grid.Column>
+                                            <Grid.Column width={5}>
+                                                <Form.Field className={this.handleInputError(errors, "customer")}>
+                                                    <label>Customer Code</label>
+                                                    <SelectSearch
+                                                        search
+                                                        disabled
+                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
+                                                        filterOptions={fuzzySearch}
+                                                        options={availableCustomerCodes}
+                                                        placeholder="Choose a customer code"
+                                                        value={customerCode}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Customer Name</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        disabled
+                                                        name="name"
+                                                        onChange={this.handleChange}
+                                                        value={customerName}
+                                                        className={this.handleInputError(errors, "name")}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Remarks</label>
+                                                    <TextArea
+                                                        disabled
+                                                        name="remark"
+                                                        onChange={this.handleChange}
+                                                        value={customerRemark}
+                                                    />
+                                                </Form.Field>
+                                            </Grid.Column>
+                                            <Grid.Column width={5}>
                                                 <Form.Field className={this.handleInputError(errors, "due")}>
                                                     <label>Due date</label>
                                                     <DatePicker
+                                                        disabled
                                                         selected={selectedDate}
                                                         onChange={(date) => this.setDate(date)}
                                                         dateFormat="MM-dd-yyyy"
@@ -491,6 +558,7 @@ class MyTaskIndex extends React.Component {
                                                     <label>Repeat</label>
                                                     <SelectSearch
                                                         search
+                                                        disabled
                                                         onChange={(value, obj) => this.handleSelectChange(value, obj, "repeat")}
                                                         filterOptions={fuzzySearch}
                                                         options={[
@@ -507,6 +575,7 @@ class MyTaskIndex extends React.Component {
                                                     <label>Priority</label>
                                                     <SelectSearch
                                                         search
+                                                        disabled
                                                         onChange={(value, obj) => this.handleSelectChange(value, obj, "priority")}
                                                         filterOptions={fuzzySearch}
                                                         options={[
@@ -543,6 +612,7 @@ class MyTaskIndex extends React.Component {
                                                     <label>Asignee(s)</label>
                                                     <SelectSearch
                                                         search
+                                                        disabled
                                                         closeOnSelect={false}
                                                         printOptions="on-focus"
                                                         multiple
@@ -562,19 +632,27 @@ class MyTaskIndex extends React.Component {
                                                 >
                                                     Update
                                                 </Button>
-                                            </Segment>
-                                        </Form>
-                                        {errors.length > 0 && (
-                                            <Message error>
-                                                <h3>Error</h3>
-                                                {this.displayErrors(errors)}
-                                            </Message>
-                                        )}</div> :
-                                        <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
-                                            Select a task to edit
-                                        </Header>}
-                                </Grid.Column>
-                            </Grid>
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                        <Grid.Row>
+                                            <Grid.Column width={16}>
+                                                <CredentialIndex
+                                                    editable={false}
+                                                    handleCredentialsChange={() => { }}
+                                                    credentials={credentials} />
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                    </Grid> :
+                                    <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
+                                        Select a task to edit
+                                    </Header>}
+                            </Form>
+                            {errors.length > 0 && (
+                                <Message error>
+                                    <h3>Error</h3>
+                                    {this.displayErrors(errors)}
+                                </Message>
+                            )}
                         </div>
                     </div>}
             </div>
