@@ -98,19 +98,19 @@ class TaskListCreate extends Component {
 
     populateAvalableCustomersForTaskList = async () => {
         let res = await axios.get(`${process.env.MIX_API_URL}/customers/populateAvailableCustomersForTaskList`);
-        let availableCustomerIdsAndCodes = res.data.availableCustomerIdsAndCodes;
-        let availableCustomerIds = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+        let availableCustomerDetails = res.data.availableCustomerDetails;
+        let availableCustomerIds = availableCustomerDetails.map((availableCustomerDetail, i) => {
             let availableCustomerId = {
-                value: availableCustomerIdAndCode.id,
-                name: availableCustomerIdAndCode.id,
+                value: availableCustomerDetail.id,
+                name: availableCustomerDetail.id,
                 index: i
             };
             return availableCustomerId;
         });
-        let availableCustomerCodes = availableCustomerIdsAndCodes.map((availableCustomerIdAndCode, i) => {
+        let availableCustomerCodes = availableCustomerDetails.map((availableCustomerDetail, i) => {
             let availableCustomerCodes = {
-                value: availableCustomerIdAndCode.code,
-                name: availableCustomerIdAndCode.code,
+                value: availableCustomerDetail.code,
+                name: availableCustomerDetail.code,
                 index: i
             };
             return availableCustomerCodes;
