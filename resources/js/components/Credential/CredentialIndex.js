@@ -4,7 +4,7 @@ import {
     Form,
     Button
 } from 'semantic-ui-react'
-import { AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
+import { AiFillPlusSquare } from "react-icons/ai";
 
 class CredentialIndex extends React.Component {
     state = {
@@ -12,7 +12,7 @@ class CredentialIndex extends React.Component {
     };
 
     render() {
-        const { rows } = this.state;
+        const { editable } = this.props;
         return (
             <Table celled>
                 <Table.Header>
@@ -23,12 +23,12 @@ class CredentialIndex extends React.Component {
                         <Table.HeaderCell>Password</Table.HeaderCell>
                         <Table.HeaderCell>Remarks</Table.HeaderCell>
                         <Table.HeaderCell>
-                            <button className="btn btn-primary" style={{ marginLeft: "5px" }} onClick={this.props.addRow}>
+                            {editable ? <button className="btn btn-primary" style={{ marginLeft: "5px" }} onClick={this.props.addRow}>
                                 <AiFillPlusSquare color="white" />
                                 <div style={{ color: "white" }}>
                                     Add row
                                 </div>
-                            </button>
+                            </button> : ""}
                         </Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
@@ -79,11 +79,11 @@ class CredentialIndex extends React.Component {
                                     </Form.Field>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <button className="btn btn-danger" onClick={(event) => this.props.deleteRow(event, index)}>
+                                    {editable ? <button className="btn btn-danger" onClick={(event) => this.props.deleteRow(event, index)}>
                                         <div style={{ color: "white" }}>
                                             Delete row
                                         </div>
-                                    </button>
+                                    </button> : ""}
                                     <button className="btn btn-success" style={{ marginLeft: "5px" }}>
                                         <a target="_blank" href={credential[1]}>
                                             Go to URL

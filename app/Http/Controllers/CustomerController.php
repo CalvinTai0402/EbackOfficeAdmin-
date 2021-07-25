@@ -152,7 +152,7 @@ class CustomerController extends Controller
 
     public function populateAvailableCustomersForTaskList()
     {
-        $availableCustomerIdsAndCodes = Customer::select("id", "code")->get();
-        return response()->json(['status' => 200, 'availableCustomerIdsAndCodes' => $availableCustomerIdsAndCodes]);
+        $availableCustomerDetails = Customer::select("id", "code", "name", "remark")->get();
+        return response()->json(['status' => 200, 'availableCustomerDetails' => $availableCustomerDetails]);
     }
 }
