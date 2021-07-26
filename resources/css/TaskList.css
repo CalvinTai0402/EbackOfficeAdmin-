@@ -1,63 +1,9 @@
-/* .table-id-th {
-    width: 2%;
-}
-
-.table-id-td {
-    width: 2%;
+.table-actions-td {
+    min-width: 200px !important;
+    max-width: 200px !important;
 }
 
 .table-actions-th {
-    width: 10%;
+    min-width: 200px !important;
+    max-width: 200px !important;
 }
-
-.table-actions-td {
-    width: 10%;
-}
-
-.table-name-th {
-    width: 3% !important;
-}
-
-.table-name-td {
-    width: 3% !important;
-}
-
-.table-duedate-th {
-    width: 5%;
-}
-
-.table-duedate-td {
-    width: 5%;
-}
-
-.table-priority-th {
-    width: 3%;
-}
-
-.table-priority-td {
-    width: 3%;
-}
-
-.table-status-th {
-    width: 3%;
-}
-
-.table-status-td {
-    width: 3%;
-}
-
-.table-assigneeNames-th {
-    width: 3%;
-}
-
-.table-assigneeNames-td {
-    width: 3%;
-}
-
-.table-description-th {
-    width: 10% !important;
-}
-
-.table-description-td {
-    width: 10% !important;
-} */

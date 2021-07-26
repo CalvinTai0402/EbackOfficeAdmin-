@@ -17,7 +17,7 @@ import SelectSearch from 'react-select-search';
 import fuzzySearch from "../fuzzySearch";
 import CredentialIndex from '../Credential/CredentialIndex';
 
-import '../../../css/TaskList.css';
+import '../../../css/MyTask.css';
 
 class MyTaskIndex extends React.Component {
     state = {
@@ -442,10 +442,10 @@ class MyTaskIndex extends React.Component {
                                             )
                                         case 'actions':
                                             return (
-                                                <div style={{ display: "flex", justifyContent: "start" }} onClick={() => self.handleEditClicked(row.id.toString())}>
+                                                <div onClick={() => self.handleEditClicked(row.id.toString())}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <AiFillEdit color="white" />
-                                                        <div style={{ color: "white" }} >
+                                                        <AiFillEdit color="white" style={{ float: "left" }} />
+                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                             Edit
                                                         </div>
                                                     </button>

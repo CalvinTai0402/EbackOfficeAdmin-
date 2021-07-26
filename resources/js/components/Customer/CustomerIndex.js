@@ -145,15 +145,15 @@ class CustomerIndex extends React.Component {
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'customers/' + row.id + '/edit'}>
-                                                            <AiFillEdit color="white" />
-                                                            <div style={{ color: "white" }} >
+                                                            <AiFillEdit color="white" style={{ float: "left" }} />
+                                                            <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Edit
                                                             </div>
                                                         </Link>
                                                     </button>
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
-                                                        <AiFillDelete color="white" />
-                                                        <div style={{ color: "white" }}>
+                                                        <AiFillDelete color="white" style={{ float: "left" }} />
+                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
                                                             Delete
                                                         </div>
                                                     </button>

@@ -1,0 +1,49 @@
+.table-responsive td {
+    line-height: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.table-name-th {
+    max-width: 120px !important;
+}
+
+.table-name-td {
+    max-width: 120px !important;
+} 
+
+.table-customer_code-th {
+    max-width: 120px !important;
+}
+
+.table-customer_code-td {
+    max-width: 120px !important;
+} 
+
+.table-status-th {
+    min-width: 200px !important;
+    max-width: 200px !important;
+}
+
+.table-status-td {
+    min-width: 200px !important;
+    max-width: 200px !important;
+}
+
+.table-priority-th {
+    min-width: 100px !important;
+}
+
+.table-priority-td {
+    min-width: 100px !important;
+}
+
+.table-assigneeNames-th {
+    max-width: 100px !important;
+}
+
+.table-assigneeNames-td {
+    max-width: 100px !important;
+}
