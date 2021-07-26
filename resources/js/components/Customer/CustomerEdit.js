@@ -210,7 +210,7 @@ class CustomerEdit extends Component {
                 <Header as="h1" icon color="blue" textAlign="center">
                     Edit Customer
                 </Header>
-                <Form onSubmit={this.handleUpdate} size="large">
+                <Form onSubmit={this.handleUpdate} size="medium">
                     <Grid className="app">
                         <Grid.Row>
                             <Grid.Column width={8}>

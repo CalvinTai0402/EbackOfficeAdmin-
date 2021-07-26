@@ -163,7 +163,7 @@ class CustomerCreate extends Component {
                 <Header as="h1" icon color="blue" textAlign="center">
                     Create Customer
                 </Header>
-                <Form onSubmit={this.handleStore} size="large">
+                <Form onSubmit={this.handleStore} size="medium">
                     <Grid className="app">
                         <Grid.Row>
                             <Grid.Column width={8}>
@@ -365,7 +365,7 @@ class CustomerCreate extends Component {
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
-                            <Grid.Column width={16}>
+                            <Grid.Column width={16} >
                                 <CredentialIndex
                                     editable={true}
                                     addRow={this.addRow}

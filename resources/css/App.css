@@ -6,14 +6,23 @@
 }
 
 .homeImage {
-    margin: auto;
-    margin-top: 300px !important;
-    width: 80%;
+    width: 500px;
+    height: 200px;
     padding: 10px;
+    position: absolute;
+    top: 30%;
+    left: 30%;
 }
 
 .centerVaH {
-    margin-top: 10%;
+    height: 600px;
+    left: 20%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    max-height: 80%;
+    margin-top: 5%;
+    margin-bottom: 5%;
 }
 
 .sideBarHeader {
@@ -28,7 +37,7 @@
 #sidebar .pro-sidebar {
     width: 20px;
     min-height: 100vh;
-    height: 100%;
+    height: 130%;
 }
 
 #sidebar .pro-icon-wrapper {
