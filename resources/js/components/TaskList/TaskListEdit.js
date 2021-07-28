@@ -288,6 +288,11 @@ class TaskListEdit extends Component {
         }
     }
 
+    redirectBack = (event) => {
+        event.preventDefault()
+        this.props.history.push(`/taskLists`);
+    }
+
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading } = this.state;
         return (
@@ -425,7 +430,17 @@ class TaskListEdit extends Component {
                                 >
                                     Update
                                 </Button>
-
+                                <Button
+                                    disabled={loading}
+                                    className={loading ? "loading" : ""}
+                                    color="green"
+                                    fluid
+                                    size="large"
+                                    onClick={this.redirectBack}
+                                    style={{ marginTop: "5px" }}
+                                >
+                                    Back
+                                </Button>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

@@ -18,6 +18,13 @@ class AvailableTaskEdit extends Component {
         loading: false
     }
 
+    async componentDidMount() {
+        const id = this.props.match.params.id;
+        const res = await axios.get(`${process.env.MIX_API_URL}/availableTasks/${id}/edit`);
+        this.setState({ name: res.data.availableTask.name });
+        this.setState({ description: res.data.availableTask.description });
+    }
+
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
     handleUpdate = async () => {
@@ -71,11 +78,10 @@ class AvailableTaskEdit extends Component {
         });
     };
 
-    async componentDidMount() {
-        const id = this.props.match.params.id;
-        const res = await axios.get(`${process.env.MIX_API_URL}/availableTasks/${id}/edit`);
-        this.setState({ name: res.data.availableTask.name });
-        this.setState({ description: res.data.availableTask.description });
+
+    redirectBack = (event) => {
+        event.preventDefault()
+        this.props.history.push("/availableTasks");
     }
 
     render() {
@@ -116,6 +122,17 @@ class AvailableTaskEdit extends Component {
                                     size="large"
                                 >
                                     Update
+                                </Button>
+                                <Button
+                                    disabled={loading}
+                                    className={loading ? "loading" : ""}
+                                    color="green"
+                                    fluid
+                                    size="large"
+                                    onClick={this.redirectBack}
+                                    style={{ marginTop: "5px" }}
+                                >
+                                    Back
                                 </Button>
                             </Segment>
                         </Form>

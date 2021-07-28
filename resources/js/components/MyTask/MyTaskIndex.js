@@ -374,6 +374,10 @@ class MyTaskIndex extends React.Component {
         }
     }
 
+    backToList = () => {
+        this.setState({ selected: !this.state.selected })
+    }
+
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
             status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected, credentials } = this.state;
@@ -382,7 +386,7 @@ class MyTaskIndex extends React.Component {
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 5,
+            perPage: 20,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
@@ -409,189 +413,22 @@ class MyTaskIndex extends React.Component {
                             <Icon name='list' circular />
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
-                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
-                            {
-                                function (row, column) {
-                                    switch (column) {
-                                        case 'id':
-                                            return (
-                                                <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
-                                                    onChange={self.handleCheckboxTableChange}
-                                                    checked={self.state.selectedMyTasks.includes(row.id.toString())} />
-                                            );
-                                        case 'status':
-                                            return (
-                                                <SelectSearch
-                                                    search
-                                                    onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
-                                                    filterOptions={fuzzySearch}
-                                                    options={[
-                                                        { value: 'No Status', name: 'No Status' },
-                                                        { value: 'Not Started', name: 'Not Started' },
-                                                        { value: 'In progress', name: 'In progress' },
-                                                        { value: "On Hold", name: "On Hold" },
-                                                        { value: 'Completed', name: 'Completed' },
-                                                        { value: 'Draft', name: 'Draft' },
-                                                        { value: "Needs Review", name: "Needs Review" },
-                                                        { value: 'With Client', name: 'With Client' },
-                                                        { value: 'Waiting on Client', name: 'Waiting on Client' },
-                                                    ]}
-                                                    placeholder="Choose a status"
-                                                    value={row.status}
-                                                />
-                                            )
-                                        case 'actions':
-                                            return (
-                                                <div onClick={() => self.handleEditClicked(row.id.toString())}>
-                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <AiFillEdit color="white" style={{ float: "left" }} />
-                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
-                                                            Edit
-                                                        </div>
-                                                    </button>
-                                                </div>
-
-                                            );
-                                        default:
-                                            return (row[column]);
-                                    }
-                                }
-                            }
-                        </ServerTable >
-                        <div>
-                            <Form onSubmit={this.handleUpdate} size="large">
-                                {selected ?
-                                    <Grid className="app">
-                                        <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
-                                            Editing: {name}
-                                        </Header>
-                                        <Grid.Row>
-                                            <Grid.Column width={6}>
-                                                <Form.Field className={this.handleInputError(errors, "name")}>
-                                                    <label>Name</label>
-                                                    <SelectSearch
-                                                        style={{ color: "black" }}
-                                                        search
-                                                        disabled
-                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableTaskName")}
-                                                        filterOptions={fuzzySearch}
-                                                        options={availableTaskNames}
-                                                        placeholder="Choose a task"
-                                                        value={name}
-                                                    />
-                                                </Form.Field>
-                                                {/* <Form.Field className={this.handleInputError(errors, "customer")}>
-                                                    <label>Customer Code</label>
+                        {!selected ?
+                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
+                                {
+                                    function (row, column) {
+                                        switch (column) {
+                                            case 'id':
+                                                return (
+                                                    <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
+                                                        onChange={self.handleCheckboxTableChange}
+                                                        checked={self.state.selectedMyTasks.includes(row.id.toString())} />
+                                                );
+                                            case 'status':
+                                                return (
                                                     <SelectSearch
                                                         search
-                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
-                                                        filterOptions={fuzzySearch}
-                                                        options={availableCustomerCodes}
-                                                        placeholder="Choose a customer code"
-                                                        value={customerCode}
-                                                    />
-                                                </Form.Field> */}
-                                                <Form.Field className={this.handleInputError(errors, "description")}>
-                                                    <label>Description</label>
-                                                    <TextArea
-                                                        disabled
-                                                        name="description"
-                                                        onChange={this.handleChange}
-                                                        value={description}
-                                                    />
-                                                </Form.Field>
-                                                <Form.Field>
-                                                    <label>Notes</label>
-                                                    <TextArea
-                                                        name="notes"
-                                                        onChange={this.handleChange}
-                                                        value={notes}
-                                                    />
-                                                </Form.Field>
-                                            </Grid.Column>
-                                            <Grid.Column width={5}>
-                                                <Form.Field className={this.handleInputError(errors, "customer")}>
-                                                    <label>Customer Code</label>
-                                                    <SelectSearch
-                                                        search
-                                                        disabled
-                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
-                                                        filterOptions={fuzzySearch}
-                                                        options={availableCustomerCodes}
-                                                        placeholder="Choose a customer code"
-                                                        value={customerCode}
-                                                    />
-                                                </Form.Field>
-                                                <Form.Field>
-                                                    <label>Customer Name</label>
-                                                    <Form.Input
-                                                        fluid
-                                                        disabled
-                                                        name="name"
-                                                        onChange={this.handleChange}
-                                                        value={customerName}
-                                                        className={this.handleInputError(errors, "name")}
-                                                    />
-                                                </Form.Field>
-                                                <Form.Field>
-                                                    <label>Remarks</label>
-                                                    <TextArea
-                                                        disabled
-                                                        name="remark"
-                                                        onChange={this.handleChange}
-                                                        value={customerRemark}
-                                                    />
-                                                </Form.Field>
-                                            </Grid.Column>
-                                            <Grid.Column width={5}>
-                                                <Form.Field className={this.handleInputError(errors, "due")}>
-                                                    <label>Due date</label>
-                                                    <DatePicker
-                                                        disabled
-                                                        selected={selectedDate}
-                                                        onChange={(date) => this.setDate(date)}
-                                                        dateFormat="MM-dd-yyyy"
-                                                        closeOnScroll={(e) => e.target === document}
-                                                    />
-                                                </Form.Field>
-                                                <Form.Field className={this.handleInputError(errors, "repeat")}>
-                                                    <label>Repeat</label>
-                                                    <SelectSearch
-                                                        search
-                                                        disabled
-                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "repeat")}
-                                                        filterOptions={fuzzySearch}
-                                                        options={[
-                                                            { value: 'Daily', name: 'Daily' },
-                                                            { value: 'Weekly', name: 'Weekly' },
-                                                            { value: 'Monthly', name: 'Monthly' },
-                                                            { value: 'Yearly', name: 'Yearly' }
-                                                        ]}
-                                                        placeholder="Choose a repeat frequency"
-                                                        value={repeat}
-                                                    />
-                                                </Form.Field>
-                                                <Form.Field className={this.handleInputError(errors, "priority")}>
-                                                    <label>Priority</label>
-                                                    <SelectSearch
-                                                        search
-                                                        disabled
-                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "priority")}
-                                                        filterOptions={fuzzySearch}
-                                                        options={[
-                                                            { value: 'High', name: 'High' },
-                                                            { value: 'Medium', name: 'Medium' },
-                                                            { value: 'Low', name: 'Low' },
-                                                        ]}
-                                                        placeholder="Choose a priority"
-                                                        value={priority}
-                                                    />
-                                                </Form.Field>
-                                                <Form.Field className={this.handleInputError(errors, "status")}>
-                                                    <label>Status</label>
-                                                    <SelectSearch
-                                                        search
-                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "status")}
+                                                        onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
                                                         filterOptions={fuzzySearch}
                                                         options={[
                                                             { value: 'No Status', name: 'No Status' },
@@ -605,22 +442,163 @@ class MyTaskIndex extends React.Component {
                                                             { value: 'Waiting on Client', name: 'Waiting on Client' },
                                                         ]}
                                                         placeholder="Choose a status"
-                                                        value={status}
+                                                        value={row.status}
+                                                    />
+                                                )
+                                            case 'actions':
+                                                return (
+                                                    <div onClick={() => self.handleEditClicked(row.id.toString())}>
+                                                        <button className="btn btn-primary" style={{ marginRight: "5px" }}>
+                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
+                                                            <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
+                                                                Edit
+                                                            </div>
+                                                        </button>
+                                                    </div>
+
+                                                );
+                                            default:
+                                                return (row[column]);
+                                        }
+                                    }
+                                }
+                            </ServerTable > : ""}
+                        <div>
+                            <Form onSubmit={this.handleUpdate} size="medium">
+                                {selected ?
+                                    <Grid className="app">
+                                        <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
+                                            Editing: {name}
+                                        </Header>
+                                        <Grid.Row>
+                                            <Grid.Column width={6}>
+                                                <Form.Field>
+                                                    <label>Name</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="name"
+                                                        value={name}
+                                                        className={this.handleInputError(errors, "name")}
                                                     />
                                                 </Form.Field>
-                                                <Form.Field className={this.handleInputError(errors, "asignee")}>
-                                                    <label>Asignee(s)</label>
+                                                <Form.Field className={this.handleInputError(errors, "description")}>
+                                                    <label>Description</label>
+                                                    <TextArea
+                                                        name="description"
+                                                        value={description}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field >
+                                                    <label style={{ color: "green" }}>Notes</label>
+                                                    <div style={{ border: "2px solid #84ed80", padding: "0", backgroundColor: "#84ed80" }}>
+                                                        <TextArea
+                                                            name="notes"
+                                                            onChange={this.handleChange}
+                                                            value={notes}
+                                                        />
+                                                    </div>
+
+                                                </Form.Field>
+                                            </Grid.Column>
+                                            <Grid.Column width={5}>
+                                                {/* <Form.Field className={this.handleInputError(errors, "customer")}>
+                                                    <label>Customer Code</label>
                                                     <SelectSearch
                                                         search
                                                         disabled
-                                                        closeOnSelect={false}
-                                                        printOptions="on-focus"
-                                                        multiple
-                                                        placeholder="Choose asignee(s)"
-                                                        onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray, "asignee")}
+                                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
                                                         filterOptions={fuzzySearch}
-                                                        options={userNames}
+                                                        options={availableCustomerCodes}
+                                                        placeholder="Choose a customer code"
+                                                        value={customerCode}
+                                                    />
+                                                </Form.Field> */}
+                                                <Form.Field>
+                                                    <label>Customer Code</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="customer"
+                                                        value={customerCode}
+                                                        className={this.handleInputError(errors, "customer")}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Customer Name</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="name"
+                                                        value={customerName}
+                                                        className={this.handleInputError(errors, "name")}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Remarks</label>
+                                                    <TextArea
+                                                        name="remark"
+                                                        value={customerRemark}
+                                                    />
+                                                </Form.Field>
+                                            </Grid.Column>
+                                            <Grid.Column width={5}>
+                                                <Form.Field className={this.handleInputError(errors, "due")}>
+                                                    <label>Due date</label>
+                                                    <DatePicker
+                                                        selected={selectedDate}
+                                                        // onChange={(date) => this.setDate(date)}
+                                                        // onClick={() => { }}
+                                                        dateFormat="MM-dd-yyyy"
+                                                        closeOnScroll={(e) => e.target === document}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Repeat</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="repeat"
+                                                        value={repeat}
+                                                        className={this.handleInputError(errors, "repeat")}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <label>Priority</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="priority"
+                                                        value={priority}
+                                                        className={this.handleInputError(errors, "priority")}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "status")}>
+                                                    <label style={{ color: "green" }}>Status</label>
+                                                    <div style={{ border: "2px solid #84ed80", padding: "0", backgroundColor: "#84ed80" }}>
+                                                        <SelectSearch
+                                                            search
+                                                            onChange={(value, obj) => this.handleSelectChange(value, obj, "status")}
+                                                            filterOptions={fuzzySearch}
+                                                            options={[
+                                                                { value: 'No Status', name: 'No Status' },
+                                                                { value: 'Not Started', name: 'Not Started' },
+                                                                { value: 'In progress', name: 'In progress' },
+                                                                { value: "On Hold", name: "On Hold" },
+                                                                { value: 'Completed', name: 'Completed' },
+                                                                { value: 'Draft', name: 'Draft' },
+                                                                { value: "Needs Review", name: "Needs Review" },
+                                                                { value: 'With Client', name: 'With Client' },
+                                                                { value: 'Waiting on Client', name: 'Waiting on Client' },
+                                                            ]}
+                                                            placeholder="Choose a status"
+                                                            value={status}
+                                                        />
+                                                    </div>
+                                                </Form.Field>
+
+                                                <Form.Field>
+                                                    <label>Asignee(s)</label>
+                                                    <Form.Input
+                                                        fluid
+                                                        name="asignee"
                                                         value={initialAssignees}
+                                                        className={this.handleInputError(errors, "asignee")}
                                                     />
                                                 </Form.Field>
                                                 <Button
@@ -640,6 +618,19 @@ class MyTaskIndex extends React.Component {
                                                     editable={false}
                                                     handleCredentialsChange={() => { }}
                                                     credentials={credentials} />
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                        <Grid.Row textAlign="center" verticalAlign="middle" className="app">
+                                            <Grid.Column >
+                                                <Button.Group floated="right">
+                                                    <button className="btn btn-primary" style={{ marginRight: "8px" }} onClick={this.backToList}>
+                                                        <div style={{ color: "white" }} >
+                                                            <span  >
+                                                                Back
+                                                            </span>
+                                                        </div>
+                                                    </button>
+                                                </Button.Group>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid> :

@@ -88,7 +88,7 @@ class AnnouncementIndex extends React.Component {
         const columns = ['id', 'name', 'description', 'assignees', 'status', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 5,
+            perPage: 20,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput },
             sortable: ['name', 'description', 'assignees', 'status'],
@@ -115,7 +115,7 @@ class AnnouncementIndex extends React.Component {
                 <button className="btn btn-primary create" style={{ marginRight: "8px" }}>
                     <Link to={'announcements/create'}>
                         <div style={{ color: "white" }} >
-                            <AiFillPlusSquare color="white" size="20" />
+                            <AiFillPlusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                             <span style={{ marginLeft: "8px" }} >
                                 Create
                             </span>
@@ -124,7 +124,7 @@ class AnnouncementIndex extends React.Component {
                 </button>
                 <button className="btn btn-danger delete" onClick={() => { self.handleDeleteMany() }}>
                     <div style={{ color: "white" }} >
-                        <AiFillMinusSquare color="white" size="20" />
+                        <AiFillMinusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                         <span style={{ marginLeft: "8px" }} >
                             Delete Many
                         </span>
@@ -152,21 +152,21 @@ class AnnouncementIndex extends React.Component {
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
                                                         <Link to={'announcements/' + row.id + '/edit/announcementIndex'}>
-                                                            <AiOutlineRead color="white" style={{ float: "left" }} />
+                                                            <AiOutlineRead color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Read
                                                             </div>
                                                         </Link>
                                                     </button> : <button className="btn btn-success" style={{ marginRight: "5px" }}>
                                                         <Link to={'announcements/' + row.id + '/edit/announcementIndex'}>
-                                                            <AiOutlineRead color="white" style={{ float: "left" }} />
+                                                            <AiOutlineRead color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 New
                                                             </div>
                                                         </Link>
                                                     </button>}
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
-                                                        <AiFillDelete color="white" style={{ float: "left" }} />
+                                                        <AiFillDelete color="white" style={{ float: "left", marginTop: "4px" }} />
                                                         <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
                                                             Delete
                                                         </div>

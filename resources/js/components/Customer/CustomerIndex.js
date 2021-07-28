@@ -83,13 +83,13 @@ class CustomerIndex extends React.Component {
         const { deleting } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/customers`;
-        const columns = ['id', 'code', 'name', 'service', 'actions']
+        const columns = ['id', 'code', 'name', 'contact_person', 'telephone', 'email', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 5,
+            perPage: 20,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput },
-            sortable: ['code', 'name', 'service'],
+            headings: { id: checkAllInput, contact_person: "contact", property: "Phone" },
+            sortable: ['code', 'name', 'contact_person', 'telephone', 'email'],
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
                 let customersIDs = res.data.map(a => a.id.toString());
@@ -113,7 +113,7 @@ class CustomerIndex extends React.Component {
                 <button className="btn btn-primary create" style={{ marginRight: "8px" }}>
                     <Link to={'customers/create'}>
                         <div style={{ color: "white" }} >
-                            <AiFillPlusSquare color="white" size="20" />
+                            <AiFillPlusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                             <span style={{ marginLeft: "8px" }} >
                                 Create
                             </span>
@@ -122,7 +122,7 @@ class CustomerIndex extends React.Component {
                 </button>
                 <button className="btn btn-danger delete" onClick={() => { self.handleDeleteMany() }}>
                     <div style={{ color: "white" }} >
-                        <AiFillMinusSquare color="white" size="20" />
+                        <AiFillMinusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                         <span style={{ marginLeft: "8px" }} >
                             Delete Many
                         </span>
@@ -145,14 +145,14 @@ class CustomerIndex extends React.Component {
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'customers/' + row.id + '/edit'}>
-                                                            <AiFillEdit color="white" style={{ float: "left" }} />
+                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Edit
                                                             </div>
                                                         </Link>
                                                     </button>
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
-                                                        <AiFillDelete color="white" style={{ float: "left" }} />
+                                                        <AiFillDelete color="white" style={{ float: "left", marginTop: "4px" }} />
                                                         <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
                                                             Delete
                                                         </div>

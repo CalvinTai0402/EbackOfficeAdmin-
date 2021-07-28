@@ -77,16 +77,19 @@ class TaskListIndex extends React.Component {
                 }
             }
         });
+        // window.history.replaceState(null, null, "?search=&limit=20&page=2&orderBy=&order=desc");
     }
 
     render() {
         const { deleting } = this.state;
         let self = this;
+        // const urlParams = new URLSearchParams(window.location.search);
+        // const page = urlParams.get('page')
         const url = `${process.env.MIX_API_URL}/taskLists`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 5,
+            perPage: 20,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'duedate', 'priority', 'status', 'assigneeNames',],
@@ -103,7 +106,6 @@ class TaskListIndex extends React.Component {
                 show: 'Task Lists  '
             },
         };
-
         return (
             <div>
                 <Header as='h2' icon textAlign='center'>
@@ -113,7 +115,7 @@ class TaskListIndex extends React.Component {
                 <button className="btn btn-primary create" style={{ marginRight: "8px" }}>
                     <Link to={'taskLists/create'}>
                         <div style={{ color: "white" }} >
-                            <AiFillPlusSquare color="white" size="20" />
+                            <AiFillPlusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                             <span style={{ marginLeft: "8px" }} >
                                 Create
                             </span>
@@ -122,7 +124,7 @@ class TaskListIndex extends React.Component {
                 </button>
                 <button className="btn btn-danger delete" onClick={() => { self.handleDeleteMany() }}>
                     <div style={{ color: "white" }} >
-                        <AiFillMinusSquare color="white" size="20" />
+                        <AiFillMinusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                         <span style={{ marginLeft: "8px" }} >
                             Delete Many
                         </span>
@@ -145,14 +147,14 @@ class TaskListIndex extends React.Component {
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'taskLists/' + row.id + '/edit'}>
-                                                            <AiFillEdit color="white" style={{ float: "left" }} />
+                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Edit
                                                             </div>
                                                         </Link>
                                                     </button>
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
-                                                        <AiFillDelete color="white" style={{ float: "left" }} />
+                                                        <AiFillDelete color="white" style={{ float: "left", marginTop: "4px" }} />
                                                         <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
                                                             Delete
                                                         </div>

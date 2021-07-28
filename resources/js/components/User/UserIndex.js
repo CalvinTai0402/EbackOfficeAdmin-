@@ -87,7 +87,7 @@ class UserIndex extends React.Component {
         const columns = ['id', 'name', 'email', 'role', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 5,
+            perPage: 20,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput },
             sortable: ['name', 'email', 'role'],
@@ -114,7 +114,7 @@ class UserIndex extends React.Component {
                 <button className="btn btn-primary create" style={{ marginRight: "8px" }}>
                     <Link to={'users/create'}>
                         <div style={{ color: "white" }} >
-                            <AiFillPlusSquare color="white" size="20" />
+                            <AiFillPlusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                             <span style={{ marginLeft: "8px" }} >
                                 Create
                             </span>
@@ -123,7 +123,7 @@ class UserIndex extends React.Component {
                 </button>
                 <button className="btn btn-danger delete" onClick={() => { self.handleDeleteMany() }}>
                     <div style={{ color: "white" }} >
-                        <AiFillMinusSquare color="white" size="20" />
+                        <AiFillMinusSquare color="white" size="20" style={{ marginBottom: "2px" }} />
                         <span style={{ marginLeft: "8px" }} >
                             Delete Many
                         </span>
@@ -146,14 +146,14 @@ class UserIndex extends React.Component {
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
                                                         <Link to={'users/' + row.id + '/edit'}>
-                                                            <AiFillEdit color="white" style={{ float: "left" }} />
+                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Edit
                                                             </div>
                                                         </Link>
                                                     </button>
                                                     <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
-                                                        <AiFillDelete color="white" style={{ float: "left" }} />
+                                                        <AiFillDelete color="white" style={{ float: "left", marginTop: "4px" }} />
                                                         <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
                                                             Delete
                                                         </div>
