@@ -6,12 +6,11 @@
 }
 
 .homeImage {
-    width: 500px;
-    height: 200px;
-    padding: 10px;
+    width: 80%;
     position: absolute;
-    top: 30%;
-    left: 30%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-25%, -50%);
 }
 
 .centerVaH {
@@ -383,6 +382,19 @@ b { /* used for event dates/times */
 a:visited{
     color:white;
 }
+
+.swalDelete {
+    background: red;
+}
+
+.swalEdit {
+    background: green;
+}
+
+.swalCancel {
+    background: blue;
+}
+
 
 /* .card, .card-body, .react-strap-table, .text-center, .card-footer{
     position:relative;

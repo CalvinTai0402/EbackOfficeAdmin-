@@ -23,8 +23,8 @@ class CredentialIndex extends React.Component {
                             <Table.HeaderCell>Remarks</Table.HeaderCell>
                             <Table.HeaderCell>
                                 {editable ? <button className="btn btn-primary" style={{ marginLeft: "5px", minWidth: "100px" }} onClick={this.props.addRow}>
-                                    <AiFillPlusSquare color="white" />
-                                    <div style={{ color: "white" }}>
+                                    <AiFillPlusSquare color="white" style={{ float: "left", marginTop: "4px" }} />
+                                    <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
                                         Add row
                                     </div>
                                 </button> : ""}

@@ -349,7 +349,7 @@ class AnnouncementEdit extends Component {
                                     </button>
                                     <button className="btn btn-success" onClick={this.markUnread}>
                                         <div style={{ color: "white" }} >
-                                            <AiOutlineRead color="white" />
+                                            <AiOutlineRead color="white" style={{ marginBottom: "2px" }} />
                                             <span style={{ marginLeft: "8px" }} >
                                                 Mark as Unread
                                             </span>

@@ -374,6 +374,10 @@ class MyTaskIndex extends React.Component {
         }
     }
 
+    backToList = () => {
+        this.setState({ selected: !this.state.selected })
+    }
+
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
             status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected, credentials } = this.state;
@@ -382,7 +386,7 @@ class MyTaskIndex extends React.Component {
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 5,
+            perPage: 20,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
@@ -409,57 +413,58 @@ class MyTaskIndex extends React.Component {
                             <Icon name='list' circular />
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
-                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
-                            {
-                                function (row, column) {
-                                    switch (column) {
-                                        case 'id':
-                                            return (
-                                                <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
-                                                    onChange={self.handleCheckboxTableChange}
-                                                    checked={self.state.selectedMyTasks.includes(row.id.toString())} />
-                                            );
-                                        case 'status':
-                                            return (
-                                                <SelectSearch
-                                                    search
-                                                    onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
-                                                    filterOptions={fuzzySearch}
-                                                    options={[
-                                                        { value: 'No Status', name: 'No Status' },
-                                                        { value: 'Not Started', name: 'Not Started' },
-                                                        { value: 'In progress', name: 'In progress' },
-                                                        { value: "On Hold", name: "On Hold" },
-                                                        { value: 'Completed', name: 'Completed' },
-                                                        { value: 'Draft', name: 'Draft' },
-                                                        { value: "Needs Review", name: "Needs Review" },
-                                                        { value: 'With Client', name: 'With Client' },
-                                                        { value: 'Waiting on Client', name: 'Waiting on Client' },
-                                                    ]}
-                                                    placeholder="Choose a status"
-                                                    value={row.status}
-                                                />
-                                            )
-                                        case 'actions':
-                                            return (
-                                                <div onClick={() => self.handleEditClicked(row.id.toString())}>
-                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <AiFillEdit color="white" style={{ float: "left" }} />
-                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
-                                                            Edit
-                                                        </div>
-                                                    </button>
-                                                </div>
+                        {!selected ?
+                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
+                                {
+                                    function (row, column) {
+                                        switch (column) {
+                                            case 'id':
+                                                return (
+                                                    <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
+                                                        onChange={self.handleCheckboxTableChange}
+                                                        checked={self.state.selectedMyTasks.includes(row.id.toString())} />
+                                                );
+                                            case 'status':
+                                                return (
+                                                    <SelectSearch
+                                                        search
+                                                        onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
+                                                        filterOptions={fuzzySearch}
+                                                        options={[
+                                                            { value: 'No Status', name: 'No Status' },
+                                                            { value: 'Not Started', name: 'Not Started' },
+                                                            { value: 'In progress', name: 'In progress' },
+                                                            { value: "On Hold", name: "On Hold" },
+                                                            { value: 'Completed', name: 'Completed' },
+                                                            { value: 'Draft', name: 'Draft' },
+                                                            { value: "Needs Review", name: "Needs Review" },
+                                                            { value: 'With Client', name: 'With Client' },
+                                                            { value: 'Waiting on Client', name: 'Waiting on Client' },
+                                                        ]}
+                                                        placeholder="Choose a status"
+                                                        value={row.status}
+                                                    />
+                                                )
+                                            case 'actions':
+                                                return (
+                                                    <div onClick={() => self.handleEditClicked(row.id.toString())}>
+                                                        <button className="btn btn-primary" style={{ marginRight: "5px" }}>
+                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
+                                                            <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
+                                                                Edit
+                                                            </div>
+                                                        </button>
+                                                    </div>
 
-                                            );
-                                        default:
-                                            return (row[column]);
+                                                );
+                                            default:
+                                                return (row[column]);
+                                        }
                                     }
                                 }
-                            }
-                        </ServerTable >
+                            </ServerTable > : ""}
                         <div>
-                            <Form onSubmit={this.handleUpdate} size="large">
+                            <Form onSubmit={this.handleUpdate} size="medium">
                                 {selected ?
                                     <Grid className="app">
                                         <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
@@ -613,6 +618,19 @@ class MyTaskIndex extends React.Component {
                                                     editable={false}
                                                     handleCredentialsChange={() => { }}
                                                     credentials={credentials} />
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                        <Grid.Row textAlign="center" verticalAlign="middle" className="app">
+                                            <Grid.Column >
+                                                <Button.Group floated="right">
+                                                    <button className="btn btn-primary" style={{ marginRight: "8px" }} onClick={this.backToList}>
+                                                        <div style={{ color: "white" }} >
+                                                            <span  >
+                                                                Back
+                                                            </span>
+                                                        </div>
+                                                    </button>
+                                                </Button.Group>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid> :

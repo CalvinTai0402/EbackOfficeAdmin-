@@ -125,18 +125,22 @@ class Event extends React.Component {
         let eventOrTaskTitle = clickInfo.event.title.substring(3);
         if (clickInfo.event.title.charAt(0) === "E") {
             await swal("Would you like to edit or delete the event?", {
+
                 buttons: {
                     delete: {
                         text: "Delete",
                         value: "delete",
+                        className: "swalDelete"
                     },
                     edit: {
                         text: "Edit",
                         value: "edit",
+                        className: "swalEdit"
                     },
                     cancelClick: {
                         text: "Cancel",
                         value: "cancel",
+                        className: "swalCancel"
                     },
                 },
             }).then(async (value) => {
@@ -174,10 +178,12 @@ class Event extends React.Component {
                     edit: {
                         text: "Edit",
                         value: "edit",
+                        className: "swalEdit"
                     },
                     cancelClick: {
                         text: "Cancel",
                         value: "cancel",
+                        className: "swalCancel"
                     },
                 },
             }).then(async (value) => {
