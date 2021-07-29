@@ -7,7 +7,7 @@ import {
     Header,
     Icon
 } from "semantic-ui-react";
-import swal from 'sweetalert'
+import swal from 'sweetalert';
 
 import '../../../css/User.css';
 
@@ -16,10 +16,25 @@ class UserIndex extends React.Component {
         selectedUsers: [],
         usersIDs: [],
         isAllChecked: false,
-        deleting: false
+        deleting: false,
+        loading: false
     };
 
+    async componentDidMount() {
+        // while (this.state.usersIDs.length <= 0) {
+        //     await this.sleep(1000)
+        // }
+        let pageSelect = document.getElementsByTagName("select")[0];
+        pageSelect.value = this.props.perPage;
+    }
+
+    // sleep = async (msec) => {
+    //     return new Promise(resolve => setTimeout(resolve, msec));
+    // }
+
     check_all = React.createRef();
+
+    ServerTable = React.createRef();
 
     handleCheckboxTableChange = (event) => {
         const value = event.target.value;
@@ -83,11 +98,11 @@ class UserIndex extends React.Component {
     render() {
         const { deleting } = this.state;
         let self = this;
-        const url = process.env.MIX_API_URL + '/users';
+        const url = `${process.env.MIX_API_URL}/users`;
         const columns = ['id', 'name', 'email', 'role', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
-        const options = {
-            perPage: 20,
+        let options = {
+            perPage: this.props.perPage,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput },
             sortable: ['name', 'email', 'role'],
@@ -104,8 +119,8 @@ class UserIndex extends React.Component {
                 show: 'Users  '
             },
         };
-
         return (
+
             <div>
                 <Header as='h2' icon textAlign='center'>
                     <Icon name='users' circular />
@@ -129,44 +144,43 @@ class UserIndex extends React.Component {
                         </span>
                     </div>
                 </button>
-                {
-                    deleting ? <Spinner /> :
-                        <ServerTable columns={columns} url={url} options={options} bordered hover >
-                            {
-                                function (row, column) {
-                                    switch (column) {
-                                        case 'id':
-                                            return (
-                                                <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
-                                                    onChange={self.handleCheckboxTableChange}
-                                                    checked={self.state.selectedUsers.includes(row.id.toString())} />
-                                            );
-                                        case 'actions':
-                                            return (
-                                                <div style={{ display: "flex", justifyContent: "start" }}>
-                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <Link to={'users/' + row.id + '/edit'}>
-                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
-                                                            <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
-                                                                Edit
-                                                            </div>
-                                                        </Link>
-                                                    </button>
-                                                    <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
-                                                        <AiFillDelete color="white" style={{ float: "left", marginTop: "4px" }} />
-                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
-                                                            Delete
+                {deleting ? <Spinner /> :
+                    < ServerTable columns={columns} url={url} options={options} bordered hover ref={this.serverTable}>
+                        {
+                            function (row, column) {
+                                switch (column) {
+                                    case 'id':
+                                        return (
+                                            <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
+                                                onChange={self.handleCheckboxTableChange}
+                                                checked={self.state.selectedUsers.includes(row.id.toString())} />
+                                        );
+                                    case 'actions':
+                                        return (
+                                            <div style={{ display: "flex", justifyContent: "start" }}>
+                                                <button className="btn btn-primary" style={{ marginRight: "5px" }}>
+                                                    <Link to={'users/' + row.id + '/edit'}>
+                                                        <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
+                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
+                                                            Edit
                                                         </div>
-                                                    </button>
-                                                </div>
+                                                    </Link>
+                                                </button>
+                                                <button className="btn btn-danger" style={{ marginLeft: "5px" }} onClick={() => { self.handleDelete(row.id) }}>
+                                                    <AiFillDelete color="white" style={{ float: "left", marginTop: "4px" }} />
+                                                    <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }}>
+                                                        Delete
+                                                    </div>
+                                                </button>
+                                            </div>
 
-                                            );
-                                        default:
-                                            return (row[column]);
-                                    }
+                                        );
+                                    default:
+                                        return (row[column]);
                                 }
                             }
-                        </ServerTable >
+                        }
+                    </ServerTable >
                 }</div>
         );
     }

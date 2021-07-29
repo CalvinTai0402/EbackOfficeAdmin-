@@ -163,7 +163,7 @@ class CustomerCreate extends Component {
                 <Header as="h1" icon color="blue" textAlign="center">
                     Create Customer
                 </Header>
-                <Form onSubmit={this.handleStore} size="medium">
+                <Form onSubmit={this.handleStore} size="small">
                     <Grid className="app">
                         <Grid.Row>
                             <Grid.Column width={8}>

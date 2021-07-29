@@ -10,6 +10,7 @@ use App\Http\Controllers\TaskListController;
 use App\Http\Controllers\MyTaskController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CredentialController;
+use App\Http\Controllers\PreferenceController;
 use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +64,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('events/getTaskId/{event}',  [EventController::class, 'getTaskId'])->name('events.getTaskId');
         Route::resource('events', EventController::class);
+
+        Route::resource("preferences", PreferenceController::class);
     });
     Route::view('/{path?}', 'reactApp')->where('path', '.*')->name('reactApp');
 });

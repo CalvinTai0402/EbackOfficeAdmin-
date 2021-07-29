@@ -7750,6 +7750,14 @@ button.bg-dark:focus {
   padding-right: 1.5rem !important;
 }
 
+.py-4 {
+  width: 80%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .pb-4 {
   padding-bottom: 1.5rem !important;
 }
@@ -7757,14 +7765,6 @@ button.bg-dark:focus {
 .pl-4,
 .px-4 {
   padding-left: 1.5rem !important;
-}
-
-.py-4 {
-  width: 80%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 .p-5 {

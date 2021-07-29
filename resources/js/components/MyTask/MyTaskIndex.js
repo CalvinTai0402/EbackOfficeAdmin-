@@ -19,7 +19,10 @@ import CredentialIndex from '../Credential/CredentialIndex';
 
 import '../../../css/MyTask.css';
 
+let currentPage = "1";
 class MyTaskIndex extends React.Component {
+
+
     state = {
         selectedMyTasks: [],
         myTasksIDs: [],
@@ -50,7 +53,7 @@ class MyTaskIndex extends React.Component {
         rowId: "",
         errors: [],
         loading: false,
-        selected: false
+        selected: false,
     };
 
     async componentDidMount() {
@@ -168,7 +171,9 @@ class MyTaskIndex extends React.Component {
         });
     }
 
-    handleEditClicked = async (id) => {
+    handleEditClicked = async (id, element) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentPage = urlParams.get('page')
         let res = await axios.get(`${process.env.MIX_API_URL}/myTasks/${id}/edit`);
         let duedateParts = res.data.myTask.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
@@ -202,6 +207,7 @@ class MyTaskIndex extends React.Component {
 
     handleUpdate = async (event) => {
         event.preventDefault();
+        this.setState({ myTasksIDs: [], selected: false })
         const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
@@ -232,11 +238,25 @@ class MyTaskIndex extends React.Component {
                 });
             }
             else if (res.data.status === 200) {
-                this.setState({ loading: false });
-                this.props.history.push("/myTasks");
+                this.setState({ loading: false }, () => {
+                    this.goToPage()
+                });
+                this.props.history.push("/mytasks");
             }
         }
     };
+
+    goToPage = async () => {
+        while (this.state.myTasksIDs.length <= 0) {
+            await this.sleep(1000)
+        }
+        const paginationLinks = document.getElementsByClassName("page-link");
+        paginationLinks[currentPage].click()
+    }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
 
     handleUpdateStatus = async (value, obj, rowId) => {
         this.setState({ loading: true });
@@ -388,6 +408,8 @@ class MyTaskIndex extends React.Component {
         const options = {
             perPage: 20,
             perPageValues: [5, 10, 20, 25, 100],
+            perPage: 5,
+            perPageValues: [5],
             headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
             columnsAlign: { id: 'center' },
@@ -413,58 +435,59 @@ class MyTaskIndex extends React.Component {
                             <Icon name='list' circular />
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
-                        {!selected ?
-                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
-                                {
-                                    function (row, column) {
-                                        switch (column) {
-                                            case 'id':
-                                                return (
-                                                    <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
-                                                        onChange={self.handleCheckboxTableChange}
-                                                        checked={self.state.selectedMyTasks.includes(row.id.toString())} />
-                                                );
-                                            case 'status':
-                                                return (
-                                                    <SelectSearch
-                                                        search
-                                                        onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
-                                                        filterOptions={fuzzySearch}
-                                                        options={[
-                                                            { value: 'No Status', name: 'No Status' },
-                                                            { value: 'Not Started', name: 'Not Started' },
-                                                            { value: 'In progress', name: 'In progress' },
-                                                            { value: "On Hold", name: "On Hold" },
-                                                            { value: 'Completed', name: 'Completed' },
-                                                            { value: 'Draft', name: 'Draft' },
-                                                            { value: "Needs Review", name: "Needs Review" },
-                                                            { value: 'With Client', name: 'With Client' },
-                                                            { value: 'Waiting on Client', name: 'Waiting on Client' },
-                                                        ]}
-                                                        placeholder="Choose a status"
-                                                        value={row.status}
-                                                    />
-                                                )
-                                            case 'actions':
-                                                return (
-                                                    <div onClick={() => self.handleEditClicked(row.id.toString())}>
-                                                        <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
-                                                            <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
-                                                                Edit
-                                                            </div>
-                                                        </button>
-                                                    </div>
+                        {/* {!selected ? */}
+                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
+                            {
+                                function (row, column) {
+                                    switch (column) {
+                                        case 'id':
+                                            return (
+                                                <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
+                                                    onChange={self.handleCheckboxTableChange}
+                                                    checked={self.state.selectedMyTasks.includes(row.id.toString())} />
+                                            );
+                                        case 'status':
+                                            return (
+                                                <SelectSearch
+                                                    search
+                                                    onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
+                                                    filterOptions={fuzzySearch}
+                                                    options={[
+                                                        { value: 'No Status', name: 'No Status' },
+                                                        { value: 'Not Started', name: 'Not Started' },
+                                                        { value: 'In progress', name: 'In progress' },
+                                                        { value: "On Hold", name: "On Hold" },
+                                                        { value: 'Completed', name: 'Completed' },
+                                                        { value: 'Draft', name: 'Draft' },
+                                                        { value: "Needs Review", name: "Needs Review" },
+                                                        { value: 'With Client', name: 'With Client' },
+                                                        { value: 'Waiting on Client', name: 'Waiting on Client' },
+                                                    ]}
+                                                    placeholder="Choose a status"
+                                                    value={row.status}
+                                                />
+                                            )
+                                        case 'actions':
+                                            return (
+                                                <div onClick={() => self.handleEditClicked(row.id.toString(), this)}>
+                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
+                                                        <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
+                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
+                                                            Edit
+                                                        </div>
+                                                    </button>
+                                                </div>
 
-                                                );
-                                            default:
-                                                return (row[column]);
-                                        }
+                                            );
+                                        default:
+                                            return (row[column]);
                                     }
                                 }
-                            </ServerTable > : ""}
+                            }
+                        </ServerTable >
+                        {/* : ""} */}
                         <div>
-                            <Form onSubmit={this.handleUpdate} size="medium">
+                            <Form onSubmit={this.handleUpdate} size="small">
                                 {selected ?
                                     <Grid className="app">
                                         <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>

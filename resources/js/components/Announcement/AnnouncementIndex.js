@@ -20,6 +20,11 @@ class AnnouncementIndex extends React.Component {
         loading: false,
     };
 
+    async componentDidMount() {
+        let pageSelect = document.getElementsByTagName("select")[0];
+        pageSelect.value = this.props.perPage;
+    }
+
     check_all = React.createRef();
 
     handleCheckboxTableChange = (event) => {
@@ -88,7 +93,7 @@ class AnnouncementIndex extends React.Component {
         const columns = ['id', 'name', 'description', 'assignees', 'status', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 20,
+            perPage: this.props.perPage,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput },
             sortable: ['name', 'description', 'assignees', 'status'],
