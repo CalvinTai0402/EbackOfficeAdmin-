@@ -14,7 +14,8 @@ class PreferenceEdit extends Component {
     }
 
     render() {
-        const { usersPerPage, customersPerPage, availableTasksPerPage, taskListsPerPage, announcementsPerPage, sentAnnouncementsPerPage, loading } = this.props;
+        const { usersPerPage, customersPerPage, availableTasksPerPage, taskListsPerPage,
+            announcementsPerPage, sidebarTextColor, sidebarTextSelectedColor, sentAnnouncementsPerPage, loading } = this.props;
         let options = [
             { value: '5', name: '5' },
             { value: '10', name: '10' },
@@ -29,7 +30,7 @@ class PreferenceEdit extends Component {
                     <Header as="h1" icon color="blue" textAlign="center">
                         Edit Preferences
                     </Header>
-                    <Form onSubmit={this.props.handleUpdate} size="small">
+                    <Form onSubmit={this.props.handleUpdate} size="large">
                         <Grid className="app">
                             <Grid.Row>
                                 <Grid.Column width={8}>
@@ -123,6 +124,47 @@ class PreferenceEdit extends Component {
                                             onChange={(value, objArray) => this.props.handleSelectChange(value, objArray, "sentAnnouncements")}
                                             options={options}
                                             value={sentAnnouncementsPerPage}
+                                        />
+                                    </Form.Field>
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row>
+                                <Grid.Column width={8}>
+                                    <Form.Field>
+                                        <label>Sidebar Selected Color</label>
+                                        <SelectSearch
+                                            search
+                                            filterOptions={fuzzySearch}
+                                            closeOnSelect={false}
+                                            printOptions="on-focus"
+                                            placeholder="Choose color of selected text"
+                                            onChange={(value, objArray) => this.props.handleSelectChange(value, objArray, "sidebarTextSelectedColor")}
+                                            options={[
+                                                { value: 'cyan', name: 'cyan' },
+                                                { value: 'yellow', name: 'yellow' },
+                                                { value: 'green', name: 'green' },
+                                                { value: 'red', name: 'red' },
+                                                { value: 'blue', name: 'blue' },
+                                            ]}
+                                            value={sidebarTextSelectedColor}
+                                        />
+                                    </Form.Field>
+                                </Grid.Column>
+                                <Grid.Column width={8}>
+                                    <Form.Field>
+                                        <label>Sidebar Text Color </label>
+                                        <SelectSearch
+                                            search
+                                            filterOptions={fuzzySearch}
+                                            closeOnSelect={false}
+                                            printOptions="on-focus"
+                                            placeholder="Choose color of sidebar text"
+                                            onChange={(value, objArray) => this.props.handleSelectChange(value, objArray, "sidebarTextColor")}
+                                            options={[
+                                                { value: 'white', name: 'white' },
+                                                { value: 'grey', name: 'grey' },
+                                            ]}
+                                            value={sidebarTextColor}
                                         />
                                     </Form.Field>
                                 </Grid.Column>

@@ -6,7 +6,6 @@
 
 
 TODO:
-1. assignee drop down
 
 5.
 - roles (basically get roles of loggedInUser then conditional rendering)

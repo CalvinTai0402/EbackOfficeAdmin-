@@ -16,7 +16,16 @@ class PreferenceController extends Controller
      */
     public function index()
     {
-        $userPreferences = User::select("usersPerPage", "customersPerPage", "availableTasksPerPage", "taskListsPerPage", "announcementsPerPage", "sentAnnouncementsPerPage")->where("id", Auth::id())->first();
+        $userPreferences = User::select(
+            "usersPerPage",
+            "customersPerPage",
+            "availableTasksPerPage",
+            "taskListsPerPage",
+            "announcementsPerPage",
+            "sentAnnouncementsPerPage",
+            "sidebarTextColor",
+            "sidebarTextSelectedColor"
+        )->where("id", Auth::id())->first();
         return response()->json(['status' => 200, 'userPreferences' => $userPreferences]);
     }
 

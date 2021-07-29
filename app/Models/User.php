@@ -31,6 +31,8 @@ class User extends Authenticatable
         'taskListsPerPage',
         'announcementsPerPage',
         'sentAnnouncementsPerPage',
+        'sidebarTextColor',
+        'sidebarTextSelectedColor',
     ];
 
     /**
