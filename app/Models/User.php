@@ -29,6 +29,7 @@ class User extends Authenticatable
         'customersPerPage',
         'availableTasksPerPage',
         'taskListsPerPage',
+        'myTasksPerPage',
         'announcementsPerPage',
         'sentAnnouncementsPerPage',
         'sidebarTextColor',

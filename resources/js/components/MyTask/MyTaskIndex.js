@@ -1,5 +1,6 @@
 import React from 'react';
-import ServerTable from 'react-strap-table';
+// import ServerTable from 'react-strap-table';
+import ServerTable from '../ServerTable';
 import { AiFillEdit } from "react-icons/ai";
 import Spinner from "../Spinner";
 import {
@@ -19,9 +20,8 @@ import CredentialIndex from '../Credential/CredentialIndex';
 
 import '../../../css/MyTask.css';
 
-let currentPage = "1";
+// let currentPage = "1";
 class MyTaskIndex extends React.Component {
-
 
     state = {
         selectedMyTasks: [],
@@ -54,12 +54,15 @@ class MyTaskIndex extends React.Component {
         errors: [],
         loading: false,
         selected: false,
+        currentPage: 1,
+        limit: this.props.perPage,
     };
 
     async componentDidMount() {
         await this.populateAvalableTaskNamesAndDecriptions()
         await this.populateAvailableUsers()
         await this.populateAvailableCustomersForTaskList()
+        await this.setDropDownValue()
     }
 
     populateAvalableTaskNamesAndDecriptions = async () => {
@@ -150,6 +153,11 @@ class MyTaskIndex extends React.Component {
         this.setState({ availableCustomerIds, availableCustomerCodes, availableCustomerNames, availableCustomerRemarks });
     }
 
+    setDropDownValue = async () => {
+        let pageSelect = document.getElementsByTagName("select")[0];
+        pageSelect.value = this.state.limit;
+    }
+
     check_all = React.createRef();
 
     handleCheckboxTableChange = (event) => {
@@ -173,7 +181,6 @@ class MyTaskIndex extends React.Component {
 
     handleEditClicked = async (id, element) => {
         const urlParams = new URLSearchParams(window.location.search);
-        currentPage = urlParams.get('page')
         let res = await axios.get(`${process.env.MIX_API_URL}/myTasks/${id}/edit`);
         let duedateParts = res.data.myTask.duedate.split("-");
         let selectedDate = moment(duedateParts[2] + "-" + duedateParts[0] + "-" + duedateParts[1] + "T00:00:00")._d
@@ -194,6 +201,8 @@ class MyTaskIndex extends React.Component {
             customerId: res.data.myTask.customer.id,
             customerName: res.data.myTask.customer.name,
             customerRemark: res.data.myTask.customer.remark,
+            currentPage: urlParams.get('page'),
+            limit: urlParams.get('limit'),
         });
         await this.populateCredentialsForCustomers(this.state.customerId);
     }
@@ -208,7 +217,7 @@ class MyTaskIndex extends React.Component {
     handleUpdate = async (event) => {
         event.preventDefault();
         this.setState({ myTasksIDs: [], selected: false })
-        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode, currentPage, limit } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/${rowId}`, {
@@ -238,17 +247,20 @@ class MyTaskIndex extends React.Component {
                 });
             }
             else if (res.data.status === 200) {
-                this.setState({ loading: false }, () => {
-                    this.goToPage()
-                });
-                this.props.history.push("/mytasks");
+                this.setState({ loading: false });
+                this.props.history.push(`/mytasks?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+                this.goToPage()
+                this.setDropDownValue()
             }
         }
     };
 
     goToPage = async () => {
-        while (this.state.myTasksIDs.length <= 0) {
-            await this.sleep(1000)
+        const { currentPage } = this.state;
+        let i = 0;
+        while (this.state.myTasksIDs.length <= 0 && i < 100) {
+            await this.sleep(1000);
+            i += 1;
         }
         const paginationLinks = document.getElementsByClassName("page-link");
         paginationLinks[currentPage].click()
@@ -259,7 +271,13 @@ class MyTaskIndex extends React.Component {
     }
 
     handleUpdateStatus = async (value, obj, rowId) => {
-        this.setState({ loading: true });
+        const urlParams = new URLSearchParams(window.location.search);
+        this.setState({
+            loading: true,
+            currentPage: urlParams.get('page'),
+            limit: urlParams.get('limit'),
+            myTasksIDs: [],
+        });
         const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/updateStatus/${rowId}`, {
             status: obj.value,
         });
@@ -279,7 +297,10 @@ class MyTaskIndex extends React.Component {
         }
         else if (res.data.status === 200) {
             this.setState({ loading: false, selected: false });
-            this.props.history.push("/myTasks");
+            const { limit, currentPage } = this.state;
+            this.props.history.push(`/mytasks?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+            this.goToPage()
+            this.setDropDownValue()
         }
     };
 
@@ -400,21 +421,24 @@ class MyTaskIndex extends React.Component {
 
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
-            status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected, credentials } = this.state;
+            status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected,
+            currentPage, limit, credentials } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 20,
+            perPage: limit,
             perPageValues: [5, 10, 20, 25, 100],
-            perPage: 5,
-            perPageValues: [5],
+            currentPage: currentPage,
             headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'notes', 'duedate', 'repeat', 'priority', 'status', 'assigneeNames', 'customer_code'],
             columnsAlign: { id: 'center' },
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
+                if (!Array.isArray(res.data)) {
+                    res.data = Object.values(res.data)
+                }
                 let myTasksIDs = res.data.map(a => a.id.toString());
                 self.setState({ myTasksIDs: myTasksIDs }, () => {
                     self.check_all.current.checked = _.difference(self.state.myTasksIDs, self.state.selectedMyTasks).length === 0;
@@ -435,57 +459,57 @@ class MyTaskIndex extends React.Component {
                             <Icon name='list' circular />
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
-                        {/* {!selected ? */}
-                        <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
-                            {
-                                function (row, column) {
-                                    switch (column) {
-                                        case 'id':
-                                            return (
-                                                <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
-                                                    onChange={self.handleCheckboxTableChange}
-                                                    checked={self.state.selectedMyTasks.includes(row.id.toString())} />
-                                            );
-                                        case 'status':
-                                            return (
-                                                <SelectSearch
-                                                    search
-                                                    onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
-                                                    filterOptions={fuzzySearch}
-                                                    options={[
-                                                        { value: 'No Status', name: 'No Status' },
-                                                        { value: 'Not Started', name: 'Not Started' },
-                                                        { value: 'In progress', name: 'In progress' },
-                                                        { value: "On Hold", name: "On Hold" },
-                                                        { value: 'Completed', name: 'Completed' },
-                                                        { value: 'Draft', name: 'Draft' },
-                                                        { value: "Needs Review", name: "Needs Review" },
-                                                        { value: 'With Client', name: 'With Client' },
-                                                        { value: 'Waiting on Client', name: 'Waiting on Client' },
-                                                    ]}
-                                                    placeholder="Choose a status"
-                                                    value={row.status}
-                                                />
-                                            )
-                                        case 'actions':
-                                            return (
-                                                <div onClick={() => self.handleEditClicked(row.id.toString(), this)}>
-                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
-                                                        <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
-                                                            Edit
-                                                        </div>
-                                                    </button>
-                                                </div>
+                        {!selected ?
+                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
+                                {
+                                    function (row, column) {
+                                        switch (column) {
+                                            case 'id':
+                                                return (
+                                                    <input key={row.id.toString()} type="checkbox" value={row.id.toString()}
+                                                        onChange={self.handleCheckboxTableChange}
+                                                        checked={self.state.selectedMyTasks.includes(row.id.toString())} />
+                                                );
+                                            case 'status':
+                                                return (
+                                                    <SelectSearch
+                                                        search
+                                                        onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
+                                                        filterOptions={fuzzySearch}
+                                                        options={[
+                                                            { value: 'No Status', name: 'No Status' },
+                                                            { value: 'Not Started', name: 'Not Started' },
+                                                            { value: 'In progress', name: 'In progress' },
+                                                            { value: "On Hold", name: "On Hold" },
+                                                            { value: 'Completed', name: 'Completed' },
+                                                            { value: 'Draft', name: 'Draft' },
+                                                            { value: "Needs Review", name: "Needs Review" },
+                                                            { value: 'With Client', name: 'With Client' },
+                                                            { value: 'Waiting on Client', name: 'Waiting on Client' },
+                                                        ]}
+                                                        placeholder="Choose a status"
+                                                        value={row.status}
+                                                    />
+                                                )
+                                            case 'actions':
+                                                return (
+                                                    <div onClick={() => self.handleEditClicked(row.id.toString(), this)}>
+                                                        <button className="btn btn-primary" style={{ marginRight: "5px" }}>
+                                                            <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
+                                                            <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
+                                                                Edit
+                                                            </div>
+                                                        </button>
+                                                    </div>
 
-                                            );
-                                        default:
-                                            return (row[column]);
+                                                );
+                                            default:
+                                                return (row[column]);
+                                        }
                                     }
                                 }
-                            }
-                        </ServerTable >
-                        {/* : ""} */}
+                            </ServerTable >
+                            : ""}
                         <div>
                             <Form onSubmit={this.handleUpdate} size="small">
                                 {selected ?
