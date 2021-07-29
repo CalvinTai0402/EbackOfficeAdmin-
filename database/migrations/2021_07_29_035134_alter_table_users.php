@@ -18,6 +18,7 @@ class AlterTableUsers extends Migration
             $table->string('customersPerPage')->default(20);
             $table->string('availableTasksPerPage')->default(20);
             $table->string('taskListsPerPage')->default(20);
+            $table->string('myTasksPerPage')->default(20);
             $table->string('announcementsPerPage')->default(20);
             $table->string('sentAnnouncementsPerPage')->default(20);
             $table->string('sidebarTextColor')->default("white");
@@ -37,6 +38,7 @@ class AlterTableUsers extends Migration
             $table->dropColumn('customersPerPage');
             $table->dropColumn('availableTasksPerPage');
             $table->dropColumn('taskListsPerPage');
+            $table->dropColumn('myTasksPerPage');
             $table->dropColumn('announcementsPerPage');
             $table->dropColumn('sentAnnouncementsPerPage');
             $table->dropColumn('sidebarTextColor');

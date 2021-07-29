@@ -97,6 +97,7 @@ class TaskListIndex extends React.Component {
             sortable: ['name', 'description', 'duedate', 'priority', 'status', 'assigneeNames',],
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
+                console.log(res.data)
                 let taskListsIDs = res.data.map(a => a.id.toString());
                 self.setState({ taskListsIDs: taskListsIDs }, () => {
                     self.check_all.current.checked = _.difference(self.state.taskListsIDs, self.state.selectedTaskLists).length === 0;
