@@ -10,7 +10,6 @@ import {
 import swal from 'sweetalert'
 
 import '../../../css/TaskList.css';
-import { indexOf } from 'lodash';
 class TaskListIndex extends React.Component {
     state = {
         selectedTaskLists: [],
@@ -22,10 +21,6 @@ class TaskListIndex extends React.Component {
     async componentDidMount() {
         let pageSelect = document.getElementsByTagName("select")[0];
         pageSelect.value = this.props.perPage;
-    }
-
-    sleep = async (msec) => {
-        return new Promise(resolve => setTimeout(resolve, msec));
     }
 
     check_all = React.createRef();
@@ -92,9 +87,6 @@ class TaskListIndex extends React.Component {
     render() {
         const { deleting } = this.state;
         let self = this;
-        // const urlParams = new URLSearchParams(window.location.search);
-        // const page = urlParams.get('page')
-        // const perPage = urlParams.get('limit')
         const url = `${process.env.MIX_API_URL}/taskLists`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);

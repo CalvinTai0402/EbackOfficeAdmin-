@@ -28,9 +28,9 @@ class UserIndex extends React.Component {
         pageSelect.value = this.props.perPage;
     }
 
-    sleep = async (msec) => {
-        return new Promise(resolve => setTimeout(resolve, msec));
-    }
+    // sleep = async (msec) => {
+    //     return new Promise(resolve => setTimeout(resolve, msec));
+    // }
 
     check_all = React.createRef();
 

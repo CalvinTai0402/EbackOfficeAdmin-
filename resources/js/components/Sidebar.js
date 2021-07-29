@@ -239,7 +239,7 @@ class Sidebar extends React.Component {
                                 <Route exact path="/taskLists/:id/edit" render={(props) => <TaskListEdit {...props} />} />
                                 <Route exact path="/mytasks" render={(props) => <MyTaskIndex {...props} />} />
 
-                                <Route exact path="/announcements" render={(props) => <AnnouncementIndex {...props} />} perPage={preferences.announcementsPerPage} />
+                                <Route exact path="/announcements" render={(props) => <AnnouncementIndex {...props} perPage={preferences.announcementsPerPage} />} />
                                 <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} perPage={preferences.sentAnnouncementsPerPage} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
                                 <Route exact path="/announcements/:id/edit/:source" render={(props) => <AnnouncementEdit {...props} />} />

@@ -21,15 +21,8 @@ class AnnouncementIndex extends React.Component {
     };
 
     async componentDidMount() {
-        // while (!this.props.perPage) {
-        //     await this.sleep(1000)
-        // }
         let pageSelect = document.getElementsByTagName("select")[0];
         pageSelect.value = this.props.perPage;
-    }
-
-    sleep = async (msec) => {
-        return new Promise(resolve => setTimeout(resolve, msec));
     }
 
     check_all = React.createRef();
@@ -94,13 +87,6 @@ class AnnouncementIndex extends React.Component {
     }
 
     render() {
-        // let perPage = 20;
-        // if (this.props.perPage) { perPage = this.props.perPage }
-        // while (!this.props.perPage) { }
-        // console.log(this.props.page)
-        // while (!this.props.perPage) {
-        //     this.sleep(1000)
-        // }
         const { deleting, loading } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/announcements`;
