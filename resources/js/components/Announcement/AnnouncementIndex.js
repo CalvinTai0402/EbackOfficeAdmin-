@@ -20,6 +20,18 @@ class AnnouncementIndex extends React.Component {
         loading: false,
     };
 
+    async componentDidMount() {
+        // while (!this.props.perPage) {
+        //     await this.sleep(1000)
+        // }
+        let pageSelect = document.getElementsByTagName("select")[0];
+        pageSelect.value = this.props.perPage;
+    }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
+
     check_all = React.createRef();
 
     handleCheckboxTableChange = (event) => {
@@ -82,13 +94,20 @@ class AnnouncementIndex extends React.Component {
     }
 
     render() {
+        // let perPage = 20;
+        // if (this.props.perPage) { perPage = this.props.perPage }
+        // while (!this.props.perPage) { }
+        // console.log(this.props.page)
+        // while (!this.props.perPage) {
+        //     this.sleep(1000)
+        // }
         const { deleting, loading } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/announcements`;
         const columns = ['id', 'name', 'description', 'assignees', 'status', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 20,
+            perPage: this.props.perPage,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput },
             sortable: ['name', 'description', 'assignees', 'status'],

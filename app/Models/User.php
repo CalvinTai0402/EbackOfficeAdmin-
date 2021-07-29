@@ -24,7 +24,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'usersPerPage',
+        'customersPerPage',
+        'availableTasksPerPage',
+        'taskListsPerPage',
+        'announcementsPerPage',
+        'sentAnnouncementsPerPage',
     ];
 
     /**

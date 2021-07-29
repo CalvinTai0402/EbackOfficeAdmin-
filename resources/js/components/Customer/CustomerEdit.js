@@ -15,6 +15,7 @@ class CustomerEdit extends Component {
         code: "",
         name: "",
         service: "",
+        serviceArray: [],
         serviceOther: "",
         businessAddress: "",
         mailingAddress: "",
@@ -42,7 +43,7 @@ class CustomerEdit extends Component {
         this.setState({
             code: res.data.customer.code,
             name: res.data.customer.name,
-            serviceArray: this.state.serviceArray,
+            // serviceArray: this.state.serviceArray,
             serviceOther: res.data.customer.service_other,
             businessAddress: res.data.customer.business_address,
             mailingAddress: res.data.customer.mailing_address,
@@ -210,7 +211,7 @@ class CustomerEdit extends Component {
                 <Header as="h1" icon color="blue" textAlign="center">
                     Edit Customer
                 </Header>
-                <Form onSubmit={this.handleUpdate} size="medium">
+                <Form onSubmit={this.handleUpdate} size="small">
                     <Grid className="app">
                         <Grid.Row>
                             <Grid.Column width={8}>

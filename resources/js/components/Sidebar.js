@@ -1,6 +1,9 @@
 import React from "react";
 import { ProSidebar, SubMenu, Menu, MenuItem, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
-import { FaBattleNet, FaAdn, FaArtstation, FaGem, FaFantasyFlightGames, FaCriticalRole, FaDrupal, FaFreebsd, FaGitter, FaGratipay, FaGrav, FaGripfire } from "react-icons/fa";
+import {
+    FaBattleNet, FaAdn, FaArtstation, FaGem, FaFantasyFlightGames, FaCriticalRole, FaDrupal, FaFreebsd,
+    FaGitter, FaGratipay, FaGrav, FaGripfire, FaBalanceScale
+} from "react-icons/fa";
 import Home from "./Home"
 import {
     BrowserRouter as Router,
@@ -28,20 +31,41 @@ import TaskListIndex from './TaskList/TaskListIndex';
 import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
 import MyTaskIndex from "./MyTask/MyTaskIndex";
+import PreferenceEdit from "./Preferences/PreferenceEdit";
 
 import '../../css/App.css';
 import 'react-pro-sidebar/dist/css/styles.css';
+
 class Sidebar extends React.Component {
     state = {
         menuCollapse: false,
         loggedInUserName: "Guest",
         selected: "",
-        color: "yellow"
+        color: "yellow",
+        preferences: {},
+        usersPerPage: '20',
+        customersPerPage: '20',
+        availableTasksPerPage: '20',
+        taskListsPerPage: '20',
+        announcementsPerPage: '20',
+        sentAnnouncementsPerPage: '20',
+        preferencesLoading: false
     };
 
     async componentDidMount() {
+        await this.getLoggedInUsername()
+        await this.populateUserPreferences()
+    }
+
+    getLoggedInUsername = async () => {
         const res = await axios.get("/getLoggedInUsername")
         this.setState({ loggedInUserName: res.data.loggedInUserName })
+    }
+
+
+    populateUserPreferences = async () => {
+        const res = await axios.get(`${process.env.MIX_API_URL}/preferences`);
+        this.setState({ preferences: res.data.userPreferences })
     }
 
     logout = async () => {
@@ -53,8 +77,50 @@ class Sidebar extends React.Component {
         this.setState({ selected: selectedLink })
     }
 
+    handlePreferencesUpdate = async (event) => {
+        event.preventDefault();
+        const { usersPerPage, customersPerPage, availableTasksPerPage, taskListsPerPage, announcementsPerPage, sentAnnouncementsPerPage } = this.state;
+        this.setState({ preferencesLoading: true });
+        const res = await axios.put(`${process.env.MIX_API_URL}/preferences/0`, {
+            usersPerPage: usersPerPage,
+            customersPerPage: customersPerPage,
+            availableTasksPerPage: availableTasksPerPage,
+            taskListsPerPage: taskListsPerPage,
+            announcementsPerPage: announcementsPerPage,
+            sentAnnouncementsPerPage: sentAnnouncementsPerPage,
+        });
+        if (res.data.status === 200) {
+            await this.populateUserPreferences();
+            this.setState({ preferencesLoading: false });
+        }
+    };
+
+    handlePreferencesSelectChange = (value, obj, field) => {
+        switch (field) {
+            case "users":
+                this.setState({ usersPerPage: obj.value })
+                break;
+            case "customers":
+                this.setState({ customersPerPage: obj.value })
+                break;
+            case "availableTasks":
+                this.setState({ availableTasksPerPage: obj.value })
+                break;
+            case "tasks":
+                this.setState({ taskListsPerPage: obj.value })
+                break;
+            case "announcements":
+                this.setState({ announcementsPerPage: obj.value })
+                break;
+            case "sentAnnouncements":
+                this.setState({ sentAnnouncementsPerPage: obj.value })
+                break;
+            default:
+        }
+    }
+
     render() {
-        const { menuCollapse, loggedInUserName, selected, color } = this.state;
+        const { menuCollapse, loggedInUserName, selected, color, preferences } = this.state;
         return (
             <div >
                 <Router>
@@ -129,6 +195,12 @@ class Sidebar extends React.Component {
                                             <Link to="/announcementssent" />
                                         </MenuItem>
                                     </SubMenu>
+                                    <MenuItem icon={<FaBalanceScale />} onClick={() => { this.changeColorOnClick("Preferences") }}>
+                                        <span style={{ color: selected === "Preferences" ? color : "" }}>
+                                            Preferences
+                                        </span>
+                                        <Link to="/preferences" />
+                                    </MenuItem>
                                 </Menu>
                             </SidebarContent>
                             <SidebarFooter style={{ textAlign: 'center' }}>
@@ -146,11 +218,11 @@ class Sidebar extends React.Component {
                         </ProSidebar>
                         <div className="centerH">
                             <Switch>
-                                <Route exact path="/users" render={(props) => <UserIndex {...props} />} />
+                                <Route exact path="/users" render={(props) => <UserIndex {...props} perPage={preferences.usersPerPage} />} />
                                 <Route exact path="/users/create" render={(props) => <UserCreate {...props} />} />
                                 <Route exact path="/users/:id/edit" render={(props) => <UserEdit {...props} />} />
 
-                                <Route exact path="/customers" render={(props) => <CustomerIndex {...props} />} />
+                                <Route exact path="/customers" render={(props) => <CustomerIndex {...props} perPage={preferences.customersPerPage} />} />
                                 <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />
                                 <Route exact path="/customers/:id/edit" render={(props) => <CustomerEdit {...props} />} />
 
@@ -158,20 +230,34 @@ class Sidebar extends React.Component {
 
                                 <Route exact path="/filemanager" render={(props) => <FileManager {...props} />} />
 
-                                <Route exact path="/availableTasks" render={(props) => <AvailableTaskIndex {...props} />} />
+                                <Route exact path="/availableTasks" render={(props) => <AvailableTaskIndex {...props} perPage={preferences.availableTasksPerPage} />} />
                                 <Route exact path="/availableTasks/create" render={(props) => <AvailableTaskCreate {...props} />} />
                                 <Route exact path="/availableTasks/:id/edit" render={(props) => <AvailableTaskEdit {...props} />} />
 
-                                <Route exact path="/taskLists" render={(props) => <TaskListIndex {...props} />} />
+                                <Route exact path="/taskLists" render={(props) => <TaskListIndex {...props} perPage={preferences.taskListsPerPage} />} />
                                 <Route exact path="/taskLists/create" render={(props) => <TaskListCreate {...props} />} />
                                 <Route exact path="/taskLists/:id/edit" render={(props) => <TaskListEdit {...props} />} />
                                 <Route exact path="/mytasks" render={(props) => <MyTaskIndex {...props} />} />
 
-                                <Route exact path="/announcements" render={(props) => <AnnouncementIndex {...props} />} />
-                                <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} />} />
+                                <Route exact path="/announcements" render={(props) => <AnnouncementIndex {...props} />} perPage={preferences.announcementsPerPage} />
+                                <Route exact path="/announcementssent" render={(props) => <SentAnnouncementsIndex {...props} perPage={preferences.sentAnnouncementsPerPage} />} />
                                 <Route exact path="/announcements/create" render={(props) => <AnnouncementCreate {...props} />} />
                                 <Route exact path="/announcements/:id/edit/:source" render={(props) => <AnnouncementEdit {...props} />} />
                                 {/* <Route exact path="/announcements/:id/readOrUnreadPage/:reading" render={(props) => <ReadPage {...props} />} /> */}
+
+                                <Route exact path="/preferences"
+                                    render={(props) => <PreferenceEdit
+                                        handleUpdate={this.handlePreferencesUpdate}
+                                        handleSelectChange={this.handlePreferencesSelectChange}
+                                        usersPerPage={preferences.usersPerPage}
+                                        customersPerPage={preferences.customersPerPage}
+                                        availableTasksPerPage={preferences.availableTasksPerPage}
+                                        taskListsPerPage={preferences.taskListsPerPage}
+                                        announcementsPerPage={preferences.announcementsPerPage}
+                                        sentAnnouncementsPerPage={preferences.sentAnnouncementsPerPage}
+                                        loading={this.state.preferencesLoading}
+                                        {...props} />}
+                                />
 
                                 <Route path="/" render={(props) => <Home {...props} />} />
                             </Switch>

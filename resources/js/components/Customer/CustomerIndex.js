@@ -15,8 +15,17 @@ class CustomerIndex extends React.Component {
         selectedCustomers: [],
         customersIDs: [],
         isAllChecked: false,
-        deleting: false
+        deleting: false,
     };
+
+    async componentDidMount() {
+        let pageSelect = document.getElementsByTagName("select")[0];
+        pageSelect.value = this.props.perPage;
+    }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
 
     check_all = React.createRef();
 
@@ -86,7 +95,7 @@ class CustomerIndex extends React.Component {
         const columns = ['id', 'code', 'name', 'contact_person', 'telephone', 'email', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 20,
+            perPage: this.props.perPage,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, contact_person: "contact", property: "Phone" },
             sortable: ['code', 'name', 'contact_person', 'telephone', 'email'],

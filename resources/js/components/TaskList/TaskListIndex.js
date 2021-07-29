@@ -10,13 +10,23 @@ import {
 import swal from 'sweetalert'
 
 import '../../../css/TaskList.css';
+import { indexOf } from 'lodash';
 class TaskListIndex extends React.Component {
     state = {
         selectedTaskLists: [],
         taskListsIDs: [],
         isAllChecked: false,
-        deleting: false
+        deleting: false,
     };
+
+    async componentDidMount() {
+        let pageSelect = document.getElementsByTagName("select")[0];
+        pageSelect.value = this.props.perPage;
+    }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
 
     check_all = React.createRef();
 
@@ -77,7 +87,6 @@ class TaskListIndex extends React.Component {
                 }
             }
         });
-        // window.history.replaceState(null, null, "?search=&limit=20&page=2&orderBy=&order=desc");
     }
 
     render() {
@@ -85,11 +94,12 @@ class TaskListIndex extends React.Component {
         let self = this;
         // const urlParams = new URLSearchParams(window.location.search);
         // const page = urlParams.get('page')
+        // const perPage = urlParams.get('limit')
         const url = `${process.env.MIX_API_URL}/taskLists`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
-            perPage: 20,
+            perPage: this.props.perPage,
             perPageValues: [5, 10, 20, 25, 100],
             headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'duedate', 'priority', 'status', 'assigneeNames',],
@@ -145,8 +155,8 @@ class TaskListIndex extends React.Component {
                                         case 'actions':
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
-                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <Link to={'taskLists/' + row.id + '/edit'}>
+                                                    <button className="btn btn-primary" style={{ marginRight: "5px" }} onClick={this.populateLinks}>
+                                                        <Link to={`/taskLists/${row.id}/edit`}>
                                                             <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Edit
