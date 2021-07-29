@@ -7741,8 +7741,7 @@ button.bg-dark:focus {
   padding: 1.5rem !important;
 }
 
-.pt-4,
-.py-4 {
+.pt-4 {
   padding-top: 1.5rem !important;
 }
 
@@ -7751,8 +7750,15 @@ button.bg-dark:focus {
   padding-right: 1.5rem !important;
 }
 
-.pb-4,
 .py-4 {
+  width: 80%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pb-4 {
   padding-bottom: 1.5rem !important;
 }
 
