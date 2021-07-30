@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
 class UtilitiesController extends Controller
 {
     public function token()
@@ -14,9 +11,6 @@ class UtilitiesController extends Controller
 
     public function getLoggedInUsername()
     {
-        if (Auth::check()) {
-            return response()->json(["loggedInUserName" => Auth::user()->name]);
-        }
-        return response()->json(["loggedInUserName" => "Guest"]);
+        return response()->json(["loggedInUserName" => auth()->user()->name ?? 'Guest']);
     }
 }
