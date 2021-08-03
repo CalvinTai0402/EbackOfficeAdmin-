@@ -43,6 +43,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put("users/deleteAnnouncement/{announcementId}",  [UserController::class, 'deleteAnnouncement'])->name('users.deleteAnnouncement');
         Route::put("users/deleteAnnouncements",  [UserController::class, 'deleteAnnouncements'])->name('users.deleteAnnouncements');
         Route::get("users/populateUsersForTaskList",  [UserController::class, 'populateUsersForTaskList'])->name('users.populateUsersForTaskList');
+        Route::get("users/role",  [UserController::class, 'role'])->name('users.role');
         Route::post("users/deleteMany",  [UserController::class, 'destroyMany'])->name('users.destroyMany');
         Route::resource("users", UserController::class);
 

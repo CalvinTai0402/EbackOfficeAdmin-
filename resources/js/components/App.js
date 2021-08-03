@@ -10,11 +10,19 @@ class App extends React.Component {
         window.parent.document.body.style.zoom = 0.75;
     }
 
+    logout = async () => {
+        await axios.post("/logout");
+        window.location.href = "/"
+    }
+
     render() {
         return (
             <div>
                 <Sidebar />
-            </div>
+                <button className="logoutButton" onClick={this.logout}>
+                    Logout
+                </button>
+            </div >
         );
     }
 

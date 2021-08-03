@@ -41,6 +41,7 @@ class Sidebar extends React.Component {
     state = {
         menuCollapse: false,
         loggedInUserName: "Guest",
+        loggedInUserRole: "User",
         selected: "Home",
         sidebarTextSelectedColor: "yellow",
         sidebarTextColor: "white",
@@ -60,6 +61,7 @@ class Sidebar extends React.Component {
 
     async componentDidMount() {
         await this.getLoggedInUsername()
+        await this.getLoggedInUserRole()
         await this.populateUserPreferences()
         this.setState({ loading: false })
     }
@@ -69,6 +71,10 @@ class Sidebar extends React.Component {
         this.setState({ loggedInUserName: res.data.loggedInUserName })
     }
 
+    getLoggedInUserRole = async () => {
+        const res = await axios.get(`${process.env.MIX_API_URL}/users/role`)
+        this.setState({ loggedInUserRole: res.data.role })
+    }
 
     populateUserPreferences = async () => {
         const res = await axios.get(`${process.env.MIX_API_URL}/preferences`);
@@ -79,11 +85,6 @@ class Sidebar extends React.Component {
             sidebarTextColorForUpdate: res.data.userPreferences.sidebarTextColor,
             sidebarTextSelectedColorForUpdate: res.data.userPreferences.sidebarTextSelectedColor,
         })
-    }
-
-    logout = async () => {
-        await axios.post("/logout");
-        window.location.href = "/"
     }
 
     changeColorOnClick = (selectedLink) => {
@@ -146,7 +147,7 @@ class Sidebar extends React.Component {
     }
 
     render() {
-        const { menuCollapse, loggedInUserName, selected, sidebarTextSelectedColor, sidebarTextColor, preferences, loading } = this.state;
+        const { menuCollapse, loggedInUserName, loggedInUserRole, selected, sidebarTextSelectedColor, sidebarTextColor, preferences, loading } = this.state;
         return (
             <div>
                 {loading ? <Spinner text="loading..." /> :
@@ -164,12 +165,12 @@ class Sidebar extends React.Component {
                                             </span>
                                             <Link to="/" />
                                         </MenuItem>
-                                        <MenuItem icon={<FaAdn />} onClick={() => { this.changeColorOnClick("Users") }}>
+                                        {loggedInUserRole === "admin" ? <MenuItem icon={<FaAdn />} onClick={() => { this.changeColorOnClick("Users") }}>
                                             <span style={{ color: selected === "Users" ? sidebarTextSelectedColor : sidebarTextColor }}>
                                                 Users
                                             </span>
                                             <Link to="/users" />
-                                        </MenuItem>
+                                        </MenuItem> : ""}
                                         <MenuItem icon={<FaArtstation />} onClick={() => { this.changeColorOnClick("Customers") }}>
                                             <span style={{ color: selected === "Customers" ? sidebarTextSelectedColor : sidebarTextColor }}>
                                                 Customers
@@ -230,18 +231,10 @@ class Sidebar extends React.Component {
                                         </MenuItem>
                                     </Menu>
                                 </SidebarContent>
-                                <SidebarFooter style={{ textAlign: 'center' }}>
-                                    <div
-                                        className="sidebar-btn-wrapper"
-                                        style={{
-                                            padding: '20px 24px',
-                                        }}
-                                    >
-                                        <button className="sidebar-btn" onClick={this.logout}>
-                                            Logout
-                                        </button>
-                                    </div>
-                                </SidebarFooter>
+                                {/* <SidebarFooter style={{ textAlign: 'center' }}>
+                                    
+                                </SidebarFooter> */}
+
                             </ProSidebar>
                             <div className="centerH">
                                 <Switch>

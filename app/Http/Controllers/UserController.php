@@ -156,4 +156,10 @@ class UserController extends Controller
         Auth::user()->announcements()->updateExistingPivot($selectedAnnouncementIds, ["deleted" => 1]);
         return response()->json(['status' => 200]);
     }
+
+    public function role()
+    {
+        $role = Auth::user()->role;
+        return response()->json(['status' => 200, 'role' => $role]);
+    }
 }
