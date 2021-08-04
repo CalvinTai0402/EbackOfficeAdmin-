@@ -56,13 +56,15 @@ class Sidebar extends React.Component {
         sidebarTextColorForUpdate: "white",
         sidebarTextSelectedColorForUpdate: "yellow",
         preferencesLoading: false,
-        loading: true,
+        loading: false,
     };
 
     async componentDidMount() {
+        this.setState({ loading: true })
         await this.getLoggedInUsername()
         await this.getLoggedInUserRole()
         await this.populateUserPreferences()
+        await this.setSelected()
         this.setState({ loading: false })
     }
 
@@ -85,6 +87,31 @@ class Sidebar extends React.Component {
             sidebarTextColorForUpdate: res.data.userPreferences.sidebarTextColor,
             sidebarTextSelectedColorForUpdate: res.data.userPreferences.sidebarTextSelectedColor,
         })
+    }
+
+    setSelected = async () => {
+        let currentURL = window.location.href;
+        if (currentURL.includes("users")) {
+            this.setState({ selected: "Users" })
+        } else if (currentURL.includes("customers")) {
+            this.setState({ selected: "Customers" })
+        } else if (currentURL.includes("events")) {
+            this.setState({ selected: "Events" })
+        } else if (currentURL.includes("filemanager")) {
+            this.setState({ selected: "Files" })
+        } else if (currentURL.includes("availableTasks")) {
+            this.setState({ selected: "Available Tasks" })
+        } else if (currentURL.includes("taskLists")) {
+            this.setState({ selected: "Task Lists" })
+        } else if (currentURL.includes("mytasks")) {
+            this.setState({ selected: "My Tasks" })
+        } else if (currentURL.includes("announcementssent")) {
+            this.setState({ selected: "Sent Announcments" })
+        } else if (currentURL.includes("announcements")) {
+            this.setState({ selected: "Announcments" })
+        } else if (currentURL.includes("preferences")) {
+            this.setState({ selected: "Preferences" })
+        }
     }
 
     changeColorOnClick = (selectedLink) => {
@@ -185,7 +212,7 @@ class Sidebar extends React.Component {
                                         </MenuItem>
                                         <MenuItem icon={<FaCriticalRole />} onClick={() => { this.changeColorOnClick("Files") }}>
                                             <span style={{ color: selected === "Files" ? sidebarTextSelectedColor : sidebarTextColor }}>
-                                                Files
+                                                File manager
                                             </span>
                                             <Link to="/filemanager" />
                                         </MenuItem>
@@ -231,9 +258,6 @@ class Sidebar extends React.Component {
                                         </MenuItem>
                                     </Menu>
                                 </SidebarContent>
-                                {/* <SidebarFooter style={{ textAlign: 'center' }}>
-                                    
-                                </SidebarFooter> */}
 
                             </ProSidebar>
                             <div className="centerH">

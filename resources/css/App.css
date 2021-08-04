@@ -404,7 +404,8 @@ a:visited{
     display: flex;
     align-items: center;
     justify-content: center;
-    color: black;
+    color: #282424;
+    border-color: #282424;
     position: absolute;
     top: 10px;
     right: 10px;

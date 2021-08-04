@@ -203,6 +203,12 @@ class CustomerEdit extends Component {
         this.setState({ credentials })
     }
 
+    redirectBack = (event) => {
+        event.preventDefault()
+        const { limit, currentPage } = this.props.location;
+        this.props.history.push(`/customers?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+    }
+
     render() {
         const { code, name, service, serviceArray, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
             companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, credentials, errors, loading } = this.state;
@@ -434,6 +440,19 @@ class CustomerEdit extends Component {
                                 >
                                     Update customer
                                 </Button>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row textAlign="center" verticalAlign="middle" className="app">
+                            <Grid.Column >
+                                <Button.Group floated="right">
+                                    <button className="btn btn-primary" style={{ marginRight: "8px" }} onClick={this.redirectBack}>
+                                        <div style={{ color: "white" }} >
+                                            <span  >
+                                                Back
+                                            </span>
+                                        </div>
+                                    </button>
+                                </Button.Group>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

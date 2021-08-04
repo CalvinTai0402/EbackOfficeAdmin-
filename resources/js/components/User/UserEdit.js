@@ -90,6 +90,12 @@ class UserEdit extends Component {
         });
     };
 
+    redirectBack = (event) => {
+        event.preventDefault()
+        const { limit, currentPage } = this.props.location;
+        this.props.history.push(`/users?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+    }
+
     handleSelectChange = (value, obj, field) => {
         switch (field) {
             case "role":
@@ -154,6 +160,17 @@ class UserEdit extends Component {
                                     size="large"
                                 >
                                     Update
+                                </Button>
+                                <Button
+                                    disabled={loading}
+                                    className={loading ? "loading" : ""}
+                                    color="green"
+                                    fluid
+                                    size="large"
+                                    onClick={this.redirectBack}
+                                    style={{ marginTop: "5px" }}
+                                >
+                                    Back
                                 </Button>
                             </Segment>
                         </Form>
