@@ -7,6 +7,7 @@ use App\Models\MyTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TaskList;
 
 class MyTaskController extends Controller
 {
@@ -17,19 +18,30 @@ class MyTaskController extends Controller
      */
     public function index(Request $request)
     {
+        $loggedInUsername = Auth::user()->name;
+        $filterIncompleteValue = $request->input("filterIncompleteValue");
         $search = $request->input("search");
         $limit = $request->input("limit");
         $page = $request->input("page");
         $orderBy = $request->input("orderBy");
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
-        $myTasks = Auth::user()->myTasks()
-            ->name($search)
-            ->customer($search)
-            ->description($search)
-            ->priority($search)
-            ->status($search)
-            ->assigneenames($search)
+        if (!is_null($search)) {
+            $myTasks = Auth::user()->myTasks()
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'LIKE', '%' . $search . '%')
+                        ->orWhere('customer_code', 'LIKE', '%' . $search . '%')
+                        ->orWhere('priority', 'LIKE', '%' . $search . '%');
+                });
+        } else {
+            $myTasks = Auth::user()->myTasks();
+        }
+        if ($filterIncompleteValue) {
+            $myTasks = $myTasks->where('status', '<>', 'Completed');
+        } else {
+            $myTasks = $myTasks->status($search);
+        }
+        $myTasks = $myTasks
             ->order($orderBy, $order)
             ->skipPage($toSkip)
             ->take($limit)

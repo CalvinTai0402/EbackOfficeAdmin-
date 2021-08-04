@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Auth;
 
 class MyTask extends Model
 {
@@ -22,6 +23,46 @@ class MyTask extends Model
         'customer_id'
     ];
     protected $table = 'task_lists';
+
+    // private $loggedInUsername;
+
+    // public function __construct()
+    // {
+    //     $this->loggedInUsername = Auth::user()->name;;
+    // }
+
+    // public function scopeOverdue($query, $filter)
+    // {
+    //     if (!is_null($filter)) {
+    //         return $query->orWhere('assigneeNames', 'LIKE', '%' . $filter . '%');
+    //     }
+
+    //     return $query;
+    // }
+
+    // public function scopeIncomplete($query, $value)
+    // {
+    //     if ($value) {
+    //         return $query->where('status', '<>', 'Completed');
+    //     }
+
+    //     return $query;
+    // }
+
+    // public function scopeSearch($query, $filter)
+    // {
+    //     if (!is_null($filter)) {
+    //         return $query->where('assigneeNames', 'LIKE', '%' . $this->loggedInUsername . '%')
+    //             ->where(function ($query, $filter) {
+    //                 $query->where('name', 'LIKE', '%' . $filter . '%')
+    //                     ->orWhere('customer_code', 'LIKE', '%' . $filter . '%')
+    //                     ->orWhere('description', 'LIKE', '%' . $filter . '%')
+    //                     ->orWhere('priority', 'LIKE', '%' . $filter . '%')
+    //                     ->orWhere('status', 'LIKE', '%' . $filter . '%');
+    //             });
+    //     }
+    //     return $query;
+    // }
 
     public function scopeName($query, $filter)
     {
@@ -41,36 +82,10 @@ class MyTask extends Model
         return $query;
     }
 
-    public function scopeDescription($query, $filter)
-    {
-        if (!is_null($filter)) {
-            return $query->orWhere('description', 'LIKE', '%' . $filter . '%');
-        }
-
-        return $query;
-    }
-
-    public function scopeNotes($query, $filter)
-    {
-        if (!is_null($filter)) {
-            return $query->orWhere('notes', 'LIKE', '%' . $filter . '%');
-        }
-
-        return $query;
-    }
-    public function scopeRepeat($query, $filter)
-    {
-        if (!is_null($filter)) {
-            return $query->orWhere('repeat', 'LIKE', '%' . $filter . '%');
-        }
-
-        return $query;
-    }
-
     public function scopePriority($query, $filter)
     {
         if (!is_null($filter)) {
-            return $query->orWhere('priority', 'LIKE', '%' . $filter . '%');
+            return $query->where('priority', 'LIKE', '%' . $filter . '%');
         }
 
         return $query;
@@ -80,15 +95,6 @@ class MyTask extends Model
     {
         if (!is_null($filter)) {
             return $query->orWhere('status', 'LIKE', '%' . $filter . '%');
-        }
-
-        return $query;
-    }
-
-    public function scopeAssigneenames($query, $filter)
-    {
-        if (!is_null($filter)) {
-            return $query->orWhere('assigneeNames', 'LIKE', '%' . $filter . '%');
         }
 
         return $query;

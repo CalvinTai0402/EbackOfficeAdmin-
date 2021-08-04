@@ -27,6 +27,8 @@ class ServerTable extends Component {
             },
             data: [],
             isLoading: true,
+            filterOverdue: false,
+            filterIncompleteValue: false
         };
         this.state.requestData.limit = this.state.options.perPage;
         this.state.options.texts = Object.assign(default_texts, this.props.options.texts);
@@ -175,6 +177,7 @@ class ServerTable extends Component {
     }
 
     handleFetchData() {
+        const { filterOverdue, filterIncompleteValue } = this.state;
         const url = this.props.url;
         let options = Object.assign({}, this.state.options);
         let requestData = Object.assign({}, this.state.requestData);
@@ -188,8 +191,18 @@ class ServerTable extends Component {
         if (this.props.updateUrl) {
             history.replaceState(url, null, baseUrl.search + com + urlParams.toString());
         }
-
-        axios.get(url + com + urlParams.toString())
+        let getReqURL = url + com + urlParams.toString()
+        if (filterOverdue) {
+            getReqURL = getReqURL + "&filterOverdue=1";
+        } else {
+            getReqURL = getReqURL + "&filterOverdue=0";
+        }
+        if (filterIncompleteValue) {
+            getReqURL = getReqURL + "&filterIncompleteValue=1";
+        } else {
+            getReqURL = getReqURL + "&filterIncompleteValue=0";
+        }
+        axios.get(getReqURL)
             .then(function (response) {
                 let response_data = response.data;
 
@@ -252,6 +265,22 @@ class ServerTable extends Component {
         });
     }
 
+    handleFilterOverdue = () => {
+        let requestData = Object.assign({}, this.state.requestData);
+        requestData.page = 1;
+        this.setState({ requestData: requestData, isLoading: true, filterOverdue: !this.state.filterOverdue }, () => {
+            this.handleFetchData();
+        });
+    }
+
+    handleFilterIncomplete = () => {
+        let requestData = Object.assign({}, this.state.requestData);
+        requestData.page = 1;
+        this.setState({ requestData: requestData, isLoading: true, filterIncompleteValue: !this.state.filterIncompleteValue }, () => {
+            this.handleFetchData();
+        });
+    }
+
     render() {
         return (
             <div className="card react-strap-table">
@@ -276,17 +305,35 @@ class ServerTable extends Component {
                         }
 
                         {this.state.isLoading && (this.state.options.loading)}
-
                         {
                             this.props.search &&
                             <div className="input-icon input-group-sm float-right">
-                                <input type="text" className="form-control" style={{ height: 34 }}
+                                <input type="text" className="form-control" style={{ height: 34, marginLeft: "10px", marginRight: "10px" }}
                                     placeholder={this.state.options.texts.search} ref={this.table_search_input}
                                     onKeyUp={() => this.handleSearchClick()} />
 
                                 <span className="input-icon-addon"><i className="fe fe-search"></i></span>
                             </div>
                         }
+                        {
+                            this.props.filterOverdue &&
+                            <div className="input-icon input-group-sm float-right">
+                                <button type="text" className="form-control" style={{ height: 34, marginLeft: "10px", backgroundColor: "#2055f5", color: "white" }}
+                                    onClick={() => this.handleFilterOverdue()}>
+                                    Filter overdue tasks
+                                </button>
+                            </div>
+                        }
+                        {
+                            this.props.filterIncomplete &&
+                            <div className="input-icon input-group-sm float-right">
+                                <button type="text" className="form-control" style={{ height: 34, marginLeft: "10px", backgroundColor: "#2055f5", color: "white" }}
+                                    onClick={() => this.handleFilterIncomplete()}>
+                                    {!this.state.filterIncompleteValue ? "Filter incomplete tasks" : "Clear Filter"}
+                                </button>
+                            </div>
+                        }
+
                     </div>
                 }
                 <div className="card-body">
@@ -330,7 +377,7 @@ class ServerTable extends Component {
                         </ul>
                     }
                 </div>
-            </div>
+            </div >
         );
     }
 }

@@ -13,3 +13,11 @@ TODO:
 https://medium.com/@afrazahmad090/laravel-many-to-many-relationship-explained-822b554c1973
 https://www.itsolutionstuff.com/post/laravel-one-to-many-eloquent-relationship-tutorialexample.html
 https://stackoverflow.com/questions/1125968/how-do-i-force-git-pull-to-overwrite-local-files
+
+CMDs:
+git clone https://github.com/CalvinTai0402/EbackOfficeAdmin-.git
+add .env file and create DB
+composer install
+npm install
+php artisan serve
+npm run watch

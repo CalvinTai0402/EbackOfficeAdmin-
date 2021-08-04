@@ -416,7 +416,16 @@ class MyTaskIndex extends React.Component {
     }
 
     backToList = () => {
-        this.setState({ selected: !this.state.selected })
+        const urlParams = new URLSearchParams(window.location.search);
+        this.setState({
+            currentPage: urlParams.get('page'),
+            limit: urlParams.get('limit'),
+            myTasksIDs: [],
+            selected: !this.state.selected
+        }, () => {
+            this.setDropDownValue()
+            this.goToPage()
+        })
     }
 
     render() {
@@ -460,7 +469,7 @@ class MyTaskIndex extends React.Component {
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
                         {!selected ?
-                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
+                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl filterOverdue={true} filterIncomplete={true}>
                                 {
                                     function (row, column) {
                                         switch (column) {
@@ -472,24 +481,28 @@ class MyTaskIndex extends React.Component {
                                                 );
                                             case 'status':
                                                 return (
-                                                    <SelectSearch
-                                                        search
-                                                        onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
-                                                        filterOptions={fuzzySearch}
-                                                        options={[
-                                                            { value: 'No Status', name: 'No Status' },
-                                                            { value: 'Not Started', name: 'Not Started' },
-                                                            { value: 'In progress', name: 'In progress' },
-                                                            { value: "On Hold", name: "On Hold" },
-                                                            { value: 'Completed', name: 'Completed' },
-                                                            { value: 'Draft', name: 'Draft' },
-                                                            { value: "Needs Review", name: "Needs Review" },
-                                                            { value: 'With Client', name: 'With Client' },
-                                                            { value: 'Waiting on Client', name: 'Waiting on Client' },
-                                                        ]}
-                                                        placeholder="Choose a status"
-                                                        value={row.status}
-                                                    />
+                                                    <div style={{
+                                                        border: "2px solid #84ed80", padding: "0", backgroundColor: "#84ed80"
+                                                    }} >
+                                                        <SelectSearch
+                                                            search
+                                                            onChange={(value, obj) => self.handleUpdateStatus(value, obj, row.id)}
+                                                            filterOptions={fuzzySearch}
+                                                            options={[
+                                                                { value: 'No Status', name: 'No Status' },
+                                                                { value: 'Not Started', name: 'Not Started' },
+                                                                { value: 'In progress', name: 'In progress' },
+                                                                { value: "On Hold", name: "On Hold" },
+                                                                { value: 'Completed', name: 'Completed' },
+                                                                { value: 'Draft', name: 'Draft' },
+                                                                { value: "Needs Review", name: "Needs Review" },
+                                                                { value: 'With Client', name: 'With Client' },
+                                                                { value: 'Waiting on Client', name: 'Waiting on Client' },
+                                                            ]}
+                                                            placeholder="Choose a status"
+                                                            value={row.status}
+                                                        />
+                                                    </div>
                                                 )
                                             case 'actions':
                                                 return (
@@ -535,13 +548,14 @@ class MyTaskIndex extends React.Component {
                                                         value={description}
                                                     />
                                                 </Form.Field>
-                                                <Form.Field >
+                                                <Form.Field>
                                                     <label style={{ color: "green" }}>Notes</label>
                                                     <div style={{ border: "2px solid #84ed80", padding: "0", backgroundColor: "#84ed80" }}>
                                                         <TextArea
                                                             name="notes"
                                                             onChange={this.handleChange}
                                                             value={notes}
+                                                            style={{ height: "190px" }}
                                                         />
                                                     </div>
 
@@ -583,6 +597,7 @@ class MyTaskIndex extends React.Component {
                                                     <TextArea
                                                         name="remark"
                                                         value={customerRemark}
+                                                        style={{ height: "230px" }}
                                                     />
                                                 </Form.Field>
                                             </Grid.Column>
