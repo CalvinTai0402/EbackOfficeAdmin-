@@ -320,7 +320,7 @@ class ServerTable extends Component {
                             <div className="input-icon input-group-sm float-right">
                                 <button type="text" className="form-control" style={{ height: 34, marginLeft: "10px", backgroundColor: "#2055f5", color: "white" }}
                                     onClick={() => this.handleFilterOverdue()}>
-                                    Filter overdue tasks
+                                    {!this.state.filterOverdue ? "Filter overdue tasks" : "Clear Filter"}
                                 </button>
                             </div>
                         }

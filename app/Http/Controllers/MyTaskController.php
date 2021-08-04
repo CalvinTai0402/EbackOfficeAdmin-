@@ -7,7 +7,7 @@ use App\Models\MyTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use App\Models\TaskList;
+use Carbon\Carbon;
 
 class MyTaskController extends Controller
 {
@@ -18,8 +18,8 @@ class MyTaskController extends Controller
      */
     public function index(Request $request)
     {
-        $loggedInUsername = Auth::user()->name;
         $filterIncompleteValue = $request->input("filterIncompleteValue");
+        $filterOverdue = $request->input("filterOverdue");
         $search = $request->input("search");
         $limit = $request->input("limit");
         $page = $request->input("page");
@@ -46,6 +46,15 @@ class MyTaskController extends Controller
             ->skipPage($toSkip)
             ->take($limit)
             ->get();
+        if ($filterOverdue) {
+            $today = Carbon::today()->endOfDay();
+            foreach ($myTasks as $key => $myTask) {
+                $thisTaskDuedate = Carbon::createFromFormat('m-d-Y', $myTask["duedate"])->endOfDay();
+                if ($thisTaskDuedate->lt($today)) {
+                    unset($myTasks[$key]);
+                }
+            }
+        }
         $myTasks = $myTasks->unique("id")->all();
         return response()->json(['count' => Auth::user()->myTasks()->count(), 'total' => Auth::user()->myTasks()->count(), 'data' => $myTasks]);
     }

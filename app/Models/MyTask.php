@@ -24,45 +24,11 @@ class MyTask extends Model
     ];
     protected $table = 'task_lists';
 
-    // private $loggedInUsername;
-
-    // public function __construct()
-    // {
-    //     $this->loggedInUsername = Auth::user()->name;;
-    // }
-
-    // public function scopeOverdue($query, $filter)
-    // {
-    //     if (!is_null($filter)) {
-    //         return $query->orWhere('assigneeNames', 'LIKE', '%' . $filter . '%');
-    //     }
-
-    //     return $query;
-    // }
-
-    // public function scopeIncomplete($query, $value)
-    // {
-    //     if ($value) {
-    //         return $query->where('status', '<>', 'Completed');
-    //     }
-
-    //     return $query;
-    // }
-
-    // public function scopeSearch($query, $filter)
-    // {
-    //     if (!is_null($filter)) {
-    //         return $query->where('assigneeNames', 'LIKE', '%' . $this->loggedInUsername . '%')
-    //             ->where(function ($query, $filter) {
-    //                 $query->where('name', 'LIKE', '%' . $filter . '%')
-    //                     ->orWhere('customer_code', 'LIKE', '%' . $filter . '%')
-    //                     ->orWhere('description', 'LIKE', '%' . $filter . '%')
-    //                     ->orWhere('priority', 'LIKE', '%' . $filter . '%')
-    //                     ->orWhere('status', 'LIKE', '%' . $filter . '%');
-    //             });
-    //     }
-    //     return $query;
-    // }
+    public function scopeTest($query)
+    {
+        echo "Success!";
+        return $query;
+    }
 
     public function scopeName($query, $filter)
     {
