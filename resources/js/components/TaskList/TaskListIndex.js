@@ -1,5 +1,5 @@
 import React from 'react';
-import ServerTable from 'react-strap-table';
+import ServerTable from '../ServerTable';
 import { AiFillDelete, AiFillEdit, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
@@ -16,11 +16,34 @@ class TaskListIndex extends React.Component {
         taskListsIDs: [],
         isAllChecked: false,
         deleting: false,
+        currentPage: 1,
+        limit: this.props.perPage,
     };
 
     async componentDidMount() {
+        await this.goToPage()
+        await this.setDropDownValue()
+    }
+
+    goToPage = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        let i = 0;
+        while (this.state.taskListsIDs.length <= 0 && i < 100) {
+            await this.sleep(1000);
+            i += 1;
+        }
+        const paginationLinks = document.getElementsByClassName("page-link");
+        paginationLinks[urlParams.get('page')].click()
+    }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
+
+    setDropDownValue = async () => {
         let pageSelect = document.getElementsByTagName("select")[0];
-        pageSelect.value = this.props.perPage;
+        const urlParams = new URLSearchParams(window.location.search);
+        pageSelect.value = urlParams.get('limit');
     }
 
     check_all = React.createRef();
@@ -85,19 +108,22 @@ class TaskListIndex extends React.Component {
     }
 
     render() {
-        const { deleting } = this.state;
+        let { deleting, currentPage, limit } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/taskLists`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('limit')) { limit = urlParams.get('limit') }
+        if (urlParams.get('page')) { currentPage = urlParams.get('page') }
         const options = {
-            perPage: this.props.perPage,
+            perPage: limit,
             perPageValues: [5, 10, 20, 25, 100],
+            currentPage: currentPage,
             headings: { id: checkAllInput, assigneeNames: "Assignee" },
             sortable: ['name', 'description', 'duedate', 'priority', 'status', 'assigneeNames',],
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
-                console.log(res.data)
                 let taskListsIDs = res.data.map(a => a.id.toString());
                 self.setState({ taskListsIDs: taskListsIDs }, () => {
                     self.check_all.current.checked = _.difference(self.state.taskListsIDs, self.state.selectedTaskLists).length === 0;
@@ -138,6 +164,11 @@ class TaskListIndex extends React.Component {
                         <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
                             {
                                 function (row, column) {
+                                    const editPathProps = {
+                                        pathname: `/taskLists/${row.id}/edit`,
+                                        limit: limit,
+                                        currentPage: currentPage,
+                                    };
                                     switch (column) {
                                         case 'id':
                                             return (
@@ -149,7 +180,7 @@ class TaskListIndex extends React.Component {
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }} onClick={this.populateLinks}>
-                                                        <Link to={`/taskLists/${row.id}/edit`}>
+                                                        <Link to={editPathProps}>
                                                             <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Edit

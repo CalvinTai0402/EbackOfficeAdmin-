@@ -24,12 +24,29 @@ class AnnouncementController extends Controller
         $orderBy = $request->input("orderBy");
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
-        $read = $request->input("read");
+        // $read = $request->input("read");
+        // $unreadAnnouncements =  Auth::user()->announcementsReadOrUnread(0)->name($search)
+        //     ->description($search)
+        //     ->order($orderBy, $order)
+        //     ->skipPage($toSkip)
+        //     ->take($limit)
+        //     ->get();
+        // foreach ($unreadAnnouncements as $unreadAnnouncement) {
+        //     $unreadAnnouncement['status'] = "Unread";
+        // }
+        // $readAnnouncements =  Auth::user()->announcementsReadOrUnread(1)->name($search)
+        //     ->description($search)
+        //     ->order($orderBy, $order)
+        //     ->skipPage($toSkip)
+        //     ->take($limit)
+        //     ->get();
+        // foreach ($readAnnouncements as $readAnnouncement) {
+        //     $readAnnouncement['status'] = "Read";
+        // }
+        // $announcements = $unreadAnnouncements->merge($readAnnouncements);
         $unreadAnnouncements =  Auth::user()->announcementsReadOrUnread(0)->name($search)
             ->description($search)
             ->order($orderBy, $order)
-            ->skipPage($toSkip)
-            ->take($limit)
             ->get();
         foreach ($unreadAnnouncements as $unreadAnnouncement) {
             $unreadAnnouncement['status'] = "Unread";
@@ -37,14 +54,22 @@ class AnnouncementController extends Controller
         $readAnnouncements =  Auth::user()->announcementsReadOrUnread(1)->name($search)
             ->description($search)
             ->order($orderBy, $order)
-            ->skipPage($toSkip)
-            ->take($limit)
             ->get();
         foreach ($readAnnouncements as $readAnnouncement) {
             $readAnnouncement['status'] = "Read";
         }
-        $announcements = $unreadAnnouncements->merge($readAnnouncements);
-        return response()->json(['count' => $announcements->count(), 'total' => $announcements->count(), 'data' => $announcements]);
+        // $announcements = $unreadAnnouncements->merge($readAnnouncements)->skip(1)->take(5);
+        if ($toSkip != 0) {
+            $announcements = $unreadAnnouncements->merge($readAnnouncements)
+                ->skip($toSkip)
+                ->take($limit);
+            // ->get();
+        } else {
+            $announcements = $unreadAnnouncements->merge($readAnnouncements)
+                ->take($limit);
+            // ->get();
+        }
+        return response()->json(['count' => $unreadAnnouncements->merge($readAnnouncements)->count(), 'total' => $unreadAnnouncements->merge($readAnnouncements)->count(), 'data' => $announcements]);
     }
 
     /**

@@ -53,7 +53,8 @@ class AvailableTaskEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/availableTasks");
+                const { limit, currentPage } = this.props.location;
+                this.props.history.push(`/availableTasks?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
             }
         }
     };
@@ -81,7 +82,8 @@ class AvailableTaskEdit extends Component {
 
     redirectBack = (event) => {
         event.preventDefault()
-        this.props.history.push("/availableTasks");
+        const { limit, currentPage } = this.props.location;
+        this.props.history.push(`/availableTasks?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
     }
 
     render() {

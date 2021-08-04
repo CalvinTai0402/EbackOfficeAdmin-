@@ -79,8 +79,8 @@ class CustomerEdit extends Component {
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
-    handleUpdate = async () => {
-        // event.preventDefault();
+    handleUpdate = async (event) => {
+        event.preventDefault();
         const { code, name, service, serviceOther, businessAddress, mailingAddress, yearEnd, ein,
             companyGroup, contactPerson, otherContactPerson, email, fax, telephone, clientStatus, remark, credentials } = this.state;
         if (this.isFormValid(this.state)) {
@@ -121,7 +121,8 @@ class CustomerEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/customers");
+                const { limit, currentPage } = this.props.location;
+                this.props.history.push(`/customers?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
             }
         }
     };
@@ -198,7 +199,6 @@ class CustomerEdit extends Component {
     deleteRow = (event, rowId) => {
         event.preventDefault();
         let { credentials } = this.state;
-        console.log(credentials, rowId)
         credentials.splice(rowId, 1)
         this.setState({ credentials })
     }

@@ -21,7 +21,7 @@ class ServerTable extends Component {
             requestData: {
                 query: '',
                 limit: 10,
-                page: this.props.options.currentPage,
+                page: 1,
                 orderBy: '',
                 direction: 0,
             },
@@ -31,6 +31,7 @@ class ServerTable extends Component {
             filterIncompleteValue: false
         };
         this.state.requestData.limit = this.state.options.perPage;
+        this.state.requestData.page = this.props.options.currentPage;
         this.state.options.texts = Object.assign(default_texts, this.props.options.texts);
         this.state.options.icons = Object.assign(default_icons, this.props.options.icons);
         this.state.options.requestParametersNames = Object.assign(default_parameters_names, this.props.options.requestParametersNames);

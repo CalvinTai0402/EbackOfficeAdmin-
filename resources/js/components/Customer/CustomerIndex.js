@@ -1,5 +1,5 @@
 import React from 'react';
-import ServerTable from 'react-strap-table';
+import ServerTable from '../ServerTable';
 import { AiFillDelete, AiFillEdit, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
@@ -16,11 +16,34 @@ class CustomerIndex extends React.Component {
         customersIDs: [],
         isAllChecked: false,
         deleting: false,
+        currentPage: 1,
+        limit: this.props.perPage,
     };
 
     async componentDidMount() {
+        await this.goToPage()
+        await this.setDropDownValue()
+    }
+
+    goToPage = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        let i = 0;
+        while (this.state.customersIDs.length <= 0 && i < 100) {
+            await this.sleep(1000);
+            i += 1;
+        }
+        const paginationLinks = document.getElementsByClassName("page-link");
+        paginationLinks[urlParams.get('page')].click()
+    }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
+
+    setDropDownValue = async () => {
         let pageSelect = document.getElementsByTagName("select")[0];
-        pageSelect.value = this.props.perPage;
+        const urlParams = new URLSearchParams(window.location.search);
+        pageSelect.value = urlParams.get('limit');
     }
 
     check_all = React.createRef();
@@ -85,15 +108,19 @@ class CustomerIndex extends React.Component {
     }
 
     render() {
-        const { deleting } = this.state;
+        let { deleting, currentPage, limit } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/customers`;
         const columns = ['id', 'code', 'name', 'contact_person', 'telephone', 'email', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('limit')) { limit = urlParams.get('limit') }
+        if (urlParams.get('page')) { currentPage = urlParams.get('page') }
         const options = {
-            perPage: this.props.perPage,
+            perPage: limit,
             perPageValues: [5, 10, 20, 25, 100],
-            headings: { id: checkAllInput, contact_person: "contact", property: "Phone" },
+            currentPage: currentPage,
+            headings: { id: checkAllInput, contact_person: "contact", telephone: "Phone" },
             sortable: ['code', 'name', 'contact_person', 'telephone', 'email'],
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
@@ -138,6 +165,11 @@ class CustomerIndex extends React.Component {
                         <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
                             {
                                 function (row, column) {
+                                    const editPathProps = {
+                                        pathname: 'customers/' + row.id + '/edit',
+                                        limit: limit,
+                                        currentPage: currentPage,
+                                    };
                                     switch (column) {
                                         case 'id':
                                             return (
@@ -149,7 +181,7 @@ class CustomerIndex extends React.Component {
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     <button className="btn btn-primary" style={{ marginRight: "5px" }}>
-                                                        <Link to={'customers/' + row.id + '/edit'}>
+                                                        <Link to={editPathProps}>
                                                             <AiFillEdit color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Edit

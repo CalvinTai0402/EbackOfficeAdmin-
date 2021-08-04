@@ -61,7 +61,8 @@ class UserEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/users");
+                const { limit, currentPage } = this.props.location;
+                this.props.history.push(`/users?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
             }
         }
     };

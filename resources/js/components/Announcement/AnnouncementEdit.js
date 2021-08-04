@@ -162,7 +162,8 @@ class AnnouncementEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/announcements");
+                const { limit, currentPage } = this.props.location;
+                this.props.history.push(`/announcements?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
             }
         }
     };
@@ -174,14 +175,20 @@ class AnnouncementEdit extends Component {
 
     markUnread = async () => {
         const { id } = this.state;
+        const { limit, currentPage } = this.props.location;
         await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
-        this.props.history.push("/announcements");
+        this.props.history.push(`/announcements?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
     }
 
     cancel = () => {
         const { source } = this.state;
-        if (source === "sentAnnouncementIndex") this.props.history.push("/announcementssent")
-        else this.props.history.push("/announcements")
+        const { limit, currentPage } = this.props.location;
+        if (source === "sentAnnouncementIndex") {
+            this.props.history.push(`/announcementssent?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+        }
+        else {
+            this.props.history.push(`/announcements?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+        }
     }
 
     displayErrors = errors => errors.map((error, i) => <p key={i}>{error}</p>);
