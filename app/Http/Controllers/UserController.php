@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -60,6 +61,7 @@ class UserController extends Controller
         }
         $request['password'] = Hash::make($request['password']);
         $user = User::create($request->all());
+        Storage::disk('local')->makeDirectory('public/users/' . $request->name . ' (' . $request->email . ')');
         return response()->json(['status' => 200, 'user' => $user]);
     }
 
@@ -94,6 +96,12 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        if (file_exists(Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix() . 'public/users/' . $user->name . ' (' . $user->email . ')')) {
+            rename(
+                Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix() . 'public/users/' . $user->name . ' (' . $user->email . ')',
+                Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix() . 'public/users/' . $request->name . ' (' . $request->email . ')'
+            );
+        }
         $validator = Validator::make($request->all(), [
             "name" => "required|max:50|unique:users,name,$user->id",
             "email" => "required|max:50|unique:users,email,$user->id",
