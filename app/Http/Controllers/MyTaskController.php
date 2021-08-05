@@ -18,8 +18,8 @@ class MyTaskController extends Controller
      */
     public function index(Request $request)
     {
-        $filterIncompleteValue = $request->input("filterIncompleteValue");
-        $filterOverdue = $request->input("filterOverdue");
+        $filterCompletedValue = $request->input("filterCompletedValue");
+        $filterFuture = $request->input("filterFuture");
         $search = $request->input("search");
         $limit = $request->input("limit");
         $page = $request->input("page");
@@ -36,7 +36,7 @@ class MyTaskController extends Controller
         } else {
             $myTasks = Auth::user()->myTasks();
         }
-        if ($filterIncompleteValue) {
+        if ($filterCompletedValue) {
             $myTasks = $myTasks->where('status', '<>', 'Completed');
         } else {
             $myTasks = $myTasks->status($search);
@@ -46,11 +46,11 @@ class MyTaskController extends Controller
             ->skipPage($toSkip)
             ->take($limit)
             ->get();
-        if ($filterOverdue) {
+        if ($filterFuture) {
             $today = Carbon::today()->endOfDay();
             foreach ($myTasks as $key => $myTask) {
                 $thisTaskDuedate = Carbon::createFromFormat('m-d-Y', $myTask["duedate"])->endOfDay();
-                if ($thisTaskDuedate->lt($today)) {
+                if ($thisTaskDuedate->gt($today)) {
                     unset($myTasks[$key]);
                 }
             }

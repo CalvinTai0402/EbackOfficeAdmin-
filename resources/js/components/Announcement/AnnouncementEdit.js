@@ -163,7 +163,7 @@ class AnnouncementEdit extends Component {
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
                 const { limit, currentPage } = this.props.location;
-                this.props.history.push(`/announcements?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+                this.props.history.push(`/announcementssent?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`)
             }
         }
     };
@@ -300,6 +300,16 @@ class AnnouncementEdit extends Component {
                                     >
                                         Update
                                     </Button> : ""}
+                                {source === "sentAnnouncementIndex" ?
+                                    <Button
+                                        className={loading ? "loading" : ""}
+                                        color="green"
+                                        fluid
+                                        size="large"
+                                        onClick={this.cancel}
+                                        style={{ marginTop: "8px" }}>
+                                        Back
+                                    </Button> : ""}
                             </Segment>
                         </Form>
                         {errors.length > 0 && (
@@ -333,15 +343,6 @@ class AnnouncementEdit extends Component {
                             })}
                         </tbody>
                     </Table>
-                    <Button.Group floated="right">
-                        <button className="btn btn-primary" style={{ marginTop: "8px" }} onClick={this.cancel}>
-                            <div style={{ color: "white" }} >
-                                <span >
-                                    Back
-                                </span>
-                            </div>
-                        </button>
-                    </Button.Group>
                 </div>
                     : source === "announcementIndex" ?
                         <Grid textAlign="center" verticalAlign="middle" className="app">

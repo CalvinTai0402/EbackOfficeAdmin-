@@ -56,6 +56,8 @@ class MyTaskIndex extends React.Component {
         selected: false,
         currentPage: 1,
         limit: this.props.perPage,
+        filterFutureValue: false,
+        filterCompletedValue: true
     };
 
     async componentDidMount() {
@@ -205,6 +207,10 @@ class MyTaskIndex extends React.Component {
             limit: urlParams.get('limit'),
         });
         await this.populateCredentialsForCustomers(this.state.customerId);
+    }
+
+    updateFilters = async (filterFutureValue, filterCompletedValue) => {
+        this.setState({ filterFutureValue, filterCompletedValue });
     }
 
     populateCredentialsForCustomers = async (id) => {
@@ -431,7 +437,7 @@ class MyTaskIndex extends React.Component {
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
             status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected,
-            currentPage, limit, credentials } = this.state;
+            currentPage, limit, credentials, filterFutureValue, filterCompletedValue } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
@@ -469,7 +475,8 @@ class MyTaskIndex extends React.Component {
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
                         {!selected ?
-                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl filterOverdue={true} filterIncomplete={true}>
+                            <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl filterFutureValue={filterFutureValue}
+                                filterCompletedValue={filterCompletedValue} filterFutureAndIncomplete={true} loadAll={true} updateFilters={this.updateFilters}>
                                 {
                                     function (row, column) {
                                         switch (column) {
@@ -530,6 +537,15 @@ class MyTaskIndex extends React.Component {
                                         <Header as="h1" icon color="blue" textAlign="center" style={{ marginTop: "20px" }}>
                                             Editing: {name}
                                         </Header>
+                                        <Button.Group floated="right">
+                                            <button className="btn btn-primary" style={{ marginRight: "8px", height: "35px" }} onClick={this.backToList}>
+                                                <div style={{ color: "white" }} >
+                                                    <span  >
+                                                        Back
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        </Button.Group>
                                         <Grid.Row>
                                             <Grid.Column width={6}>
                                                 <Form.Field>
@@ -680,19 +696,6 @@ class MyTaskIndex extends React.Component {
                                                     editable={false}
                                                     handleCredentialsChange={() => { }}
                                                     credentials={credentials} />
-                                            </Grid.Column>
-                                        </Grid.Row>
-                                        <Grid.Row textAlign="center" verticalAlign="middle" className="app">
-                                            <Grid.Column >
-                                                <Button.Group floated="right">
-                                                    <button className="btn btn-primary" style={{ marginRight: "8px" }} onClick={this.backToList}>
-                                                        <div style={{ color: "white" }} >
-                                                            <span  >
-                                                                Back
-                                                            </span>
-                                                        </div>
-                                                    </button>
-                                                </Button.Group>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid> :

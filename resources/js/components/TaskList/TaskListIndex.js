@@ -120,7 +120,7 @@ class TaskListIndex extends React.Component {
             perPage: limit,
             perPageValues: [5, 10, 20, 25, 100],
             currentPage: currentPage,
-            headings: { id: checkAllInput, assigneeNames: "Assignee" },
+            headings: { id: checkAllInput, assigneeNames: "Assignee", customer_code: "Customer" },
             sortable: ['name', 'description', 'duedate', 'priority', 'status', 'assigneeNames',],
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {

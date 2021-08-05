@@ -20,4 +20,7 @@ add .env file and create DB
 composer install
 npm install
 php artisan serve
-npm run watch
+npm run watch (npm run build for prod)
+
+create the directory  C:\Users\Calvi\OneDrive\Documents\Dads\Ebackoffice\EbackOfficeAdmin\public\announcementImages
+Add MIX_API_URL=http://localhost:8000/api
