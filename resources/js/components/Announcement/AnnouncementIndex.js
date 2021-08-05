@@ -1,5 +1,5 @@
 import React from 'react';
-import ServerTable from 'react-strap-table';
+import ServerTable from '../ServerTable';
 import { AiFillDelete, AiOutlineRead, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
@@ -18,11 +18,34 @@ class AnnouncementIndex extends React.Component {
         isAllChecked: false,
         deleting: false,
         loading: false,
+        currentPage: 1,
+        limit: this.props.perPage,
     };
 
     async componentDidMount() {
+        await this.goToPage()
+        await this.setDropDownValue()
+    }
+
+    goToPage = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        let i = 0;
+        while (this.state.announcementsIDs.length <= 0 && i < 100) {
+            await this.sleep(1000);
+            i += 1;
+        }
+        const paginationLinks = document.getElementsByClassName("page-link");
+        paginationLinks[urlParams.get('page')].click()
+    }
+
+    sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
+    }
+
+    setDropDownValue = async () => {
         let pageSelect = document.getElementsByTagName("select")[0];
-        pageSelect.value = this.props.perPage;
+        const urlParams = new URLSearchParams(window.location.search);
+        pageSelect.value = urlParams.get('limit');
     }
 
     check_all = React.createRef();
@@ -87,18 +110,25 @@ class AnnouncementIndex extends React.Component {
     }
 
     render() {
-        const { deleting, loading } = this.state;
+        let { deleting, loading, currentPage, limit } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/announcements`;
         const columns = ['id', 'name', 'description', 'assignees', 'status', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('limit')) { limit = urlParams.get('limit') }
+        if (urlParams.get('page')) { currentPage = urlParams.get('page') }
         const options = {
-            perPage: this.props.perPage,
+            perPage: limit,
             perPageValues: [5, 10, 20, 25, 100],
+            currentPage: currentPage,
             headings: { id: checkAllInput },
             sortable: ['name', 'description', 'assignees', 'status'],
             requestParametersNames: { query: 'search', direction: 'order' },
             responseAdapter: function (res) {
+                if (!Array.isArray(res.data)) {
+                    res.data = Object.values(res.data)
+                }
                 let announcementsIDs = res.data.map(a => a.id.toString());
                 self.setState({ announcementsIDs: announcementsIDs }, () => {
                     self.check_all.current.checked = _.difference(self.state.announcementsIDs, self.state.selectedAnnouncements).length === 0;
@@ -140,6 +170,11 @@ class AnnouncementIndex extends React.Component {
                         <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl>
                             {
                                 function (row, column) {
+                                    const editPathProps = {
+                                        pathname: 'announcements/' + row.id + '/edit/announcementIndex',
+                                        limit: limit,
+                                        currentPage: currentPage,
+                                    };
                                     let read = row["status"]
                                     switch (column) {
                                         case 'id':
@@ -156,14 +191,14 @@ class AnnouncementIndex extends React.Component {
                                             return (
                                                 <div style={{ display: "flex", justifyContent: "start" }}>
                                                     {read === "Read" ? <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/edit/announcementIndex'}>
+                                                        <Link to={editPathProps}>
                                                             <AiOutlineRead color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 Read
                                                             </div>
                                                         </Link>
                                                     </button> : <button className="btn btn-success" style={{ marginRight: "5px" }}>
-                                                        <Link to={'announcements/' + row.id + '/edit/announcementIndex'}>
+                                                        <Link to={editPathProps}>
                                                             <AiOutlineRead color="white" style={{ float: "left", marginTop: "4px" }} />
                                                             <div style={{ color: "white", float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
                                                                 New

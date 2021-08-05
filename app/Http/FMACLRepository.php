@@ -34,9 +34,9 @@ class FMACLRepository implements ACLRepository
         return [
             ['disk' => 'public', 'path' => '/', 'access' => 1],
             ['disk' => 'public', 'path' => 'users', 'access' => 1],
-            ['disk' => 'public', 'path' => 'users/' . Auth::user()->name, 'access' => 2],
-            ['disk' => 'public', 'path' => 'users/' . Auth::user()->name . '/', 'access' => 2],
-            ['disk' => 'public', 'path' => 'users/' . Auth::user()->name . '/*', 'access' => 2],
+            ['disk' => 'public', 'path' => 'users/' . Auth::user()->name . ' (' . Auth::user()->email . ')', 'access' => 1],
+            ['disk' => 'public', 'path' => 'users/' . Auth::user()->name . ' (' . Auth::user()->email . ')/', 'access' => 2],
+            ['disk' => 'public', 'path' => 'users/' . Auth::user()->name . ' (' . Auth::user()->email . ')/*', 'access' => 2],
             ['disk' => 'public', 'path' => 'users/*', 'access' => 0],
             ['disk' => 'public', 'path' => 'shared', 'access' => 2],
             ['disk' => 'public', 'path' => 'shared/*', 'access' => 2],

@@ -172,7 +172,8 @@ class TaskListEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/taskLists");
+                const { limit, currentPage } = this.props.location;
+                this.props.history.push(`/taskLists?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
             }
         }
     };
@@ -290,7 +291,8 @@ class TaskListEdit extends Component {
 
     redirectBack = (event) => {
         event.preventDefault()
-        this.props.history.push(`/taskLists`);
+        const { limit, currentPage } = this.props.location;
+        this.props.history.push(`/taskLists?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
     }
 
     render() {

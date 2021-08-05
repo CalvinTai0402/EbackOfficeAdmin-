@@ -7,3 +7,7 @@
     min-width: 200px !important;
     max-width: 200px !important;
 }
+
+.table-id-td {
+    text-align: center;
+}

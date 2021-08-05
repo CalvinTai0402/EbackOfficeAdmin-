@@ -61,7 +61,8 @@ class UserEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                this.props.history.push("/users");
+                const { limit, currentPage } = this.props.location;
+                this.props.history.push(`/users?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
             }
         }
     };
@@ -88,6 +89,12 @@ class UserEdit extends Component {
             this.setState({ errors })
         });
     };
+
+    redirectBack = (event) => {
+        event.preventDefault()
+        const { limit, currentPage } = this.props.location;
+        this.props.history.push(`/users?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+    }
 
     handleSelectChange = (value, obj, field) => {
         switch (field) {
@@ -153,6 +160,17 @@ class UserEdit extends Component {
                                     size="large"
                                 >
                                     Update
+                                </Button>
+                                <Button
+                                    disabled={loading}
+                                    className={loading ? "loading" : ""}
+                                    color="green"
+                                    fluid
+                                    size="large"
+                                    onClick={this.redirectBack}
+                                    style={{ marginTop: "5px" }}
+                                >
+                                    Back
                                 </Button>
                             </Segment>
                         </Form>

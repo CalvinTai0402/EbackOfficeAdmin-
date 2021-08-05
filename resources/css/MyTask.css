@@ -47,3 +47,7 @@
 .table-assigneeNames-td {
     max-width: 100px !important;
 }
+
+.table-id-td {
+    text-align: center;
+}
