@@ -49,7 +49,7 @@ class AuditEdit extends Component {
                         </span>
                     </div>
                 </button>
-                <table className="table" style={{ width: "100%" }}>
+                <table className="table auditDetails" style={{ maxWidth: "100%", width: "100%" }}>
                     <thead className="thead-dark">
                         <tr>
                             <th scope="col">User ID</th>
@@ -66,19 +66,19 @@ class AuditEdit extends Component {
                             <td>{username}</td>
                             <td>{event}</td>
                             <td>{modifiedItem}</td>
-                            <td>
+                            <td style={{ maxWidth: "400px" }}>
                                 {oldValuesArray.map((value, index) => (
                                     <tr key={index}>
-                                        <b><td>{value[0]}</td></b>
-                                        <td>{value[1]}</td>
+                                        <b><td style={{ maxWidth: "100px", overflowWrap: "break-word" }} > {value[0]}</td></b>
+                                        <td style={{ maxWidth: "300px", overflowWrap: "break-word" }}>{value[1]}</td>
                                     </tr>
                                 ))}
                             </td>
-                            <td>
+                            <td style={{ maxWidth: "400px" }}>
                                 {newValuesArray.map((value, index) => (
                                     <tr key={index}>
-                                        <b><td>{value[0]}</td></b>
-                                        <td>{value[1]}</td>
+                                        <b><td style={{ maxWidth: "100px", overflowWrap: "break-word" }}> {value[0]}</td></b>
+                                        <td style={{ maxWidth: "300px", overflowWrap: "break-word" }}>{value[1]}</td>
                                     </tr>
                                 ))}
                             </td>

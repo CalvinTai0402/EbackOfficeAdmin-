@@ -1,13 +1,12 @@
 import React from 'react';
 import ServerTable from '../ServerTable';
-import { AiFillDelete, AiFillEdit, AiFillPlusSquare, AiFillMinusSquare } from "react-icons/ai";
+import { AiFillEdit } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
 import {
     Header,
     Icon
 } from "semantic-ui-react";
-import swal from 'sweetalert'
 
 import '../../../css/Audit.css';
 class AuditIndex extends React.Component {
