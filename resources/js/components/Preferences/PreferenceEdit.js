@@ -14,7 +14,7 @@ class PreferenceEdit extends Component {
     }
 
     render() {
-        const { usersPerPage, customersPerPage, availableTasksPerPage, taskListsPerPage, myTasksPerPage,
+        const { usersPerPage, customersPerPage, availableTasksPerPage, taskListsPerPage, myTasksPerPage, auditsPerPage,
             announcementsPerPage, sidebarTextColor, sidebarTextSelectedColor, sentAnnouncementsPerPage, loading } = this.props;
         let options = [
             { value: '5', name: '5' },
@@ -109,6 +109,21 @@ class PreferenceEdit extends Component {
                                             onChange={(value, objArray) => this.props.handleSelectChange(value, objArray, "mytasks")}
                                             options={options}
                                             value={myTasksPerPage}
+                                        />
+                                    </Form.Field>
+                                </Grid.Column>
+                                <Grid.Column width={8}>
+                                    <Form.Field>
+                                        <label>Audits Per Page</label>
+                                        <SelectSearch
+                                            search
+                                            filterOptions={fuzzySearch}
+                                            closeOnSelect={false}
+                                            printOptions="on-focus"
+                                            placeholder="Choose # of audits per page"
+                                            onChange={(value, objArray) => this.props.handleSelectChange(value, objArray, "audits")}
+                                            options={options}
+                                            value={auditsPerPage}
                                         />
                                     </Form.Field>
                                 </Grid.Column>

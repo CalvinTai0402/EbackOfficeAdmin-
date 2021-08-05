@@ -11,6 +11,7 @@ use App\Http\Controllers\MyTaskController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\PreferenceController;
+use App\Http\Controllers\AuditController;
 use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +69,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('events', EventController::class);
 
         Route::resource("preferences", PreferenceController::class);
+
+        Route::resource('audits', AuditController::class);
     });
     Route::view('/{path?}', 'reactApp')->where('path', '.*')->name('reactApp');
 });

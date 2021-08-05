@@ -2,7 +2,7 @@ import React from "react";
 import { ProSidebar, SubMenu, Menu, MenuItem, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
 import {
     FaBattleNet, FaAdn, FaArtstation, FaGem, FaFantasyFlightGames, FaCriticalRole, FaDrupal, FaFreebsd,
-    FaGitter, FaGratipay, FaGrav, FaGripfire, FaBalanceScale
+    FaGitter, FaGratipay, FaGrav, FaGripfire, FaBalanceScale, FaFire
 } from "react-icons/fa";
 import Home from "./Home"
 import {
@@ -33,10 +33,13 @@ import TaskListCreate from './TaskList/TaskListCreate';
 import TaskListEdit from "./TaskList/TaskListEdit";
 import MyTaskIndex from "./MyTask/MyTaskIndex";
 import PreferenceEdit from "./Preferences/PreferenceEdit";
+import AuditIndex from "./Audit/AuditIndex";
+import AuditEdit from "./Audit/AuditEdit";
 import Spinner from "./Spinner";
 
 import '../../css/App.css';
 import 'react-pro-sidebar/dist/css/styles.css';
+
 
 class Sidebar extends React.Component {
     state = {
@@ -52,6 +55,7 @@ class Sidebar extends React.Component {
         availableTasksPerPage: '20',
         taskListsPerPage: '20',
         myTasksPerPage: '20',
+        auditsPerPage: '20',
         announcementsPerPage: '20',
         sentAnnouncementsPerPage: '20',
         sidebarTextColorForUpdate: "white",
@@ -112,6 +116,8 @@ class Sidebar extends React.Component {
             this.setState({ selected: "Announcments" })
         } else if (currentURL.includes("preferences")) {
             this.setState({ selected: "Preferences" })
+        } else if (currentURL.includes("audits")) {
+            this.setState({ selected: "Audits" })
         }
     }
 
@@ -126,7 +132,7 @@ class Sidebar extends React.Component {
 
     handlePreferencesUpdate = async (event) => {
         event.preventDefault();
-        const { usersPerPage, customersPerPage, availableTasksPerPage, taskListsPerPage, myTasksPerPage,
+        const { usersPerPage, customersPerPage, availableTasksPerPage, taskListsPerPage, myTasksPerPage, auditsPerPage,
             announcementsPerPage, sentAnnouncementsPerPage, sidebarTextColorForUpdate, sidebarTextSelectedColorForUpdate } = this.state;
         this.setState({ preferencesLoading: true });
         const res = await axios.put(`${process.env.MIX_API_URL}/preferences/0`, {
@@ -135,6 +141,7 @@ class Sidebar extends React.Component {
             availableTasksPerPage: availableTasksPerPage,
             taskListsPerPage: taskListsPerPage,
             myTasksPerPage: myTasksPerPage,
+            auditsPerPage: auditsPerPage,
             announcementsPerPage: announcementsPerPage,
             sentAnnouncementsPerPage: sentAnnouncementsPerPage,
             sidebarTextColor: sidebarTextColorForUpdate,
@@ -163,6 +170,9 @@ class Sidebar extends React.Component {
             case "mytasks":
                 this.setState({ myTasksPerPage: obj.value })
                 break;
+            case "audits":
+                this.setState({ auditsPerPage: obj.value })
+                break;
             case "announcements":
                 this.setState({ announcementsPerPage: obj.value })
                 break;
@@ -175,6 +185,7 @@ class Sidebar extends React.Component {
             case "sidebarTextColor":
                 this.setState({ sidebarTextColorForUpdate: obj.value })
                 break;
+
             default:
         }
     }
@@ -273,6 +284,12 @@ class Sidebar extends React.Component {
                                             </span>
                                             <Link to="/preferences" />
                                         </MenuItem>
+                                        {loggedInUserRole === "admin" ? <MenuItem icon={<FaFire />} onClick={() => { this.changeColorOnClick("Audits") }}>
+                                            <span style={{ color: selected === "Audits" ? sidebarTextSelectedColor : sidebarTextColor }}>
+                                                Audits
+                                            </span>
+                                            <Link to="/audits" />
+                                        </MenuItem> : ""}
                                     </Menu>
                                 </SidebarContent>
 
@@ -316,6 +333,7 @@ class Sidebar extends React.Component {
                                             availableTasksPerPage={preferences.availableTasksPerPage}
                                             taskListsPerPage={preferences.taskListsPerPage}
                                             myTasksPerPage={preferences.myTasksPerPage}
+                                            auditsPerPage={preferences.auditsPerPage}
                                             announcementsPerPage={preferences.announcementsPerPage}
                                             sentAnnouncementsPerPage={preferences.sentAnnouncementsPerPage}
                                             sidebarTextColor={preferences.sidebarTextColor}
@@ -323,6 +341,9 @@ class Sidebar extends React.Component {
                                             loading={this.state.preferencesLoading}
                                             {...props} />}
                                     />
+
+                                    <Route exact path="/audits" render={(props) => <AuditIndex {...props} perPage={preferences.auditsPerPage} />} />
+                                    <Route exact path="/audits/:id/edit" render={(props) => <AuditEdit {...props} />} />
 
                                     <Route path="/" render={(props) => <Home {...props} />} />
                                 </Switch>
