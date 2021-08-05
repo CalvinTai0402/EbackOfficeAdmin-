@@ -27,8 +27,8 @@ class ServerTable extends Component {
             },
             data: [],
             isLoading: true,
-            filterOverdue: false,
-            filterIncompleteValue: false
+            // filterFutureValue: false,
+            // filterCompletedValue: true
         };
         this.state.requestData.limit = this.state.options.perPage;
         this.state.requestData.page = this.props.options.currentPage;
@@ -178,7 +178,7 @@ class ServerTable extends Component {
     }
 
     handleFetchData() {
-        const { filterOverdue, filterIncompleteValue } = this.state;
+        const { filterFutureValue, filterCompletedValue } = this.props;
         const url = this.props.url;
         let options = Object.assign({}, this.state.options);
         let requestData = Object.assign({}, this.state.requestData);
@@ -193,15 +193,15 @@ class ServerTable extends Component {
             history.replaceState(url, null, baseUrl.search + com + urlParams.toString());
         }
         let getReqURL = url + com + urlParams.toString()
-        if (filterOverdue) {
-            getReqURL = getReqURL + "&filterOverdue=1";
+        if (filterFutureValue) {
+            getReqURL = getReqURL + "&filterFuture=1";
         } else {
-            getReqURL = getReqURL + "&filterOverdue=0";
+            getReqURL = getReqURL + "&filterFuture=0";
         }
-        if (filterIncompleteValue) {
-            getReqURL = getReqURL + "&filterIncompleteValue=1";
+        if (filterCompletedValue) {
+            getReqURL = getReqURL + "&filterCompletedValue=1";
         } else {
-            getReqURL = getReqURL + "&filterIncompleteValue=0";
+            getReqURL = getReqURL + "&filterCompletedValue=0";
         }
         axios.get(getReqURL)
             .then(function (response) {
@@ -266,20 +266,36 @@ class ServerTable extends Component {
         });
     }
 
-    handleFilterOverdue = () => {
+    handleFilterFutureAndIncomplete = async () => {
         let requestData = Object.assign({}, this.state.requestData);
         requestData.page = 1;
-        this.setState({ requestData: requestData, isLoading: true, filterOverdue: !this.state.filterOverdue }, () => {
+        await this.props.updateFilters(true, true);
+        this.setState({ requestData: requestData, isLoading: true }, () => {
             this.handleFetchData();
         });
+        // this.setState({ requestData: requestData, isLoading: true, filterFutureValue: true, filterCompletedValue: true }, () => {
+        //     this.handleFetchData();
+        // });
     }
 
-    handleFilterIncomplete = () => {
+    // handleFilterIncomplete = () => {
+    //     let requestData = Object.assign({}, this.state.requestData);
+    //     requestData.page = 1;
+    //     this.setState({ requestData: requestData, isLoading: true, filterIncompleteValue: !this.state.filterIncompleteValue }, () => {
+    //         this.handleFetchData();
+    //     });
+    // }
+
+    handleLoadAll = async () => {
         let requestData = Object.assign({}, this.state.requestData);
         requestData.page = 1;
-        this.setState({ requestData: requestData, isLoading: true, filterIncompleteValue: !this.state.filterIncompleteValue }, () => {
+        await this.props.updateFilters(false, false);
+        this.setState({ requestData: requestData, isLoading: true }, () => {
             this.handleFetchData();
         });
+        // this.setState({ requestData: requestData, isLoading: true, filterFutureValue: false, filterCompletedValue: false }, () => {
+        //     this.handleFetchData();
+        // });
     }
 
     render() {
@@ -317,20 +333,30 @@ class ServerTable extends Component {
                             </div>
                         }
                         {
-                            this.props.filterOverdue &&
+                            this.props.filterFutureAndIncomplete &&
                             <div className="input-icon input-group-sm float-right">
                                 <button type="text" className="form-control" style={{ height: 34, marginLeft: "10px", backgroundColor: "#2055f5", color: "white" }}
-                                    onClick={() => this.handleFilterOverdue()}>
-                                    {!this.state.filterOverdue ? "Filter overdue tasks" : "Clear Filter"}
+                                    onClick={() => this.handleFilterFutureAndIncomplete()}>
+                                    {/* {!this.state.filterFuture ? "Filter out future and completed tasks" : "Clear Filter"} */}
+                                    Filter out future and completed tasks
                                 </button>
                             </div>
                         }
-                        {
+                        {/* {
                             this.props.filterIncomplete &&
                             <div className="input-icon input-group-sm float-right">
                                 <button type="text" className="form-control" style={{ height: 34, marginLeft: "10px", backgroundColor: "#2055f5", color: "white" }}
                                     onClick={() => this.handleFilterIncomplete()}>
                                     {!this.state.filterIncompleteValue ? "Filter incomplete tasks" : "Clear Filter"}
+                                </button>
+                            </div>
+                        } */}
+                        {
+                            this.props.loadAll &&
+                            <div className="input-icon input-group-sm float-right">
+                                <button type="text" className="form-control" style={{ height: 34, marginLeft: "10px", backgroundColor: "#2055f5", color: "white" }}
+                                    onClick={() => this.handleLoadAll()}>
+                                    Load All
                                 </button>
                             </div>
                         }

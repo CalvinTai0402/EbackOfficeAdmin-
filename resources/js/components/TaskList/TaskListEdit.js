@@ -31,7 +31,7 @@ class TaskListEdit extends Component {
         initialAssignees: [],
         availableTaskNames: [],
         availableTaskDescriptions: [],
-        availableCustomerCodes: [],
+        availableCustomerCodesAndNames: [],
         availableCustomerIds: [],
         userNames: [],
         userIds: [],
@@ -125,15 +125,15 @@ class TaskListEdit extends Component {
             };
             return availableCustomerId;
         });
-        let availableCustomerCodes = availableCustomerDetails.map((availableCustomerDetail, i) => {
-            let availableCustomerCodes = {
-                value: availableCustomerDetail.code,
-                name: availableCustomerDetail.code,
+        let availableCustomerCodesAndNames = availableCustomerDetails.map((availableCustomerDetail, i) => {
+            let availableCustomerCodeAndName = {
+                value: availableCustomerDetail.code + ":" + availableCustomerDetail.name,
+                name: availableCustomerDetail.code + ":" + availableCustomerDetail.name,
                 index: i
             };
-            return availableCustomerCodes;
+            return availableCustomerCodeAndName;
         });
-        this.setState({ availableCustomerIds, availableCustomerCodes });
+        this.setState({ availableCustomerIds, availableCustomerCodesAndNames });
     }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
@@ -225,7 +225,7 @@ class TaskListEdit extends Component {
     }
 
     handleSelectChange = (value, obj, field) => {
-        const { availableTaskNames, availableTaskDescriptions, availableCustomerIds, availableCustomerCodes } = this.state;
+        const { availableTaskNames, availableTaskDescriptions, availableCustomerIds, availableCustomerCodesAndNames } = this.state;
         switch (field) {
             case "availableTaskName":
                 let index;
@@ -240,14 +240,16 @@ class TaskListEdit extends Component {
                     description: availableTaskDescriptions[index].name
                 })
                 break
-            case "availableCustomerCodes":
+            case "availableCustomerCodesAndNames":
                 let selectedCode = obj.value;
-                for (let i = 0; i < availableCustomerCodes.length; i++) {
-                    if (selectedCode === availableCustomerCodes[i].value) {
+                for (let i = 0; i < availableCustomerCodesAndNames.length; i++) {
+                    if (selectedCode === availableCustomerCodesAndNames[i].value) {
                         index = i
                         break
                     }
                 }
+                // let colonIndex = obj.value.indexOf(":");
+                // let customerCode = obj.value.substring(0, colonIndex);
                 this.setState({
                     customerCode: obj.value,
                     customerId: availableCustomerIds[index].value
@@ -296,7 +298,7 @@ class TaskListEdit extends Component {
     }
 
     render() {
-        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading } = this.state;
+        const { name, description, notes, initialAssignees, selectedDate, repeat, priority, status, availableTaskNames, availableCustomerCodesAndNames, customerCode, userNames, errors, loading } = this.state;
         return (
             <div>
                 <Form onSubmit={this.handleUpdate} size="large">
@@ -323,9 +325,9 @@ class TaskListEdit extends Component {
                                     <label>Customer Code</label>
                                     <SelectSearch
                                         search
-                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodes")}
+                                        onChange={(value, obj) => this.handleSelectChange(value, obj, "availableCustomerCodesAndNames")}
                                         filterOptions={fuzzySearch}
-                                        options={availableCustomerCodes}
+                                        options={availableCustomerCodesAndNames}
                                         placeholder="Choose a customer code"
                                         value={customerCode}
                                     />
@@ -334,7 +336,6 @@ class TaskListEdit extends Component {
                                     <label>Description</label>
                                     <TextArea
                                         name="description"
-                                        onChange={this.handleChange}
                                         value={description}
                                     />
                                 </Form.Field>
