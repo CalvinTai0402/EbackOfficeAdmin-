@@ -15,7 +15,7 @@ class UtilitiesController extends Controller
     public function getLoggedInUsername()
     {
         if (Auth::check()) {
-            return response()->json(["loggedInUserName" => Auth::user()->name]);
+            return response()->json(["loggedInUserName" => Auth::user()->name, "loggedInUserId" => Auth::id()]);
         }
         return response()->json(["loggedInUserName" => "Guest"]);
     }

@@ -3,25 +3,16 @@ import ReactDOM from 'react-dom';
 import Sidebar from '../components/Sidebar'
 import 'semantic-ui-css/semantic.min.css'
 import '../../css/App.css';
-
 class App extends React.Component {
 
     componentDidMount() {
         window.parent.document.body.style.zoom = 0.75;
     }
 
-    logout = async () => {
-        await axios.post("/logout");
-        window.location.href = "/"
-    }
-
     render() {
         return (
             <div>
                 <Sidebar />
-                <button className="logoutButton" onClick={this.logout}>
-                    Logout
-                </button>
             </div >
         );
     }

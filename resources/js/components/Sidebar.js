@@ -14,6 +14,7 @@ import {
 import UserIndex from "./User/UserIndex";
 import UserCreate from "./User/UserCreate";
 import UserEdit from "./User/UserEdit";
+import UserChangePassword from "./User/UserChangePassword";
 import CustomerIndex from './Customer/CustomerIndex';
 import CustomerCreate from './Customer/CustomerCreate';
 import CustomerEdit from "./Customer/CustomerEdit";
@@ -114,6 +115,11 @@ class Sidebar extends React.Component {
         }
     }
 
+    logout = async () => {
+        await axios.post("/logout");
+        window.location.href = "/"
+    }
+
     changeColorOnClick = (selectedLink) => {
         this.setState({ selected: selectedLink })
     }
@@ -177,8 +183,19 @@ class Sidebar extends React.Component {
         const { menuCollapse, loggedInUserName, loggedInUserRole, selected, sidebarTextSelectedColor, sidebarTextColor, preferences, loading } = this.state;
         return (
             <div>
-                {loading ? <Spinner text="loading..." /> :
+                {loading ? <Spinner text="loading..." /> : <div>
+                    <button className="logoutButton" onClick={this.logout}>
+                        Logout
+                    </button>
                     <Router>
+                        <button className="changePasswordButton" style={{ marginRight: "5px" }}>
+                            <Link to="/userChangePassword">
+                                <div style={{ float: "left", marginLeft: "3px", paddingBottom: "3px" }} >
+                                    Change Password
+                                </div>
+                            </Link>
+                        </button>
+
                         <div id="sidebar" style={{ display: 'grid', gridTemplateColumns: '200px auto' }}>
                             <ProSidebar className='sideBar' collapsed={menuCollapse} image="/sidebar/background.jpg" style={{ backgroundColor: "white" }} >
                                 <SidebarHeader className="sideBarHeader">
@@ -265,6 +282,7 @@ class Sidebar extends React.Component {
                                     <Route exact path="/users" render={(props) => <UserIndex {...props} perPage={preferences.usersPerPage} />} />
                                     <Route exact path="/users/create" render={(props) => <UserCreate {...props} />} />
                                     <Route exact path="/users/:id/edit" render={(props) => <UserEdit {...props} />} />
+                                    <Route exact path="/userChangePassword" render={(props) => <UserChangePassword {...props} />} />
 
                                     <Route exact path="/customers" render={(props) => <CustomerIndex {...props} perPage={preferences.customersPerPage} />} />
                                     <Route exact path="/customers/create" render={(props) => <CustomerCreate {...props} />} />
@@ -310,7 +328,8 @@ class Sidebar extends React.Component {
                                 </Switch>
                             </div>
                         </div>
-                    </Router>}
+                    </Router>
+                </div>}
             </div>
         );
     }
