@@ -296,9 +296,11 @@ class Sidebar extends React.Component {
                             </ProSidebar>
                             <div className="centerH">
                                 <Switch>
-                                    <Route exact path="/users" render={(props) => <UserIndex {...props} perPage={preferences.usersPerPage} />} />
-                                    <Route exact path="/users/create" render={(props) => <UserCreate {...props} />} />
-                                    <Route exact path="/users/:id/edit" render={(props) => <UserEdit {...props} />} />
+                                    {loggedInUserRole === "admin" ? <React.Fragment>
+                                        <Route exact path="/users" render={(props) => <UserIndex {...props} perPage={preferences.usersPerPage} />} />
+                                        <Route exact path="/users/create" render={(props) => <UserCreate {...props} />} />
+                                        <Route exact path="/users/:id/edit" render={(props) => <UserEdit {...props} />} />
+                                    </React.Fragment> : ""}
                                     <Route exact path="/userChangePassword" render={(props) => <UserChangePassword {...props} />} />
 
                                     <Route exact path="/customers" render={(props) => <CustomerIndex {...props} perPage={preferences.customersPerPage} />} />
@@ -342,9 +344,10 @@ class Sidebar extends React.Component {
                                             {...props} />}
                                     />
 
-                                    <Route exact path="/audits" render={(props) => <AuditIndex {...props} perPage={preferences.auditsPerPage} />} />
-                                    <Route exact path="/audits/:id/edit" render={(props) => <AuditEdit {...props} />} />
-
+                                    {loggedInUserRole === "admin" ? <React.Fragment>
+                                        <Route exact path="/audits" render={(props) => <AuditIndex {...props} perPage={preferences.auditsPerPage} />} />
+                                        <Route exact path="/audits/:id/edit" render={(props) => <AuditEdit {...props} />} />
+                                    </React.Fragment> : ""}
                                     <Route path="/" render={(props) => <Home {...props} />} />
                                 </Switch>
                             </div>
