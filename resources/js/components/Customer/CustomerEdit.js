@@ -121,7 +121,9 @@ class CustomerEdit extends Component {
             }
             else if (res.data.status === 200) {
                 this.setState({ loading: false });
-                const { limit, currentPage } = this.props.location;
+                let { limit, currentPage } = this.props.location;
+                if (limit == null) { limit = 20 }
+                if (currentPage == null) { currentPage = 1 }
                 this.props.history.push(`/customers?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
             }
         }
@@ -205,7 +207,9 @@ class CustomerEdit extends Component {
 
     redirectBack = (event) => {
         event.preventDefault()
-        const { limit, currentPage } = this.props.location;
+        let { limit, currentPage } = this.props.location;
+        if (limit == null) { limit = 20 }
+        if (currentPage == null) { currentPage = 1 }
         this.props.history.push(`/customers?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
     }
 
