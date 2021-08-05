@@ -134,6 +134,25 @@ class UserController extends Controller
         return response()->json(['status' => 200, 'usersToDelete' => $usersToDelete]);
     }
 
+    public function changePassword(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            "oldPassword" => "required",
+            "newPassword" => "required",
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => 422, 'errors' => $validator->messages()]);
+        }
+        $oldPassword = Auth::user()->password;
+        if (Hash::check($request['oldPassword'], $oldPassword)) {
+            $request["password"] = Hash::make($request['newPassword']);
+            $user->update($request->all());
+        } else {
+            return response()->json(['status' => 422, 'errors' => ["oldPassword" => ["Old password is wrong"]]]);
+        }
+        return response()->json(['status' => 200, 'user' => $user]);
+    }
+
     public function populateUsersForTaskList()
     {
         $userIdsAndNames = User::select("id", "name")->get();

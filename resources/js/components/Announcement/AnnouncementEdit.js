@@ -175,14 +175,18 @@ class AnnouncementEdit extends Component {
 
     markUnread = async () => {
         const { id } = this.state;
-        const { limit, currentPage } = this.props.location;
+        let { limit, currentPage } = this.props.location;
+        if (limit == null) { limit = 20 }
+        if (currentPage == null) { currentPage = 1 }
         await axios.put(`${process.env.MIX_API_URL}/users/unreadAnnouncement/${id}`);
         this.props.history.push(`/announcements?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
     }
 
     cancel = () => {
         const { source } = this.state;
-        const { limit, currentPage } = this.props.location;
+        let { limit, currentPage } = this.props.location;
+        if (limit == null) { limit = 20 }
+        if (currentPage == null) { currentPage = 1 }
         if (source === "sentAnnouncementIndex") {
             this.props.history.push(`/announcementssent?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
         }

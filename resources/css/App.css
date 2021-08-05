@@ -397,6 +397,34 @@ a:visited{
 
 .logoutButton {
     padding: 1px 15px;
+    background: rgba(255, 255, 255, 0);
+    margin: 0 auto;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: #282424;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: inline-block;
+    border: 0.1em solid grey;
+    border-radius: 0.12em;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-weight: 300;
+    color: black;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.logoutButton:hover{
+    color: #3278f1;
+    border-color: #000000;
+}
+
+.changePasswordButton {
+    padding: 1px 15px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0);
     margin: 0 auto;
@@ -408,7 +436,21 @@ a:visited{
     border-color: #282424;
     position: absolute;
     top: 10px;
-    right: 10px;
+    right:100px;
+    display: inline-block;
+    border: 0.1em solid grey;
+    border-radius: 0.12em;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-weight: 300;
+    color: grey;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.changePasswordButton:hover{
+    color: #000000 !important;
+    border-color: #000000;
 }
 
 /* .card, .card-body, .react-strap-table, .text-center, .card-footer{
