@@ -1,0 +1,68 @@
+.table-user_id-th {
+    width: 10%;
+    min-width: 100px;
+}
+
+.table-user_id-td {
+    width: 10%;
+    min-width: 100px;
+}
+
+.table-username-th {
+    width: 10%;
+    min-width: 100px;
+}
+
+.table-username-td {
+    width: 10%;
+    min-width: 100px;
+}
+
+.table-event-th {
+    width: 10%;
+}
+
+.table-event-td {
+    width: 10%;
+}
+
+.table-auditable_type-th {
+    width: 10%;
+    max-width: 250px;
+}
+
+.table-auditable_type-td {
+    width: 10%;
+    max-width: 250px;
+}
+
+.table-old_values-th {
+    width: 30%;
+    max-width: 200px;
+}
+
+.table-old_values-td {
+    width: 30%;
+    max-width: 200px;
+}
+
+.table-new_values-th {
+    width: 20%;
+    max-width: 200px;
+}
+
+.table-new_values-td {
+    width: 20%;
+    max-width: 200px;
+}
+
+
+.table-actions-th {
+    width: 10% !important;
+    max-width: 100px;
+}
+
+.table-actions-td {
+    width: 10% !important;
+    max-width: 100px;
+}

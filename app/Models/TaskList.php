@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \App\Models\User;
 use \App\Models\Customer;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class TaskList extends Model
+class TaskList extends Model implements Auditable
 {
     use HasFactory;
+    use \OwenIt\Auditing\Auditable;
+
     protected $fillable = [
         'name',
         'description',

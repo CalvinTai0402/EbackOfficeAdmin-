@@ -22,6 +22,7 @@ class PreferenceController extends Controller
             "availableTasksPerPage",
             "taskListsPerPage",
             "myTasksPerPage",
+            "auditsPerPage",
             "announcementsPerPage",
             "sentAnnouncementsPerPage",
             "sidebarTextColor",
