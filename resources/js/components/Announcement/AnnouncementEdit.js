@@ -114,7 +114,7 @@ class AnnouncementEdit extends Component {
         let fileName = new Date(Date.now()).toISOString() + "_" + file.name
         fileName = fileName.replaceAll(":", "-")
         await this.uploadImage(fileName, file)
-        let imagePath = 'http://localhost:8000/announcementImages/' + fileName;
+        let imagePath = `${process.env.MIX_BASE_URL}/storage/announcementImages/${fileName}`;
         return new Promise(
             (resolve, reject) => {
                 resolve({ data: { link: imagePath } });

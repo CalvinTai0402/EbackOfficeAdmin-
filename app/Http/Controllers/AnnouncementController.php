@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
@@ -230,7 +231,8 @@ class AnnouncementController extends Controller
             $imageFileResized = Image::make($imageFile)->resize(300, null, function ($constraint) {
                 $constraint->aspectRatio();
             });
-            $imageFileResized->save(public_path('announcementImages/' . $request["fileName"]));
+            // $imageFileResized->save(public_path('announcementImages/' . $request["fileName"]));
+            $imageFileResized->save(Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix() . 'public/announcementImages/' . $request["fileName"]);
             $response["status"] = 200;
             $response["message"] = "Success! kerasModelFile(s) uploaded";
         } else {
