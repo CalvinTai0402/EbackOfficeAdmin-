@@ -164,4 +164,11 @@ class MyTaskController extends Controller
         $myTask->update($request->all());
         return response()->json(['status' => 200, 'myTask' => $myTask]);
     }
+
+    public function setStatusForMany(Request $request)
+    {
+        $selectedMyTasksIds = $request->selectedMyTasks;
+        $selectedMyTasksToUpdate = MyTask::whereIn('id', $selectedMyTasksIds)->update(["status"=>$request->status]);
+        return response()->json(['status' => 200, 'selectedMyTasksToUpdate' => $selectedMyTasksToUpdate]);
+    }
 }

@@ -20,9 +20,10 @@ class MyTask extends Model implements Auditable
         'repeat',
         'priority',
         'status',
+        'hours',
         'assigneeNames',
         'customer_code',
-        'customer_id'
+        'customer_id',
     ];
     protected $table = 'task_lists';
 

@@ -57,7 +57,8 @@ class MyTaskIndex extends React.Component {
         currentPage: 1,
         limit: this.props.perPage,
         filterFutureValue: false,
-        filterCompletedValue: true
+        filterCompletedValue: true,
+        hours: 0,
     };
 
     async componentDidMount() {
@@ -205,6 +206,7 @@ class MyTaskIndex extends React.Component {
             customerRemark: res.data.myTask.customer.remark,
             currentPage: urlParams.get('page'),
             limit: urlParams.get('limit'),
+            hours: res.data.myTask.hours,
         });
         await this.populateCredentialsForCustomers(this.state.customerId);
     }
@@ -223,7 +225,7 @@ class MyTaskIndex extends React.Component {
     handleUpdate = async (event) => {
         event.preventDefault();
         this.setState({ myTasksIDs: [], selected: false })
-        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode, currentPage, limit } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode, currentPage, limit, hours } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/${rowId}`, {
@@ -236,7 +238,8 @@ class MyTaskIndex extends React.Component {
                 priority: priority,
                 status: status,
                 asigneeIds: asigneeIds,
-                customer_id: customerId
+                customer_id: customerId,
+                hours: hours
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -286,6 +289,41 @@ class MyTaskIndex extends React.Component {
         });
         const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/updateStatus/${rowId}`, {
             status: obj.value,
+        });
+        if (res.data.status === 422) {
+            this.setState({ loading: false });
+            let validationErrors = res.data.errors;
+            this.setState({ errors: [] }, () => {
+                const { errors } = this.state;
+                for (let key of Object.keys(validationErrors)) {
+                    let errorArrayForOneField = validationErrors[key]
+                    errorArrayForOneField.forEach(function (errorMessage, index) {
+                        errors.push(errorMessage)
+                    });
+                }
+                this.setState({ errors })
+            });
+        }
+        else if (res.data.status === 200) {
+            this.setState({ loading: false, selected: false });
+            const { limit, currentPage } = this.state;
+            this.props.history.push(`/mytasks?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+            this.goToPage()
+            this.setDropDownValue()
+        }
+    };
+
+    setStatusForMany = async (value, obj, rowId) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.setState({
+            loading: true,
+            currentPage: urlParams.get('page'),
+            limit: urlParams.get('limit'),
+            myTasksIDs: [],
+        });
+        const res = await axios.post(`${process.env.MIX_API_URL}/myTasks/setStatusForMany`, {
+            status: obj.value,
+            selectedMyTasks: this.state.selectedMyTasks,
         });
         if (res.data.status === 422) {
             this.setState({ loading: false });
@@ -394,6 +432,9 @@ class MyTaskIndex extends React.Component {
             case "status":
                 this.setState({ status: obj.value })
                 break;
+            case "hours":
+                this.setState({ hours: obj.value })
+                break;
             default:
         }
     }
@@ -437,10 +478,10 @@ class MyTaskIndex extends React.Component {
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
             status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected,
-            currentPage, limit, credentials, filterFutureValue, filterCompletedValue } = this.state;
+            currentPage, limit, credentials, filterFutureValue, filterCompletedValue, hours } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
-        const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'assigneeNames', 'actions']
+        const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'hours', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: limit,
@@ -474,6 +515,27 @@ class MyTaskIndex extends React.Component {
                             <Icon name='list' circular />
                             <Header.Content>My Tasks</Header.Content>
                         </Header>
+                        {!selected ?
+                        <div className="create" style={{width: '100%'}} >
+                            <SelectSearch
+                                search
+                                onChange={(value, obj) => this.setStatusForMany(value, obj)}
+                                filterOptions={fuzzySearch}
+                                options={[
+                                    { value: 'No Status', name: 'No Status' },
+                                    { value: 'Not Started', name: 'Not Started' },
+                                    { value: 'In progress', name: 'In progress' },
+                                    { value: "On Hold", name: "On Hold" },
+                                    { value: 'Completed', name: 'Completed' },
+                                    { value: 'Draft', name: 'Draft' },
+                                    { value: "Needs Review", name: "Needs Review" },
+                                    { value: 'With Client', name: 'With Client' },
+                                    { value: 'Waiting on Client', name: 'Waiting on Client' },
+                                ]}
+                                placeholder="Set status for many"
+                            />
+                        </div>:
+                        <div></div>}
                         {!selected ?
                             <ServerTable columns={columns} url={url} options={options} bordered hover updateUrl filterFutureValue={filterFutureValue}
                                 filterCompletedValue={filterCompletedValue} filterFutureAndIncomplete={true} loadAll={true} updateFilters={this.updateFilters}>
@@ -608,12 +670,37 @@ class MyTaskIndex extends React.Component {
                                                         className={this.handleInputError(errors, "name")}
                                                     />
                                                 </Form.Field>
+                                                <Form.Field className={this.handleInputError(errors, "hours")}>
+                                                    <label style={{ color: "green" }}>Hours</label>
+                                                    <div style={{ border: "2px solid #84ed80", padding: "0", backgroundColor: "#84ed80" }}>
+                                                        <SelectSearch
+                                                            search
+                                                            onChange={(value, obj) => this.handleSelectChange(value, obj, "hours")}
+                                                            filterOptions={fuzzySearch}
+                                                            options={[
+                                                                { value: '0', name: '0' },
+                                                                { value: '1', name: '1' },
+                                                                { value: '2', name: '2' },
+                                                                { value: '3', name: '3' },
+                                                                { value: '4', name: '4' },
+                                                                { value: '5', name: '5' },
+                                                                { value: '6', name: '6' },
+                                                                { value: '7', name: '7' },
+                                                                { value: '8', name: '8' },
+                                                                { value: '9', name: '9' },
+                                                                { value: '10', name: '10' },
+                                                            ]}
+                                                            placeholder="Choose estimate"
+                                                            value={hours}
+                                                        />
+                                                    </div>
+                                                </Form.Field>
                                                 <Form.Field>
                                                     <label>Remarks</label>
                                                     <TextArea
                                                         name="remark"
                                                         value={customerRemark}
-                                                        style={{ height: "230px" }}
+                                                        style={{ height: "150px" }}
                                                     />
                                                 </Form.Field>
                                             </Grid.Column>

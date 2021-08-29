@@ -21,6 +21,7 @@ class TaskList extends Model implements Auditable
         'repeat',
         'priority',
         'status',
+        'hours',
         'assigneeNames',
         'customer_code',
         'customer_id'
