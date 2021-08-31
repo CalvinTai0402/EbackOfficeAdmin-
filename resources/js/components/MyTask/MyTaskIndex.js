@@ -58,7 +58,7 @@ class MyTaskIndex extends React.Component {
         limit: this.props.perPage,
         filterFutureValue: false,
         filterCompletedValue: true,
-        hours: 0,
+        minutes: 0,
     };
 
     async componentDidMount() {
@@ -206,7 +206,7 @@ class MyTaskIndex extends React.Component {
             customerRemark: res.data.myTask.customer.remark,
             currentPage: urlParams.get('page'),
             limit: urlParams.get('limit'),
-            hours: res.data.myTask.hours,
+            minutes: res.data.myTask.minutes,
         });
         await this.populateCredentialsForCustomers(this.state.customerId);
     }
@@ -225,7 +225,7 @@ class MyTaskIndex extends React.Component {
     handleUpdate = async (event) => {
         event.preventDefault();
         this.setState({ myTasksIDs: [], selected: false })
-        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode, currentPage, limit, hours } = this.state;
+        const { name, description, notes, duedate, repeat, priority, status, rowId, asigneeIds, customerId, customerCode, currentPage, limit, minutes } = this.state;
         if (this.isFormValid(this.state)) {
             this.setState({ loading: true });
             const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/${rowId}`, {
@@ -239,7 +239,7 @@ class MyTaskIndex extends React.Component {
                 status: status,
                 asigneeIds: asigneeIds,
                 customer_id: customerId,
-                hours: hours
+                minutes: minutes
             });
             if (res.data.status === 422) {
                 this.setState({ loading: false });
@@ -432,9 +432,6 @@ class MyTaskIndex extends React.Component {
             case "status":
                 this.setState({ status: obj.value })
                 break;
-            case "hours":
-                this.setState({ hours: obj.value })
-                break;
             default:
         }
     }
@@ -478,10 +475,10 @@ class MyTaskIndex extends React.Component {
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
             status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected,
-            currentPage, limit, credentials, filterFutureValue, filterCompletedValue, hours } = this.state;
+            currentPage, limit, credentials, filterFutureValue, filterCompletedValue, minutes } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
-        const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'hours', 'assigneeNames', 'actions']
+        const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'minutes', 'assigneeNames', 'actions']
         let checkAllInput = (<input type="checkbox" ref={this.check_all} onChange={this.handleCheckboxTableAllChange} />);
         const options = {
             perPage: limit,
@@ -670,28 +667,17 @@ class MyTaskIndex extends React.Component {
                                                         className={this.handleInputError(errors, "name")}
                                                     />
                                                 </Form.Field>
-                                                <Form.Field className={this.handleInputError(errors, "hours")}>
-                                                    <label style={{ color: "green" }}>Hours</label>
+                                                <Form.Field className={this.handleInputError(errors, "minutes")}>
+                                                    <label style={{ color: "green" }}>Minutes</label>
                                                     <div style={{ border: "2px solid #84ed80", padding: "0", backgroundColor: "#84ed80" }}>
-                                                        <SelectSearch
-                                                            search
-                                                            onChange={(value, obj) => this.handleSelectChange(value, obj, "hours")}
-                                                            filterOptions={fuzzySearch}
-                                                            options={[
-                                                                { value: '0', name: '0' },
-                                                                { value: '1', name: '1' },
-                                                                { value: '2', name: '2' },
-                                                                { value: '3', name: '3' },
-                                                                { value: '4', name: '4' },
-                                                                { value: '5', name: '5' },
-                                                                { value: '6', name: '6' },
-                                                                { value: '7', name: '7' },
-                                                                { value: '8', name: '8' },
-                                                                { value: '9', name: '9' },
-                                                                { value: '10', name: '10' },
-                                                            ]}
-                                                            placeholder="Choose estimate"
-                                                            value={hours}
+                                                        <Form.Input
+                                                            fluid
+                                                            name="minutes"
+                                                            value={minutes}
+                                                            className={this.handleInputError(errors, "minutes")}
+                                                            onChange={this.handleChange}
+                                                            type="number"
+                                                            min={1}
                                                         />
                                                     </div>
                                                 </Form.Field>

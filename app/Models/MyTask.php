@@ -20,7 +20,7 @@ class MyTask extends Model implements Auditable
         'repeat',
         'priority',
         'status',
-        'hours',
+        'minutes',
         'assigneeNames',
         'customer_code',
         'customer_id',
