@@ -22,7 +22,7 @@ class CreateTaskListsTable extends Migration
             $table->string('repeat');
             $table->string('priority');
             $table->string('status');
-            $table->string('hours')->default("0");
+            $table->string('minutes')->default("0");
             $table->string('assigneeNames');
             $table->string('customer_code');
             $table->bigInteger('customer_id')->unsigned();

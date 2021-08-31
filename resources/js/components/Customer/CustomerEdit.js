@@ -263,7 +263,7 @@ class CustomerEdit extends Component {
                                         onChange={(value, objArray) => this.handleMultipleSelectChange(value, objArray, "service")}
                                         options={[
                                             { value: 'Tax', name: 'Tax' },
-                                            { value: 'Acccounting', name: 'Acccounting' },
+                                            { value: 'Accounting', name: 'Accounting' },
                                             { value: 'Other', name: 'Other' },
                                         ]}
                                         value={serviceArray}
