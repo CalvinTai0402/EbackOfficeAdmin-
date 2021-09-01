@@ -62,6 +62,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post("taskLists/deleteMany",  [TaskListController::class, 'destroyMany'])->name('taskLists.destroyMany');
         Route::resource("taskLists", TaskListController::class);
 
+        Route::put("myTasks/updateMinutes/{myTask}",  [MyTaskController::class, 'updateMinutes'])->name('myTasks.updateMinutes');
         Route::put("myTasks/updateStatus/{myTask}",  [MyTaskController::class, 'updateStatus'])->name('myTasks.updateStatus');
         Route::post("myTasks/setStatusForMany",  [MyTaskController::class, 'setStatusForMany'])->name('myTasks.setStatusForMany');
         Route::resource("myTasks", MyTaskController::class);
