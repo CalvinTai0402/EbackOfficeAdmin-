@@ -51,3 +51,12 @@
 .table-id-td {
     text-align: center;
 }
+
+#inlineMins::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: black;
+    opacity: 1; /* Firefox */
+}
+
+#inlineMins:focus::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: transparent;
+}

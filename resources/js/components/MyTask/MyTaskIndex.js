@@ -59,6 +59,7 @@ class MyTaskIndex extends React.Component {
         filterFutureValue: false,
         filterCompletedValue: true,
         minutes: 0,
+        inlineMinutes: 0,
     };
 
     async componentDidMount() {
@@ -222,6 +223,10 @@ class MyTaskIndex extends React.Component {
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
+    initializeInlineMinutes = value => { this.setState({ inlineMinutes: value }); };
+
+    handleInlineMinutesChange = event => { this.setState({ inlineMinutes: event.target.value }); };
+
     handleUpdate = async (event) => {
         event.preventDefault();
         this.setState({ myTasksIDs: [], selected: false })
@@ -289,6 +294,40 @@ class MyTaskIndex extends React.Component {
         });
         const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/updateStatus/${rowId}`, {
             status: obj.value,
+        });
+        if (res.data.status === 422) {
+            this.setState({ loading: false });
+            let validationErrors = res.data.errors;
+            this.setState({ errors: [] }, () => {
+                const { errors } = this.state;
+                for (let key of Object.keys(validationErrors)) {
+                    let errorArrayForOneField = validationErrors[key]
+                    errorArrayForOneField.forEach(function (errorMessage, index) {
+                        errors.push(errorMessage)
+                    });
+                }
+                this.setState({ errors })
+            });
+        }
+        else if (res.data.status === 200) {
+            this.setState({ loading: false, selected: false });
+            const { limit, currentPage } = this.state;
+            this.props.history.push(`/mytasks?search=&limit=${limit}&page=${currentPage}&orderBy=&order=desc`);
+            this.goToPage()
+            this.setDropDownValue()
+        }
+    };
+
+    handleInlineMinutesUpdate = async (rowId) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.setState({
+            loading: true,
+            currentPage: urlParams.get('page'),
+            limit: urlParams.get('limit'),
+            myTasksIDs: [],
+        });
+        const res = await axios.put(`${process.env.MIX_API_URL}/myTasks/updateMinutes/${rowId}`, {
+            minutes: this.state.inlineMinutes,
         });
         if (res.data.status === 422) {
             this.setState({ loading: false });
@@ -475,7 +514,7 @@ class MyTaskIndex extends React.Component {
     render() {
         const { name, description, notes, initialAssignees, selectedDate, repeat, priority, customerName, customerRemark,
             status, availableTaskNames, availableCustomerCodes, customerCode, userNames, errors, loading, selected,
-            currentPage, limit, credentials, filterFutureValue, filterCompletedValue, minutes } = this.state;
+            currentPage, limit, credentials, filterFutureValue, filterCompletedValue, minutes, inlineMinutes } = this.state;
         let self = this;
         const url = `${process.env.MIX_API_URL}/myTasks`;
         const columns = ['id', 'name', 'customer_code', 'duedate', 'priority', 'status', 'minutes', 'assigneeNames', 'actions']
@@ -567,6 +606,24 @@ class MyTaskIndex extends React.Component {
                                                             ]}
                                                             placeholder="Choose a status"
                                                             value={row.status}
+                                                        />
+                                                    </div>
+                                                )
+                                            case 'minutes':
+                                                return (
+                                                    <div style={{
+                                                        border: "2px solid #84ed80", padding: "0", backgroundColor: "#84ed80"
+                                                    }} >
+                                                        <Form.Input
+                                                            fluid
+                                                            id="inlineMins"
+                                                            name="minutes"
+                                                            placeholder={row.minutes}
+                                                            onFocus={()=>self.initializeInlineMinutes(row.minutes)}
+                                                            onChange={self.handleInlineMinutesChange}
+                                                            onBlur={()=>self.handleInlineMinutesUpdate(row.id)}
+                                                            type="number"
+                                                            min={0}
                                                         />
                                                     </div>
                                                 )
@@ -677,7 +734,7 @@ class MyTaskIndex extends React.Component {
                                                             className={this.handleInputError(errors, "minutes")}
                                                             onChange={this.handleChange}
                                                             type="number"
-                                                            min={1}
+                                                            min={0}
                                                         />
                                                     </div>
                                                 </Form.Field>

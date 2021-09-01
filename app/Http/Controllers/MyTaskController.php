@@ -165,6 +165,12 @@ class MyTaskController extends Controller
         return response()->json(['status' => 200, 'myTask' => $myTask]);
     }
 
+    public function updateMinutes(Request $request, MyTask $myTask)
+    {
+        $myTask->update($request->all());
+        return response()->json(['status' => 200, 'myTask' => $myTask]);
+    }
+
     public function setStatusForMany(Request $request)
     {
         $selectedMyTasksIds = $request->selectedMyTasks;
