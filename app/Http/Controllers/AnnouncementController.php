@@ -212,18 +212,17 @@ class AnnouncementController extends Controller
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
         $read = $request->input("read");
-        $sentAnnouncements = Announcement::where('owner_id', '=', Auth::id())
-                                        ->where(function ($query) use ($search) {
-                                            $query->where('name', 'LIKE', '%' . $search . '%')
-                                                ->orWhere('description', 'LIKE', '%' . $search . '%');
-                                        });
-        // $sentAnnouncements =  Announcement::sent()
-        //     ->name($search)
-        //     ->description($search)
-        //     ->order($orderBy, $order)
-        //     ->skipPage($toSkip)
-        //     ->take($limit)
-        //     ->get();
+        if (!is_null($search)) {
+            $sentAnnouncements = Announcement::sent()->where(function (
+                $query
+            ) use ($search) {
+                $query
+                    ->where('name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('description', 'LIKE', '%' . $search . '%');
+            });
+        } else {
+            $sentAnnouncements = Announcement::sent();
+        }
         $sentAnnouncements = $sentAnnouncements->order($orderBy, $order)
                                                 ->skipPage($toSkip)
                                                 ->take($limit)
