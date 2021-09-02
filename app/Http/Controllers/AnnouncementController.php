@@ -212,13 +212,22 @@ class AnnouncementController extends Controller
         $order = $request->input("order");
         $toSkip = ($page - 1) * $limit;
         $read = $request->input("read");
-        $sentAnnouncements =  Announcement::sent()
-            ->name($search)
-            ->description($search)
-            ->order($orderBy, $order)
-            ->skipPage($toSkip)
-            ->take($limit)
-            ->get();
+        $sentAnnouncements = Announcement::where('owner_id', '=', Auth::id())
+                                        ->where(function ($query) use ($search) {
+                                            $query->where('name', 'LIKE', '%' . $search . '%')
+                                                ->orWhere('description', 'LIKE', '%' . $search . '%');
+                                        });
+        // $sentAnnouncements =  Announcement::sent()
+        //     ->name($search)
+        //     ->description($search)
+        //     ->order($orderBy, $order)
+        //     ->skipPage($toSkip)
+        //     ->take($limit)
+        //     ->get();
+        $sentAnnouncements = $sentAnnouncements->order($orderBy, $order)
+                                                ->skipPage($toSkip)
+                                                ->take($limit)
+                                                ->get();
         return response()->json(['count' => Announcement::sent()->count(), 'total' => Announcement::sent()->count(), 'data' => $sentAnnouncements]);
     }
 
